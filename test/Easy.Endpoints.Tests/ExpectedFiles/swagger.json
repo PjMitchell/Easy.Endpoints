@@ -1,0 +1,212 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Easy.Endpoints.TestServer.Endpoints",
+    "version": "1.0"
+  },
+  "paths": {
+    "/Book": {
+      "get": {
+        "tags": [
+          "Books"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Book"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Books"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Book"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/TestOne": {
+      "get": {
+        "tags": [
+          "Endpoints"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestResponsePayload"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestResponsePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/TestOne/{id}": {
+      "put": {
+        "tags": [
+          "Endpoints"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestResponsePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/TestTwo": {
+      "post": {
+        "tags": [
+          "Endpoints"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestResponsePayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestResponsePayload"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/HelloWorld": {
+      "get": {
+        "tags": [
+          "Greetings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Book": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CommandResult": {
+        "type": "object",
+        "properties": {
+          "successful": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "TestResponsePayload": {
+        "type": "object",
+        "properties": {
+          "propertyOne": {
+            "type": "string",
+            "nullable": true
+          },
+          "propertyTwo": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}
