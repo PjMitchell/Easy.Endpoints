@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Easy.Endpoints
@@ -11,9 +12,20 @@ namespace Easy.Endpoints
             return httpContext.Response.WriteAsJsonAsync(response);
         }
 
-        public static ValueTask<TModel?> ReadJsonBody<TModel>(HttpContext httpContext)
+        public static async ValueTask<TModel> ReadJsonBody<TModel>(HttpContext httpContext)
         {
-            return httpContext.Request.ReadFromJsonAsync<TModel>();
+            try
+            {
+                var result = await httpContext.Request.ReadFromJsonAsync<TModel>();
+                if (result is null)
+                    throw new EndpointStatusCodeResponseException(400, "Invalid request body");
+                return result;
+            }
+            catch(JsonException e)
+            {
+                throw new EndpointStatusCodeResponseException(400, "Invalid request body");
+            }
+
         }
     }
 }

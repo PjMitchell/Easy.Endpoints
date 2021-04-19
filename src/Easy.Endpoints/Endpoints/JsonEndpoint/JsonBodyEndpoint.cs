@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
-    public class JsonBodyEndpoint<THandler, TBody> : IEndpoint where THandler : IJsonBodyEndpointHandler<TBody>
+    internal class JsonBodyEndpoint<THandler, TBody> : IEndpoint where THandler : IJsonBodyEndpointHandler<TBody>
     {
         private readonly THandler handler;
 
@@ -14,16 +14,10 @@ namespace Easy.Endpoints
 
         public async Task HandleRequest(HttpContext httpContext)
         {
-            var body = await HttpContextJsonHelper.ReadJsonBody<TBody>(httpContext).ConfigureAwait(false);
-            if (body is null)
-            {
-                httpContext.Response.StatusCode = 400;
-            }
-            else
-            {
-                await handler.Handle(body).ConfigureAwait(false);
-                httpContext.Response.StatusCode = 201;
-            }
+            var body = await HttpContextJsonHelper.ReadJsonBody<TBody>(httpContext).ConfigureAwait(false);            
+            await handler.Handle(body).ConfigureAwait(false);
+            httpContext.Response.StatusCode = 201;
+            
         }
     }
 }

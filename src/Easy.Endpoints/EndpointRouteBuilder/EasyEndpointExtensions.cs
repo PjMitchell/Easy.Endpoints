@@ -45,7 +45,16 @@ namespace Easy.Endpoints
                 var endpointContext = context.RequestServices.GetRequiredService<EndpointContextAccessor>();
                 endpointContext.Context = new EndpointContext(context);
                 var endpoint = (IEndpoint)context.RequestServices.GetRequiredService(type);
-                await endpoint.HandleRequest(context).ConfigureAwait(false);
+                try
+                {
+                    await endpoint.HandleRequest(context).ConfigureAwait(false);
+                }
+                catch(EndpointStatusCodeResponseException e)
+                {
+                    context.Response.StatusCode = e.StatusCode;
+                    await context.Response.WriteAsync(e.Message);
+                }
+                
             }
             return Request;
         }

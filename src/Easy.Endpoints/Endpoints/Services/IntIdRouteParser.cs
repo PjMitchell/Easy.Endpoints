@@ -1,11 +1,19 @@
 ﻿namespace Easy.Endpoints
 {
+    /// <summary>
+    /// Parses id part of route as int
+    /// </summary>
     public interface IIntIdRouteParser
     {
+        /// <summary>
+        /// Gets id part of route as an int
+        /// </summary>
+        /// <returns>id from route</returns>
+        /// <exception cref="EndpointStatusCodeResponseException">With as Status code of 404 if cannot parse id</exception>
         int GetIdFromRoute();
     }
 
-    public class IntIdRouteParser : IIntIdRouteParser
+    internal class IntIdRouteParser : IIntIdRouteParser
     {
         private readonly IEndpointContextAccessor httpContextAccessor;
 
@@ -26,7 +34,7 @@
                 };
             }
 
-            return 0;
+            throw new EndpointStatusCodeResponseException(404, "Not found");
         }
     }
 }
