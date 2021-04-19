@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestServer.Endpoints.Books
 {
@@ -9,7 +10,7 @@ namespace Easy.Endpoints.TestServer.Endpoints.Books
         {            
         }
 
-        public Task<CommandResult> Handle(Book body)
+        public Task<CommandResult> Handle(Book body, CancellationToken cancellationToken)
         {
             return Task.FromResult(new CommandResult { Successful = true, Message = $"Created {body.Name}" });
         }

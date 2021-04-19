@@ -14,7 +14,7 @@ namespace Easy.Endpoints
 
         public async Task HandleRequest(HttpContext httpContext)
         {
-            var response = await handler.Handle().ConfigureAwait(false);
+            var response = await handler.Handle(httpContext.RequestAborted).ConfigureAwait(false);
             await HttpContextJsonHelper.WriteJsonResponse(httpContext, response).ConfigureAwait(false);
         }
     }

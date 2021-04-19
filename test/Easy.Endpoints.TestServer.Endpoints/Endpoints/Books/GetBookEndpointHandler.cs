@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestServer.Endpoints.Books
@@ -7,7 +8,7 @@ namespace Easy.Endpoints.TestServer.Endpoints.Books
    
     public class GetBookEndpointHandler : IJsonResponseEndpointHandler<Book[]>
     {
-        public Task<Book[]> Handle() => Task.FromResult(AllBooks().ToArray());
+        public Task<Book[]> Handle(CancellationToken cancellationToken) => Task.FromResult(AllBooks().ToArray());
         public static IEnumerable<Book> AllBooks()
         {
             return new[] 

@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestServer.Endpoints
 {
     [Get("TestOne")]
     public class GetTestResponseEndpointHandler : IJsonResponseEndpointHandler<TestResponsePayload>
     {
-        public Task<TestResponsePayload> Handle() => Task.FromResult(TestResponsePayload.Default);
+        public Task<TestResponsePayload> Handle(CancellationToken cancellationToken) => Task.FromResult(TestResponsePayload.Default);
     }
 
     [Put("TestOne/{id:int:min(0)}")]
@@ -18,7 +19,7 @@ namespace Easy.Endpoints.TestServer.Endpoints
             this.idRouteParser = idRouteParser;
         }
 
-        public Task Handle(TestResponsePayload body)
+        public Task Handle(TestResponsePayload body, CancellationToken cancellationToken)
         {
             var id = idRouteParser.GetIdFromRoute();
             return Task.CompletedTask;
@@ -28,7 +29,7 @@ namespace Easy.Endpoints.TestServer.Endpoints
     [Post("TestOne")]
     public class PostTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePayload>
     {
-        public Task Handle(TestResponsePayload body)
+        public Task Handle(TestResponsePayload body, CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
@@ -37,7 +38,7 @@ namespace Easy.Endpoints.TestServer.Endpoints
     [Post("TestTwo")]
     public class PostTestResponseAndBodyEndpoint : IJsonEndpointHandler<TestResponsePayload, TestResponsePayload>
     {
-        public Task<TestResponsePayload> Handle(TestResponsePayload body)
+        public Task<TestResponsePayload> Handle(TestResponsePayload body, CancellationToken cancellationToken)
         {
             return Task.FromResult(body);
         }
