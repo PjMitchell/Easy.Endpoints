@@ -6,7 +6,9 @@ namespace Easy.Endpoints.Benchmark
     {
         public static void Main()
         {
-            BenchmarkRunner.Run<SampleHttpJsonGet>();
+            BenchmarkRunner.Run<BookHttpJsonGet>();
+            BenchmarkRunner.Run<BookHttpJsonPost>();
+
         }
     }
 }
