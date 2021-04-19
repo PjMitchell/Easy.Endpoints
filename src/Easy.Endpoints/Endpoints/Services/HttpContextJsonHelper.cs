@@ -21,7 +21,7 @@ namespace Easy.Endpoints
                     throw new EndpointStatusCodeResponseException(400, "Invalid request body");
                 return result;
             }
-            catch(JsonException e)
+            catch(JsonException)
             {
                 throw new EndpointStatusCodeResponseException(400, "Invalid request body");
             }

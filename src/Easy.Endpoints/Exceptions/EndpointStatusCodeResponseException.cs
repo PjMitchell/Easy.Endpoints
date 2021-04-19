@@ -6,6 +6,7 @@ namespace Easy.Endpoints
     /// <summary>
     /// This exception represents an error that will be translated to a status code with message by Easy.Endpoints
     /// </summary>
+    [Serializable]
     public class EndpointStatusCodeResponseException : Exception
     {
         /// <summary>
@@ -44,5 +45,11 @@ namespace Easy.Endpoints
         /// </summary>
         public int StatusCode { get; }
     }
+
+    internal static class EndpointStatusCodeResponseExceptionHelper
+    {
+        internal static EndpointStatusCodeResponseException NotFound() => new EndpointStatusCodeResponseException(404, "Not found");
+    }
+
 }
  

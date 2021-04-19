@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestServer.Endpoints.Books
@@ -6,6 +7,15 @@ namespace Easy.Endpoints.TestServer.Endpoints.Books
    
     public class GetBookEndpointHandler : IJsonResponseEndpointHandler<Book[]>
     {
-        public Task<Book[]> Handle() => Task.FromResult(Array.Empty<Book>());
+        public Task<Book[]> Handle() => Task.FromResult(AllBooks().ToArray());
+        public static IEnumerable<Book> AllBooks()
+        {
+            return new[] 
+            {
+                new Book { Id = 1, Name = "Book 1" },
+                new Book { Id = 2, Name = "Book 2" },
+
+            };
+        }
     }
 }

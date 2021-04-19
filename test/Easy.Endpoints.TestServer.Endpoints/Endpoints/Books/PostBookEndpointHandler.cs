@@ -11,7 +11,7 @@ namespace Easy.Endpoints.TestServer.Endpoints.Books
 
         public Task<CommandResult> Handle(Book body)
         {
-            return Task.FromResult(new CommandResult { Successful = true, Message = "Yay!" });
+            return Task.FromResult(new CommandResult { Successful = true, Message = $"Created {body.Name}" });
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Easy.Endpoints.TestServer.Endpoints
         public Task<TestResponsePayload> Handle() => Task.FromResult(TestResponsePayload.Default);
     }
 
-    [Put("TestOne/{id:long:min(0)}")]
+    [Put("TestOne/{id:int:min(0)}")]
     public class PutTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePayload>
     {
         private readonly IIntIdRouteParser idRouteParser;
