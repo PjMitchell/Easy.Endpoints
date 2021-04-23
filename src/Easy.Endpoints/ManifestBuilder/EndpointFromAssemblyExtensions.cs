@@ -10,7 +10,7 @@ namespace Easy.Endpoints
         {
             foreach (var endpoint in assembly.DefinedTypes.Where(IsRequestEndpoint))
             {
-                var info = EndpointInfoFactory.BuildInfoForEndpoint(endpoint);
+                var info = EndpointInfoFactory.BuildInfoForEndpoint(endpoint, builder.Options);
                 builder.AddEndpoint(info);
             }
 
@@ -19,7 +19,7 @@ namespace Easy.Endpoints
                 var endpoint = GetEndpointForHandler(handler);
                 if (endpoint is null)
                     continue;
-                var info = EndpointInfoFactory.BuildInfoForHandler(handler, endpoint.GetTypeInfo());
+                var info = EndpointInfoFactory.BuildInfoForHandler(handler, endpoint.GetTypeInfo(), builder.Options);
                 builder.AddEndpoint(info);
             }
 

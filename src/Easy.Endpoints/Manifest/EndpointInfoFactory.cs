@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Routing.Patterns;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using System;
 
 namespace Easy.Endpoints
 {
@@ -13,24 +12,30 @@ namespace Easy.Endpoints
     {
         private static readonly string[] get = new[] { "GET" };
 
-        public static EndpointInfo BuildInfoForEndpoint(TypeInfo endpoint)
+        public static EndpointInfo BuildInfoForEndpoint(TypeInfo endpoint, EndpointOptions options)
         {
-            return BuildInfo(endpoint, e => BuildBase(e, endpoint));
+            return BuildInfoForHandler(null, endpoint, options);
         }
 
-        public static EndpointInfo BuildInfoForHandler(TypeInfo handler, TypeInfo endpoint)
+        public static EndpointInfo BuildInfoForHandler(TypeInfo? handler, TypeInfo endpoint, EndpointOptions options)
         {
-            return BuildInfo(handler, e => BuildBase(e, handler, endpoint));
+            var declaredEndpoint = handler ?? endpoint;
+            var info = BuildInfoWithRoute(declaredEndpoint, endpoint, handler, options);
+            info.MapProducedResponse(declaredEndpoint);
+            info.MapBodyParameter(declaredEndpoint);
+            return info;
         }
 
-        public static EndpointInfo BuildInfo(TypeInfo endpoint, Func<ParsedEndpointName, EndpointInfo> endpointFactory)
+        private static EndpointInfo BuildInfoWithRoute(TypeInfo declaredEndpoint, TypeInfo endpoint, TypeInfo? handler, EndpointOptions options)
         {
-            var controllerName = GetControllerValue(endpoint);
-            var endpointValue = GetEndpointValue(endpoint);
-            var info = endpointFactory(endpointValue);
-            info.MapProducedResponse(endpoint);
-            info.MapBodyParameter(endpoint);
-            info.MapRouteParameters(controllerName, endpointValue);
+            var controllerName = GetControllerValue(declaredEndpoint);
+            var endpointValue = GetEndpointValue(declaredEndpoint);
+            var routeValues = BuildRouteParameters(controllerName, endpointValue);
+            var routeInfo = GetRouteInfo(declaredEndpoint, routeValues, endpointValue.Verb, options);
+            var info = new EndpointInfo(endpoint.AsType(),handler is null? null: handler, RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
+            info.Meta.Add(new HttpMethodMetadata(routeInfo.HttpMethods));
+            foreach (var routeValue in routeValues)
+                info.Meta.Add(routeValue);
             return info;
         }
 
@@ -91,55 +96,55 @@ namespace Easy.Endpoints
                 info.Meta.Add(new JsonEndpointRequestBodyMetaData(ta.GenericTypeArguments[0]));
         }
 
-        private static void MapRouteParameters(this EndpointInfo info, string controllerName, ParsedEndpointName endpoint)
+        private static ICollection<EndpointRouteValueMetadata> BuildRouteParameters(string controllerName, ParsedEndpointName endpoint)
         {
-            info.Meta.Add(new EndpointRouteValueMetadata(EndpointRouteKeys.Controller, controllerName));
-            info.Meta.Add(new EndpointRouteValueMetadata(EndpointRouteKeys.Endpoint, endpoint.Name));
-
+            return new[]
+            {
+                new EndpointRouteValueMetadata(EndpointRouteKeys.Controller, controllerName),
+                new EndpointRouteValueMetadata(EndpointRouteKeys.Endpoint, endpoint.Name)
+            };
         }
 
-        private static EndpointInfo BuildBase(ParsedEndpointName parsedEndpointName, TypeInfo handler, TypeInfo endpoint)
-        {
-            var routeInfo = GetRouteInfo(parsedEndpointName, handler);
-            return BuildBase(handler, endpoint, routeInfo);
-        }
-        private static EndpointInfo BuildBase(ParsedEndpointName parsedEndpointName, TypeInfo type)
-        {
-            var routeInfo = GetRouteInfo(parsedEndpointName, type);
-            return BuildBase(type, routeInfo);
-        }
 
-        private static EndpointInfo BuildBase(TypeInfo type, EndpointRouteInfo routeInfo)
-        {
-            var info = new EndpointInfo(type.AsType(), RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
-            info.Meta.Add(new HttpMethodMetadata(routeInfo.HttpMethods));
-            return info;
-        }
-
-        private static EndpointInfo BuildBase(TypeInfo handler, TypeInfo endpoint, EndpointRouteInfo routeInfo)
-        {
-            var info = new EndpointInfo(endpoint.AsType(), handler.AsType(), RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
-            info.Meta.Add(new HttpMethodMetadata(routeInfo.HttpMethods));
-            return info;
-        }
-
-        private static EndpointRouteInfo GetRouteInfo(ParsedEndpointName parsedEndpointName, TypeInfo type)
+        private static EndpointRouteInfo GetRouteInfo(TypeInfo type, ICollection<EndpointRouteValueMetadata> routeValues, string? declaredVerb, EndpointOptions option)
         {
             IEnumerable<string> verbs = get;
             var routeInfo = type.GetCustomAttribute<RouteAttribute>();
             if (routeInfo is not null)
-                return new EndpointRouteInfo(routeInfo, verbs);
+                return BuildFromRouteTemplateProvider(routeInfo, routeValues, verbs);
 
             var methodInfo = type.GetCustomAttribute<EndpointMethodAttribute>();
             if (methodInfo is not null)
             {
                 verbs = methodInfo.HttpMethods;
                 if (methodInfo.Template is not null)
-                    return new EndpointRouteInfo(methodInfo, verbs);
+                    return BuildFromRouteTemplateProvider(methodInfo, routeValues, verbs);
                 else
-                    return new EndpointRouteInfo(parsedEndpointName.Name, parsedEndpointName.Name,0, verbs);
+                    return new EndpointRouteInfo(BuildPatternFromRouteValues(option.RoutePattern, routeValues), BuildName(routeValues), 0, verbs);
             }
-            return new EndpointRouteInfo(parsedEndpointName.Name, parsedEndpointName.Name, 0, string.IsNullOrWhiteSpace(parsedEndpointName.Verb)? verbs : new[] { parsedEndpointName.Verb });
+            return new EndpointRouteInfo(BuildPatternFromRouteValues(option.RoutePattern, routeValues), BuildName(routeValues), 0, string.IsNullOrWhiteSpace(declaredVerb) ? verbs : new[] { declaredVerb });
+        }
+
+        private static EndpointRouteInfo BuildFromRouteTemplateProvider(IRouteTemplateProvider routeInfo, ICollection<EndpointRouteValueMetadata> routeValues, IEnumerable<string> verbs)
+        {
+            return new EndpointRouteInfo(
+                BuildPatternFromRouteValues(routeInfo.Template, routeValues),
+                string.IsNullOrWhiteSpace(routeInfo.Name)? BuildName(routeValues): routeInfo.Name,
+                routeInfo.Order, 
+                verbs);
+        }
+
+        private static string BuildPatternFromRouteValues(string pattern, ICollection<EndpointRouteValueMetadata> routeValues)
+        {
+            var result = pattern;
+            foreach(var routeValue in routeValues)
+                result = pattern.Replace($"[{routeValue.Key}]", routeValue.Value);
+            return result;
+        }
+
+        private static string BuildName(ICollection<EndpointRouteValueMetadata> routeValues)
+        {
+            return routeValues.Single(s=> s.Key == "endpoint").Value;
         }
 
         private class EndpointRouteInfo : IRouteTemplateProvider
