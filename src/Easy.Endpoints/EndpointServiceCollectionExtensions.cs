@@ -14,7 +14,7 @@ namespace Easy.Endpoints
         public static void AddRequestEndpoints(this IServiceCollection services)
         {
             var assembly = Assembly.GetCallingAssembly();
-            AddRequestEndpoints(services, NullOptionModifications, b => b.AddFromAsembly(assembly));
+            AddRequestEndpoints(services, NullOptionModifications, b => b.AddFromAssembly(assembly));
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace Easy.Endpoints
         public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions)
         {
             var assembly = Assembly.GetCallingAssembly();
-            AddRequestEndpoints(services, optionBuilderActions, b => b.AddFromAsembly(assembly));
+            AddRequestEndpoints(services, optionBuilderActions, b => b.AddFromAssembly(assembly));
         }
 
         /// <summary>

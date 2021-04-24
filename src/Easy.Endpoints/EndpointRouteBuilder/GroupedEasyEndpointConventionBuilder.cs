@@ -3,7 +3,7 @@ using System;
 
 namespace Easy.Endpoints
 {
-    public class GroupedEasyEndpointConventionBuilder : IEndpointConventionBuilder
+    internal class GroupedEasyEndpointConventionBuilder : IEndpointConventionBuilder
     {
         private readonly IEndpointConventionBuilder[] endpointBuilders;
 

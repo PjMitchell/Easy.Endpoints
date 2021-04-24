@@ -30,7 +30,7 @@ namespace Easy.Endpoints
         /// </summary>
         /// <param name="statusCode">Status for Endpoint response</param>
         /// <param name="message">Message for Endpoint body</param>
-        /// <param name="message">Inner exception</param>
+        /// <param name="innerException">Inner exception</param>
         public EndpointStatusCodeResponseException(int statusCode, string message, Exception? innerException) : base(message, innerException)
         {
             StatusCode = statusCode;

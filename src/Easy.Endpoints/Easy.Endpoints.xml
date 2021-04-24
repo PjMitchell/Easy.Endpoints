@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Easy.Endpoints</name>
+    </assembly>
+    <members>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddRequestEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds Request endpoints with default options and all Endpoints from calling assembly
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddRequestEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Easy.Endpoints.EndpointOptionBuilders})">
+            <summary>
+            Adds Request endpoints with default options and all Endpoints from calling assembly
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+            <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddRequestEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Easy.Endpoints.EndpointManifestBuilder})">
+            <summary>
+            Adds Request endpoints
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+            <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddRequestEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Easy.Endpoints.EndpointOptionBuilders},System.Action{Easy.Endpoints.EndpointManifestBuilder})">
+            <summary>
+            Adds Request endpoints
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+            <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
+            <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
+        </member>
+        <member name="T:Easy.Endpoints.IJsonBodyEndpointHandler`1">
+            <summary>
+            A handler that processes a json body and will return a 201 response
+            </summary>
+            <typeparam name="TBody">Type of Json Body</typeparam>
+        </member>
+        <member name="M:Easy.Endpoints.IJsonBodyEndpointHandler`1.Handle(`0,System.Threading.CancellationToken)">
+            <summary>
+            Processes body
+            </summary>
+            <param name="body">Request body to be handled</param>
+            <param name="cancellationToken">Request Aborted</param>
+            <returns>A Task</returns>
+        </member>
+        <member name="T:Easy.Endpoints.IJsonEndpointHandler`2">
+            <summary>
+            A handler that processes a json body and returns a new object
+            </summary>
+            <typeparam name="TBody">Type of Json Body</typeparam>
+            <typeparam name="TResponse">Type of Json Response</typeparam>
+        </member>
+        <member name="M:Easy.Endpoints.IJsonEndpointHandler`2.Handle(`0,System.Threading.CancellationToken)">
+            <summary>
+            Processes json body and returns a new object
+            </summary>
+            <param name="body">Request body to be handled</param>
+            <param name="cancellationToken">Request Aborted</param>
+            <returns>Handled Response object</returns>
+        </member>
+        <member name="T:Easy.Endpoints.IJsonResponseEndpointHandler`1">
+            <summary>
+            A handler that returns a new object
+            </summary>
+            <typeparam name="TResponse">Type of Json Response</typeparam>
+        </member>
+        <member name="M:Easy.Endpoints.IJsonResponseEndpointHandler`1.Handle(System.Threading.CancellationToken)">
+            <summary>
+            Handles a response and returns a new object
+            </summary>
+            <param name="cancellationToken">Request Aborted</param>
+            <returns>Handled Response object</returns>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointStatusCodeResponseException">
+            <summary>
+            This exception represents an error that will be translated to a status code with message by Easy.Endpoints
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointStatusCodeResponseException.#ctor">
+            <summary>
+            Simple 400 Bad Request
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointStatusCodeResponseException.#ctor(System.Int32,System.String)">
+            <summary>
+            Exception with status code and message
+            </summary>
+            <param name="statusCode">Status for Endpoint response</param>
+            <param name="message">Message for Endpoint body</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointStatusCodeResponseException.#ctor(System.Int32,System.String,System.Exception)">
+            <summary>
+            Exception with status code and message
+            </summary>
+            <param name="statusCode">Status for Endpoint response</param>
+            <param name="message">Message for Endpoint body</param>
+            <param name="innerException">Inner exception</param>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointStatusCodeResponseException.StatusCode">
+            <summary>
+            Status Code for Endpoint response
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.InvalidEndpointSetupException">
+            <summary>
+            This exception represents an error in the setup of easy endpoint
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointFromAssemblyExtensions">
+            <summary>
+            EndpointManifestBuilder for adding endpoints from an assembly
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointFromAssemblyExtensions.AddFromAssembly(Easy.Endpoints.EndpointManifestBuilder,System.Reflection.Assembly)">
+            <summary>
+            Adds all endpoints from a assembly to the manifest
+            </summary>
+            <param name="builder">The current instance of the manifest builder</param>
+            <param name="assembly">Assembly to search for endpoints</param>
+            <returns>Same instance of the manifest builder</returns>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointManifestBuilder">
+            <summary>
+            Builds Endpoint manifest
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointManifestBuilder.Options">
+            <summary>
+            Option for endpoints
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilder.#ctor(Easy.Endpoints.EndpointOptions)">
+            <summary>
+            Constructs new instance of EndpointManifestBuilder 
+            </summary>
+            <param name="options">EndpointOptions options for endpoints</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilder.AddEndpoint(Easy.Endpoints.EndpointInfo)">
+            <summary>
+            Adds a new endpoint to the manifest
+            </summary>
+            <param name="endpoint">Endpoint to be added to manifest</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilder.Build">
+            <summary>
+            Builds Endpoint manifest
+            </summary>
+            <returns>New Endpoint manifest</returns>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointManifestBuilderExtensions">
+            <summary>
+            Extensions to the manifest builder to aid with adding endpoints
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilderExtensions.AddForEndpoint``1(Easy.Endpoints.EndpointManifestBuilder)">
+            <summary>
+            Add Endpoints For Implementation of IEndpoint;
+            </summary>
+            <typeparam name="TEndpoint">Type of IEndpoint to be added</typeparam>
+            <param name="builder">The current instance of the manifest builder</param>
+            <returns>Same instance of the manifest builder</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilderExtensions.AddForEndpoint(Easy.Endpoints.EndpointManifestBuilder,System.Type)">
+            <summary>
+            Add Endpoints For Implementation of IEndpoint;
+            </summary>
+            <param name="builder">The current instance of the manifest builder</param>
+            <param name="endpoint">Type of IEndpoint to be added</param>
+            <returns>Same instance of the manifest builder</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilderExtensions.AddForEndpoint(Easy.Endpoints.EndpointManifestBuilder,System.Reflection.TypeInfo)">
+            <summary>
+            Add Endpoints For Implementation of IEndpoint;
+            </summary>
+            <param name="builder">The current instance of the manifest builder</param>
+            <param name="endpoint">TypeInfo of IEndpoint to be added</param>
+            <returns>Same instance of the manifest builder</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilderExtensions.AddForEndpointHandler``1(Easy.Endpoints.EndpointManifestBuilder)">
+            <summary>
+            Add Endpoints For Implementation of IEndpointHandler;
+            </summary>
+            <typeparam name="TendpointHandler">Type of IEndpointHandler to be added</typeparam>
+            <param name="builder">The current instance of the manifest builder</param>
+            <returns>Same instance of the manifest builder</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilderExtensions.AddForEndpointHandler(Easy.Endpoints.EndpointManifestBuilder,System.Type)">
+            <summary>
+            Add Endpoints For Implementation of IEndpointHandler;
+            </summary>
+            <param name="builder">The current instance of the manifest builder</param>
+            <param name="handler">Type of IEndpointHandler to be added</param>
+            <returns>Same instance of the manifest builder</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointManifestBuilderExtensions.AddForEndpointHandler(Easy.Endpoints.EndpointManifestBuilder,System.Reflection.TypeInfo)">
+            <summary>
+            Add Endpoints For Implementation of IEndpointHandler;
+            </summary>
+            <param name="builder">The current instance of the manifest builder</param>
+            <param name="handler">TypeInfo of IEndpointHandler to be added</param>
+            <returns>Same instance of the manifest builder</returns>
+        </member>
+        <member name="T:Easy.Endpoints.IEndpointForHandlerDeclaration">
+            <summary>
+            Gets Endpoint type for EndpointHandler Type
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IEndpointForHandlerDeclaration.GetEndpointForHandler(System.Reflection.TypeInfo)">
+            <summary>
+            Gets Endpoint type for EndpointHandler Type
+            </summary>
+            <param name="handlerTypeInfo">EndpointHandler TypeInfo</param>
+            <returns>Endpoint type for EndpointHandler Type, returns null if no valid endpoint found</returns>
+        </member>
+        <member name="T:Easy.Endpoints.JsonEndpointForHandlerDeclarations">
+            <summary>
+            Endpoints for JsonEndpointHandlers
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.JsonEndpointForHandlerDeclarations.GetEndpointForHandler(System.Reflection.TypeInfo)">
+            <inheritdoc cref="T:Easy.Endpoints.IEndpointForHandlerDeclaration"/>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointContext">
+            <summary>
+            Provides the context for an endpoint request
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointContext.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Created a new instance of the Endpoint Context
+            </summary>
+            <param name="context">HttpContext for the request</param>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointContext.HttpContext">
+            <summary>
+            HttpContext for the request
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointOptionBuilders">
+            <summary>
+            Route Pattern when none is specified, defaults "[endpoint]"
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointOptionBuilders.#ctor">
+            <summary>
+            Constructs new EndpointOptionBuilders
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointOptionBuilders.WithRoutePattern(System.String)">
+            <summary>
+            Defines Route Pattern when no route is defined for an endpoint
+            </summary>
+            <param name="routePattern">new route pattern for endpoint</param>
+            <returns>Updated instance of the option builder</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointOptionBuilders.BuildOption">
+            <summary>
+            Build Endpoint option
+            </summary>
+            <returns>Option Endpoint for builder</returns>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointOptions">
+            <summary>
+            Option for Endpoints
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointOptions.#ctor">
+            <summary>
+            Creates new instance of EndpointOptions with default values
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointOptions.RoutePattern">
+            <summary>
+            Route Pattern when none is specified, defaults "[endpoint]"
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointOptions.EndpointForHandlerDeclarations">
+            <summary>
+            All EndpointForHandlerDeclaration 
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.IEndpointContextAccessor">
+            <summary>
+            Gets Endpoint Context, accessor is scoped to the request
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IEndpointContextAccessor.GetContext">
+            <summary>
+            Gets Context
+            </summary>
+            <returns>Returns context for request</returns>
+        </member>
+        <member name="T:Easy.Endpoints.IIntIdRouteParser">
+            <summary>
+            Parses id part of route as int
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IIntIdRouteParser.GetIdFromRoute">
+            <summary>
+            Gets id part of route as an int
+            </summary>
+            <returns>id from route</returns>
+            <exception cref="T:Easy.Endpoints.EndpointStatusCodeResponseException">With as Status code of 404 if cannot parse id</exception>
+        </member>
+    </members>
+</doc>

@@ -12,7 +12,7 @@ using System.Text;
 
 namespace Easy.Endpoints
 {
-    public class EasyEndpointApiDescriptionGroupCollectionProvider : IApiDescriptionGroupCollectionProvider
+    internal class EasyEndpointApiDescriptionGroupCollectionProvider : IApiDescriptionGroupCollectionProvider
     {
         private readonly IEndpointManifest manifest;
         private readonly IModelMetadataProvider modelMetadataProvider;
@@ -45,7 +45,7 @@ namespace Easy.Endpoints
             return new ApiDescriptionGroupCollection(new[] { group }, 1);
         }
 
-        private IDictionary<string, string> GetRouteValues(EndpointInfo endpoint)
+        private static IDictionary<string, string> GetRouteValues(EndpointInfo endpoint)
         {
             return endpoint.GetAllMetadata<IEndpointRouteValueMetadataProvider>().ToDictionary(k => k.Key, v => v.Value);
         }

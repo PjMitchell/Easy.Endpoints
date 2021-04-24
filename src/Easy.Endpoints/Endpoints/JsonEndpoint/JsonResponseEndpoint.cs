@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
-    public class JsonResponseEndpoint<THandler, TResponse> : IEndpoint where THandler : IJsonResponseEndpointHandler<TResponse>
+    internal class JsonResponseEndpoint<THandler, TResponse> : IEndpoint where THandler : IJsonResponseEndpointHandler<TResponse>
     {
         private readonly THandler handler;
 

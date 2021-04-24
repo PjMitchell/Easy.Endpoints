@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
-    public static class HttpContextJsonHelper
+    internal static class HttpContextJsonHelper
     {
         public static Task WriteJsonResponse<TModel>(HttpContext httpContext, TModel response, int statusCode = 200)
         {

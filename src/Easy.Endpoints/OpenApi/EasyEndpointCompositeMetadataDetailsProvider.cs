@@ -5,11 +5,11 @@ using System.Linq;
 namespace Easy.Endpoints
 {
 
-    public interface IEasyEndpointCompositeMetadataDetailsProvider : ICompositeMetadataDetailsProvider
+    internal interface IEasyEndpointCompositeMetadataDetailsProvider : ICompositeMetadataDetailsProvider
     {
     }
 
-    public class EasyEndpointCompositeMetadataDetailsProvider : IEasyEndpointCompositeMetadataDetailsProvider
+    internal class EasyEndpointCompositeMetadataDetailsProvider : IEasyEndpointCompositeMetadataDetailsProvider
     {
         private readonly IEnumerable<IMetadataDetailsProvider> providers;
 

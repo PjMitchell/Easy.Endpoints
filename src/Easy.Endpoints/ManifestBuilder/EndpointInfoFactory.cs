@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Easy.Endpoints
 {
-    public static class EndpointInfoFactory
+    internal static class EndpointInfoFactory
     {
         private static readonly string[] get = new[] { "GET" };
 
