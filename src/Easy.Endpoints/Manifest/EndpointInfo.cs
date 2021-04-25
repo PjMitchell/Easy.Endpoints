@@ -1,16 +1,22 @@
 ﻿using Microsoft.AspNetCore.Routing.Patterns;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Easy.Endpoints
 {
+    /// <summary>
+    /// Information about a Easy.Endpoint
+    /// </summary>
     public class EndpointInfo
     {
-        public EndpointInfo(Type type, RoutePattern pattern, string name, int order) : this(type, null, pattern, name, order)
-        {
-        }
-
+        /// <summary>
+        /// Constructs new instance of EnpointInfo
+        /// </summary>
+        /// <param name="type">Type of IEndpoint</param>
+        /// <param name="handler">Type of IEndpointHandler if being used by endpoint</param>
+        /// <param name="pattern">Route pattern of endpoint</param>
+        /// <param name="name">Route Name</param>
+        /// <param name="order">Route order.</param>
         public EndpointInfo(Type type, Type? handler, RoutePattern pattern, string name, int order)
         {
             Type = type;
@@ -21,25 +27,33 @@ namespace Easy.Endpoints
             Meta = new List<object>();
         }
 
+        /// <summary>
+        /// Gets Type of IEndpoint
+        /// </summary>
         public Type Type { get; }
+
+        /// <summary>
+        /// Gets Type of IEndpointHandler if being used by endpoint
+        /// </summary>
         public Type? Handler { get; }
 
+        /// <summary>
+        /// Gets route pattern of endpoint
+        /// </summary>
         public RoutePattern Pattern { get; }
+
+        /// <summary>
+        /// Gets Route Name
+        /// </summary>
         public string Name { get; }
-        public IList<object> Meta { get; }
+        /// <summary>
+        /// Gets Route order
+        /// </summary>
         public int Order { get; }
-    }
 
-    public static class EndpointInfoExtensions
-    {
-        public static T? GetMetadata<T>(this EndpointInfo source)
-        {
-            return source.Meta.OfType<T>().FirstOrDefault();
-        }
-
-        public static IEnumerable<T> GetAllMetadata<T>(this EndpointInfo source)
-        {
-            return source.Meta.OfType<T>();
-        }
+        /// <summary>
+        /// Gets Meta data for endpoint
+        /// </summary>
+        public IList<object> Meta { get; }
     }
 }

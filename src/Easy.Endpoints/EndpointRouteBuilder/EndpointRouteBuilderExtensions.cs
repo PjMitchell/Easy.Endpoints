@@ -8,8 +8,16 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
-    public static class EasyEndpointExtensions
+    /// <summary>
+    /// Adds Easy.Endpoints routes to EndpointRouteBuilder
+    /// </summary>
+    public static class EndpointRouteBuilderExtensions
     {
+        /// <summary>
+        /// Adds Easy.Endpoints routes to EndpointRouteBuilder
+        /// </summary>
+        /// <param name="endpoints">Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add Easy.Endpoints to</param>
+        /// <returns>Returns Microsoft.AspNetCore.Builder.IEndpointConventionBuilder for endpoints</returns>
         public static IEndpointConventionBuilder AddEasyEndpoints(
             this IEndpointRouteBuilder endpoints)
         {

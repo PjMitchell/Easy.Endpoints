@@ -36,6 +36,11 @@ namespace Easy.Endpoints
             StatusCode = statusCode;
         }
 
+        /// <summary>
+        /// Creates new instance of InvalidEndpointSetupException with serialization data
+        /// </summary>
+        /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
         protected EndpointStatusCodeResponseException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }

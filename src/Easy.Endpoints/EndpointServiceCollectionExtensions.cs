@@ -5,6 +5,9 @@ using System.Reflection;
 
 namespace Easy.Endpoints
 {
+    /// <summary>
+    /// Easy.Endpoints Extensions for IServiceCollection
+    /// </summary>
     public static class EndpointServiceCollectionExtensions
     {
         /// <summary>

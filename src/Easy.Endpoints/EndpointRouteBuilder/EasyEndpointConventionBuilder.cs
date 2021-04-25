@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Easy.Endpoints
 {
-    public class EasyEndpointConventionBuilder : IEndpointConventionBuilder
+    internal class EasyEndpointConventionBuilder : IEndpointConventionBuilder
     {
         private readonly EndpointBuilder endpointBuiilder;
 

@@ -4,6 +4,151 @@
         <name>Easy.Endpoints</name>
     </assembly>
     <members>
+        <member name="T:Easy.Endpoints.DeleteAttribute">
+            <summary>
+            Defines endpoint with DELETE HttpMethod and optional route information
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.DeleteAttribute.#ctor">
+            <summary>
+            Creates new instance without route template
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.DeleteAttribute.#ctor(System.String)">
+            <summary>
+            Creates new instance with route template
+            </summary>
+            <param name="template">Route template</param>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointControllerAttribute">
+            <summary>
+            Defines Controller Route Value for an endpoint, useful for grouping endpoints
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointControllerAttribute.#ctor(System.String)">
+            <summary>
+            Creates new instance of EndpointControllerAttribute
+            </summary>
+            <param name="name">Name of controller</param>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointControllerAttribute.Name">
+            <summary>
+            Name of controller
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointMethodAttribute">
+            <summary>
+            Defines endpoint HttpMethod and optional route information
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointMethodAttribute.#ctor(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates new instance with httpMethods
+            </summary>
+            <param name="httpMethods">Desired Http methods</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointMethodAttribute.#ctor(System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Creates new instance with httpMethods and route template
+            </summary>
+            <param name="httpMethods">Desired Http methods</param>
+            <param name="template">Route template</param>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointMethodAttribute.HttpMethods">
+            <summary>
+            Http methods for Endpoint
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointMethodAttribute.Template">
+            <inheritdoc cref="P:Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider.Template"/>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointMethodAttribute.Order">
+            <inheritdoc cref="P:Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider.Order"/>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointMethodAttribute.Name">
+            <inheritdoc cref="P:Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider.Name"/>
+        </member>
+        <member name="T:Easy.Endpoints.GetAttribute">
+            <summary>
+            Defines endpoint with GET HttpMethod and optional route information
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.GetAttribute.#ctor">
+            <summary>
+            Creates new instance without route template
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.GetAttribute.#ctor(System.String)">
+            <summary>
+            Creates new instance with route template
+            </summary>
+            <param name="template">Route template</param>
+        </member>
+        <member name="T:Easy.Endpoints.PatchAttribute">
+            <summary>
+            Defines endpoint with PATCH HttpMethod and optional route information
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.PatchAttribute.#ctor">
+            <summary>
+            Creates new instance without route template
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.PatchAttribute.#ctor(System.String)">
+            <summary>
+            Creates new instance with route template
+            </summary>
+            <param name="template">Route template</param>
+        </member>
+        <member name="T:Easy.Endpoints.PostAttribute">
+            <summary>
+            Defines endpoint with POST HttpMethod and optional route information
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.PostAttribute.#ctor">
+            <summary>
+            Creates new instance without route template
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.PostAttribute.#ctor(System.String)">
+            <summary>
+            Creates new instance with route template
+            </summary>
+            <param name="template">Route template</param>
+        </member>
+        <member name="T:Easy.Endpoints.PutAttribute">
+            <summary>
+            Defines endpoint with PUT HttpMethod and optional route information
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.PutAttribute.#ctor">
+            <summary>
+            Creates new instance without route template
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.PutAttribute.#ctor(System.String)">
+            <summary>
+            Creates new instance with route template
+            </summary>
+            <param name="template">Route template</param>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointRouteBuilderExtensions">
+            <summary>
+            Adds Easy.Endpoints routes to EndpointRouteBuilder
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointRouteBuilderExtensions.AddEasyEndpoints(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder)">
+            <summary>
+            Adds Easy.Endpoints routes to EndpointRouteBuilder
+            </summary>
+            <param name="endpoints">Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add Easy.Endpoints to</param>
+            <returns>Returns Microsoft.AspNetCore.Builder.IEndpointConventionBuilder for endpoints</returns>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointServiceCollectionExtensions">
+            <summary>
+            Easy.Endpoints Extensions for IServiceCollection
+            </summary>
+        </member>
         <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddRequestEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Adds Request endpoints with default options and all Endpoints from calling assembly
@@ -74,6 +219,41 @@
             <param name="cancellationToken">Request Aborted</param>
             <returns>Handled Response object</returns>
         </member>
+        <member name="T:Easy.Endpoints.IEndpoint">
+            <summary>
+            Endpoint for use with Easy.Endpoint
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IEndpoint.HandleRequest(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Handles the Http Request
+            </summary>
+            <param name="httpContext">Context of the request</param>
+            <returns>A task for the operation</returns>
+        </member>
+        <member name="T:Easy.Endpoints.IEndpointHandler">
+            <summary>
+            An endpoint handler that has a corresponding IEndpoint that uses the IEndpointHandler to handle the request.
+            These can be flagged with the same Attributes as IEndpoints to provide endpoint information 
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.IJsonBody`1">
+            <summary>
+            Tags an IEndpointHandler to show that it expects a JSON body
+            </summary>
+            <typeparam name="TApiBody">Model for the JSON Body</typeparam>
+        </member>
+        <member name="T:Easy.Endpoints.IJsonResponse`1">
+            <summary>
+            Tags an IEndpointHandler to show that it expects to return a JSON response
+            </summary>
+            <typeparam name="TApiResponse">Model of the response body</typeparam>
+        </member>
+        <member name="T:Easy.Endpoints.INoContentResponse">
+            <summary>
+            Tags an IEndpointHandler to show that it expects to return a No Content Response
+            </summary>
+        </member>
         <member name="T:Easy.Endpoints.EndpointStatusCodeResponseException">
             <summary>
             This exception represents an error that will be translated to a status code with message by Easy.Endpoints
@@ -99,6 +279,13 @@
             <param name="message">Message for Endpoint body</param>
             <param name="innerException">Inner exception</param>
         </member>
+        <member name="M:Easy.Endpoints.EndpointStatusCodeResponseException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates new instance of InvalidEndpointSetupException with serialization data
+            </summary>
+            <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
+        </member>
         <member name="P:Easy.Endpoints.EndpointStatusCodeResponseException.StatusCode">
             <summary>
             Status Code for Endpoint response
@@ -108,6 +295,19 @@
             <summary>
             This exception represents an error in the setup of easy endpoint
             </summary>
+        </member>
+        <member name="M:Easy.Endpoints.InvalidEndpointSetupException.#ctor(System.String)">
+            <summary>
+            Creates new instance of InvalidEndpointSetupException with message
+            </summary>
+            <param name="message">Error message</param>
+        </member>
+        <member name="M:Easy.Endpoints.InvalidEndpointSetupException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Creates new instance of InvalidEndpointSetupException with serialization data
+            </summary>
+            <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
         </member>
         <member name="T:Easy.Endpoints.EndpointFromAssemblyExtensions">
             <summary>
@@ -221,7 +421,150 @@
             </summary>
         </member>
         <member name="M:Easy.Endpoints.JsonEndpointForHandlerDeclarations.GetEndpointForHandler(System.Reflection.TypeInfo)">
-            <inheritdoc cref="T:Easy.Endpoints.IEndpointForHandlerDeclaration"/>
+            <inheritdoc cref="M:Easy.Endpoints.IEndpointForHandlerDeclaration.GetEndpointForHandler(System.Reflection.TypeInfo)"/>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointInfo">
+            <summary>
+            Information about a Easy.Endpoint
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointInfo.#ctor(System.Type,System.Type,Microsoft.AspNetCore.Routing.Patterns.RoutePattern,System.String,System.Int32)">
+            <summary>
+            Constructs new instance of EnpointInfo
+            </summary>
+            <param name="type">Type of IEndpoint</param>
+            <param name="handler">Type of IEndpointHandler if being used by endpoint</param>
+            <param name="pattern">Route pattern of endpoint</param>
+            <param name="name">Route Name</param>
+            <param name="order">Route order.</param>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointInfo.Type">
+            <summary>
+            Gets Type of IEndpoint
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointInfo.Handler">
+            <summary>
+            Gets Type of IEndpointHandler if being used by endpoint
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointInfo.Pattern">
+            <summary>
+            Gets route pattern of endpoint
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointInfo.Name">
+            <summary>
+            Gets Route Name
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointInfo.Order">
+            <summary>
+            Gets Route order
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointInfo.Meta">
+            <summary>
+            Gets Meta data for endpoint
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.IEndpointManifest">
+            <summary>
+            A manifest of all Endpoints
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointResponseMetaData">
+            <summary>
+            Returns Response Type and code meta data for endpoint 
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointResponseMetaData.#ctor(System.Int32,System.Type,System.String[])">
+            <summary>
+            Constructs new instance of EndpointResponseMetaData
+            </summary>
+            <param name="statusCode">Status Code of response</param>
+            <param name="responseType">Model type of response</param>
+            <param name="responseTypes">Media Type of response</param>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointResponseMetaData.Type">
+            <summary>
+            Gets Model type of response
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointResponseMetaData.StatusCode">
+            <summary>
+            Gets Status Code of response
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointResponseMetaData.SetContentTypes(Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection)">
+            <summary>
+            Applies MediaTypes to MediaTypeCollection
+            </summary>
+            <param name="contentTypes">MediaTypeCollection to be modified</param>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointRouteKeys">
+            <summary>
+            Easy.Endpoints RouteKeys
+            </summary>
+        </member>
+        <member name="F:Easy.Endpoints.EndpointRouteKeys.Controller">
+            <summary>
+            Controller Route Key, used for grouping Endpoints
+            </summary>
+        </member>
+        <member name="F:Easy.Endpoints.EndpointRouteKeys.Endpoint">
+            <summary>
+            Endpoint Route Key, defines Endpoint Name
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.EndpointRouteValueMetadata">
+            <summary>
+            Providers Endpoint route values information
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointRouteValueMetadata.#ctor(System.String,System.String)">
+            <summary>
+            Creates new instance of EndpointRouteValueMetadata
+            </summary>
+            <param name="key">Key for route value</param>
+            <param name="value">Value of route value</param>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointRouteValueMetadata.Key">
+            <inheritdoc cref="P:Easy.Endpoints.IEndpointRouteValueMetadataProvider.Key"/>
+        </member>
+        <member name="P:Easy.Endpoints.EndpointRouteValueMetadata.Value">
+            <inheritdoc cref="P:Easy.Endpoints.IEndpointRouteValueMetadataProvider.Value"/>
+        </member>
+        <member name="T:Easy.Endpoints.IEndpointRequestBodyMetadataProvider">
+            <summary>
+            MetaData used to declare Endpoint request body type
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.IEndpointRequestBodyMetadataProvider.Type">
+            <summary>
+            Model for Request Body
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IEndpointRequestBodyMetadataProvider.SetContentTypes(Microsoft.AspNetCore.Mvc.Formatters.MediaTypeCollection)">
+            <summary>
+            Applies MediaTypes to MediaTypeCollection
+            </summary>
+            <param name="contentTypes">MediaTypeCollection to be modified</param>
+        </member>
+        <member name="T:Easy.Endpoints.IEndpointRouteValueMetadataProvider">
+            <summary>
+            Providers Endpoint route values information
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.IEndpointRouteValueMetadataProvider.Key">
+            <summary>
+            Get Endpoint Route Key
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.IEndpointRouteValueMetadataProvider.Value">
+            <summary>
+            Gets Endpoint Route Value
+            </summary>
         </member>
         <member name="T:Easy.Endpoints.EndpointContext">
             <summary>

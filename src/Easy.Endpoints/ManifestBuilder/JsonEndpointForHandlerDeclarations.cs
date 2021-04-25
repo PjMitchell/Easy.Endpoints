@@ -9,7 +9,7 @@ namespace Easy.Endpoints
     /// </summary>
     public class JsonEndpointForHandlerDeclarations : IEndpointForHandlerDeclaration
     {
-        ///<inheritdoc cref="IEndpointForHandlerDeclaration"/>
+        ///<inheritdoc cref="IEndpointForHandlerDeclaration.GetEndpointForHandler(TypeInfo)"/>
         public Type? GetEndpointForHandler(TypeInfo handlerTypeInfo)
         {
             var jsonBodyHandler = handlerTypeInfo.ImplementedInterfaces.SingleOrDefault(r => r.GenericTypeArguments.Length == 1 && r == typeof(IJsonBodyEndpointHandler<>).MakeGenericType(r.GenericTypeArguments[0]));
