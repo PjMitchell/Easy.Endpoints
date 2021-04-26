@@ -13,5 +13,10 @@
         /// Endpoint Route Key, defines Endpoint Name
         /// </summary>
         public const string Endpoint = "endpoint";
+
+        /// <summary>
+        /// Type Route Key, used by generic endpoints to denote type
+        /// </summary>
+        public const string Type = "type";
     }
 }

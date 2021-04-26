@@ -12,26 +12,28 @@ namespace Easy.Endpoints
     {
         private static readonly string[] get = new[] { "GET" };
 
-        public static EndpointInfo BuildInfoForEndpoint(TypeInfo endpoint, EndpointOptions options)
+        public static EndpointInfo BuildInfoForEndpoint(TypeInfo endpoint, EndpointOptions options,params object[] meta)
         {
-            return BuildInfoForHandler(null, endpoint, options);
+            return BuildInfoForHandler(null, endpoint, options, meta);
         }
 
-        public static EndpointInfo BuildInfoForHandler(TypeInfo? handler, TypeInfo endpoint, EndpointOptions options)
+        public static EndpointInfo BuildInfoForHandler(TypeInfo? handler, TypeInfo endpoint, EndpointOptions options, params object[] meta)
         {
             var declaredEndpoint = handler ?? endpoint;
-            var info = BuildInfoWithRoute(declaredEndpoint, endpoint, handler, options);
+            var info = BuildInfoWithRoute(declaredEndpoint, endpoint, handler, options, meta.OfType<EndpointRouteValueMetadata>());
             info.MapProducedResponse(declaredEndpoint);
             info.MapBodyParameter(declaredEndpoint);
+            foreach (var item in meta)
+                info.Meta.Add(item);
             return info;
         }
 
-        private static EndpointInfo BuildInfoWithRoute(TypeInfo declaredEndpoint, TypeInfo endpoint, TypeInfo? handler, EndpointOptions options)
+        private static EndpointInfo BuildInfoWithRoute(TypeInfo declaredEndpoint, TypeInfo endpoint, TypeInfo? handler, EndpointOptions options, IEnumerable<EndpointRouteValueMetadata> routeValueMetaData)
         {
             var controllerName = GetControllerValue(declaredEndpoint);
             var endpointValue = GetEndpointValue(declaredEndpoint);
             var routeValues = BuildRouteParameters(controllerName, endpointValue);
-            var routeInfo = GetRouteInfo(declaredEndpoint, routeValues, endpointValue.Verb, options);
+            var routeInfo = GetRouteInfo(declaredEndpoint, routeValues.Concat(routeValueMetaData).ToArray(), endpointValue.Verb, options);
             var info = new EndpointInfo(endpoint.AsType(),handler is null? null: handler, RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
             info.Meta.Add(new HttpMethodMetadata(routeInfo.HttpMethods));
             foreach (var routeValue in routeValues)
@@ -136,10 +138,9 @@ namespace Easy.Endpoints
 
         private static string BuildPatternFromRouteValues(string pattern, ICollection<EndpointRouteValueMetadata> routeValues)
         {
-            var result = pattern;
             foreach(var routeValue in routeValues)
-                result = pattern.Replace($"[{routeValue.Key}]", routeValue.Value);
-            return result;
+                pattern = pattern.Replace($"[{routeValue.Key}]", routeValue.Value);
+            return pattern;
         }
 
         private static string BuildName(ICollection<EndpointRouteValueMetadata> routeValues)

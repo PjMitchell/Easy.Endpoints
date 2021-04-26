@@ -68,6 +68,9 @@
         <member name="P:Easy.Endpoints.EndpointMethodAttribute.Name">
             <inheritdoc cref="P:Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider.Name"/>
         </member>
+        <member name="M:Easy.Endpoints.GenericParameterDiscoveryAttribute.GetGenericEndpointTypeInfo">
+            <inheritdoc cref="M:Easy.Endpoints.IGenericEndpointTypeInfoProvider.GetGenericEndpointTypeInfo"/>
+        </member>
         <member name="T:Easy.Endpoints.GetAttribute">
             <summary>
             Defines endpoint with GET HttpMethod and optional route information
@@ -131,6 +134,9 @@
             Creates new instance with route template
             </summary>
             <param name="template">Route template</param>
+        </member>
+        <member name="M:Easy.Endpoints.SingleGenericParameterDiscoveryAttribute.GetGenericEndpointTypeInfo">
+            <inheritdoc cref="M:Easy.Endpoints.IGenericEndpointTypeInfoProvider.GetGenericEndpointTypeInfo"/>
         </member>
         <member name="T:Easy.Endpoints.EndpointRouteBuilderExtensions">
             <summary>
@@ -517,6 +523,11 @@
             Endpoint Route Key, defines Endpoint Name
             </summary>
         </member>
+        <member name="F:Easy.Endpoints.EndpointRouteKeys.Type">
+            <summary>
+            Type Route Key, used by generic endpoints to denote type
+            </summary>
+        </member>
         <member name="T:Easy.Endpoints.EndpointRouteValueMetadata">
             <summary>
             Providers Endpoint route values information
@@ -534,6 +545,25 @@
         </member>
         <member name="P:Easy.Endpoints.EndpointRouteValueMetadata.Value">
             <inheritdoc cref="P:Easy.Endpoints.IEndpointRouteValueMetadataProvider.Value"/>
+        </member>
+        <member name="T:Easy.Endpoints.GenericEndpointTypeInfo">
+            <inheritdoc cref="T:Easy.Endpoints.IGenericEndpointTypeInfo"/>
+        </member>
+        <member name="M:Easy.Endpoints.GenericEndpointTypeInfo.#ctor(System.Type[],Easy.Endpoints.IEndpointRouteValueMetadataProvider[])">
+            <summary>
+            Creates new instance of GenericEndpointTypeInfo
+            </summary>
+            <param name="typeParameters">Type parameters</param>
+            <param name="routeValues">Endpoint route values</param>
+        </member>
+        <member name="P:Easy.Endpoints.GenericEndpointTypeInfo.TypeParameters">
+            <inheritdoc cref="P:Easy.Endpoints.IGenericEndpointTypeInfo.TypeParameters"/>
+        </member>
+        <member name="M:Easy.Endpoints.GenericEndpointTypeInfo.GetEnumerator">
+            <summary>
+            Gets Enumerator of IEndpointRouteValueMetadataProvider
+            </summary>
+            <returns>Enumerator of IEndpointRouteValueMetadataProvider</returns>
         </member>
         <member name="T:Easy.Endpoints.IEndpointRequestBodyMetadataProvider">
             <summary>
@@ -565,6 +595,27 @@
             <summary>
             Gets Endpoint Route Value
             </summary>
+        </member>
+        <member name="T:Easy.Endpoints.IGenericEndpointTypeInfo">
+            <summary>
+            Gets Type info and route values for a generic endpoint
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.IGenericEndpointTypeInfo.TypeParameters">
+            <summary>
+            Type parameters of Generic endpoint
+            </summary>
+        </member>
+        <member name="T:Easy.Endpoints.IGenericEndpointTypeInfoProvider">
+            <summary>
+            Returns GenericEndpointTypeInfo for an endpoint
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IGenericEndpointTypeInfoProvider.GetGenericEndpointTypeInfo">
+            <summary>
+            Gets GenericEndpointTypeInfo
+            </summary>
+            <returns>All generic Endpoint type info for an endpoint</returns>
         </member>
         <member name="T:Easy.Endpoints.EndpointContext">
             <summary>

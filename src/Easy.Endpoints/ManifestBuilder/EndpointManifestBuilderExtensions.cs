@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 
 namespace Easy.Endpoints
 {
@@ -32,9 +34,7 @@ namespace Easy.Endpoints
         /// <returns>Same instance of the manifest builder</returns>
         public static EndpointManifestBuilder AddForEndpoint(this EndpointManifestBuilder builder, TypeInfo endpoint)
         {
-            var info = EndpointInfoFactory.BuildInfoForEndpoint(endpoint, builder.Options);
-            builder.AddEndpoint(info);
-            return builder;
+            return AddForEndpoint<IEndpoint>(builder, endpoint, (b, e, m) => EndpointInfoFactory.BuildInfoForEndpoint(e, b.Options, m));
         }
 
         /// <summary>
@@ -61,10 +61,46 @@ namespace Easy.Endpoints
         /// <returns>Same instance of the manifest builder</returns>
         public static EndpointManifestBuilder AddForEndpointHandler(this EndpointManifestBuilder builder, TypeInfo handler)
         {
-            var endpoint = GetEndpointForHandler(builder, handler);            
-            var info = EndpointInfoFactory.BuildInfoForHandler(handler, endpoint.GetTypeInfo(), builder.Options);
-            builder.AddEndpoint(info);
+            return AddForEndpoint<IEndpointHandler>(builder, handler, AddForHandler);
+        }
+
+        private static EndpointManifestBuilder AddForEndpoint<TEndpointType>(this EndpointManifestBuilder builder, TypeInfo handler, Action<EndpointManifestBuilder, TypeInfo, object[]> addHandlerMethod)
+        {
+            if (!handler.IsAssignableTo(typeof(TEndpointType)))
+                throw new InvalidEndpointSetupException($"Could not assign {handler.FullName} to {typeof(TEndpointType).FullName}");
+            if (handler.IsGenericType)
+            {
+                foreach (var info in GetGenericEndpointInfo(handler).Where(i => i.TypeParameters.Length == handler.GenericTypeParameters.Length))
+                {
+                    var handlerType = handler.MakeGenericType(info.TypeParameters).GetTypeInfo();
+                    addHandlerMethod(builder, handlerType, info.ToArray());
+                }
+            }
+            else
+                addHandlerMethod(builder, handler, Array.Empty<object>());
+
             return builder;
+        }
+
+        private static IEnumerable<IGenericEndpointTypeInfo> GetGenericEndpointInfo(TypeInfo handler)
+        {
+            foreach(var attribute in handler.GetCustomAttributes())
+            {
+                if (attribute is IGenericEndpointTypeInfo info)
+                    yield return info;
+                else if (attribute is IGenericEndpointTypeInfoProvider infoProvider)
+                {
+                    foreach (var item in infoProvider.GetGenericEndpointTypeInfo())
+                        yield return item;
+                }
+            }
+        }
+
+        private static void AddForHandler(EndpointManifestBuilder builder, TypeInfo handler, params object[] meta)
+        {
+            var endpoint = GetEndpointForHandler(builder, handler);
+            var info = EndpointInfoFactory.BuildInfoForHandler(handler, endpoint.GetTypeInfo(), builder.Options, meta);
+            builder.AddEndpoint(info);
         }
 
         private static Type GetEndpointForHandler(EndpointManifestBuilder builder, TypeInfo handler)

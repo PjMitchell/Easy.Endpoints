@@ -21,7 +21,7 @@ namespace Easy.Endpoints.TestServer.Endpoints
 
         public Task Handle(TestResponsePayload body, CancellationToken cancellationToken)
         {
-            var id = idRouteParser.GetIdFromRoute();
+            idRouteParser.GetIdFromRoute();
             return Task.CompletedTask;
         }
     }
