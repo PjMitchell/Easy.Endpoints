@@ -11,7 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Easy.Endpoints.Benchmark", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Easy.Endpoints.TestServer.Endpoints", "test\Easy.Endpoints.TestServer.Endpoints\Easy.Endpoints.TestServer.Endpoints.csproj", "{350E8FEB-D193-4548-90E1-9E3448BA9664}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Easy.Endpoints.Tests", "test\Easy.Endpoints.Tests\Easy.Endpoints.Tests.csproj", "{EC43473D-E6DF-4EAA-840F-F78F21148E54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Easy.Endpoints.Tests", "test\Easy.Endpoints.Tests\Easy.Endpoints.Tests.csproj", "{EC43473D-E6DF-4EAA-840F-F78F21148E54}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{291AA12C-BC85-4395-93A4-FDF171FF6F85}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		coverlet.runsettings.xml = coverlet.runsettings.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
