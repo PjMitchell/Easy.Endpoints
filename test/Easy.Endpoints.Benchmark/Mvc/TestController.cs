@@ -8,15 +8,15 @@ namespace Easy.Endpoints.Benchmark.Mvc
     public class TestController : Controller
     {
         [HttpGet("Book")]
-        public Book[] Get()
+        public IActionResult Get()
         {
-            return GetBookEndpointHandler.AllBooks().ToArray();
+            return Ok(GetBookEndpointHandler.AllBooks().ToArray());
         }
 
         [HttpPost("Book")]
-        public CommandResult Post([FromBody] Book book)
+        public IActionResult Post([FromBody] Book book)
         {
-            return new CommandResult { Successful = true, Message = book.Name };
+            return Ok(new CommandResult { Successful = true, Message = book.Name });
         }
     }
 }
