@@ -1,4 +1,4 @@
-﻿namespace Easy.Endpoints.TestServer.Endpoints
+﻿namespace Easy.Endpoints.TestService.Endpoints
 {
 
     public class CommandResult

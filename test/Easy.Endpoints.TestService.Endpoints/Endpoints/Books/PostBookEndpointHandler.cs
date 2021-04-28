@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Easy.Endpoints.TestServer.Endpoints.Books
+namespace Easy.Endpoints.TestService.Endpoints.Books
 {
 
     public class PostBookEndpointHandler : IJsonEndpointHandler<Book, CommandResult>

@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-namespace Easy.Endpoints.TestServer.Endpoints
+namespace Easy.Endpoints.TestService.Endpoints
 {
     [EndpointController("Animal")]
     [KnownTypes("Cow", typeof(Cow))]

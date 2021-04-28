@@ -1,25 +1,27 @@
+﻿using System;
 using Xunit;
 
 namespace Easy.Endpoints.Tests
 {
-    public class IntIdParserTests
+    public class GuidIdParserTests
     {
         private readonly TestEndpointContextAccessor contextAccessor;
-        private readonly IIntIdRouteParser target;
+        private readonly IGuidIdRouteParser target;
 
-        public IntIdParserTests()
+        public GuidIdParserTests()
         {
             contextAccessor = new TestEndpointContextAccessor();
-            target = new IntIdRouteParser(contextAccessor);
+            target = new GuidIdRouteParser(contextAccessor);
         }
-        
+
 
         [Fact]
-        public void ParsesIntId()
+        public void ParsesGuidId()
         {
-            contextAccessor.WithIdRouteParameters("23");
+            var id = "babc3b8f-87f1-42e1-a8f9-fc47e000e0af";
+            contextAccessor.WithIdRouteParameters(id);
             var result = target.GetIdFromRoute();
-            Assert.Equal(23, result);
+            Assert.Equal(Guid.Parse(id), result);
         }
 
         [Fact]

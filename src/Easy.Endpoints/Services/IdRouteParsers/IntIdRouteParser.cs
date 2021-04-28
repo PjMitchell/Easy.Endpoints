@@ -25,23 +25,14 @@
         public int GetIdFromRoute()
         {
             var context = httpContextAccessor.GetContext();
-            if (context.HttpContext.Request.RouteValues.TryGetValue("id", out var value))
+            if (context.HttpContext.Request.RouteValues.TryGetValue("id", out var value)
+                 && value is string stringValue 
+                 && int.TryParse(stringValue, out var result)
+            )
             {
-                return value switch
-                {
-                    int i => i,
-                    string s => Parse(s),
-                    _ => throw EndpointStatusCodeResponseExceptionHelper.NotFound()
-                };
+                return result;
             }
 
-            throw EndpointStatusCodeResponseExceptionHelper.NotFound();
-        }
-
-        private int Parse(string id)
-        {
-            if (int.TryParse(id, out var result))
-                return result;
             throw EndpointStatusCodeResponseExceptionHelper.NotFound();
         }
     }

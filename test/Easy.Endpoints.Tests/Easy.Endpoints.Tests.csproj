@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Easy.Endpoints\Easy.Endpoints.csproj" />
-    <ProjectReference Include="..\Easy.Endpoints.TestServer.Endpoints\Easy.Endpoints.TestServer.Endpoints.csproj" />
+    <ProjectReference Include="..\Easy.Endpoints.TestService.Endpoints\Easy.Endpoints.TestService.Endpoints.csproj" />
   </ItemGroup>
 
 </Project>

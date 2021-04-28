@@ -13,6 +13,6 @@ namespace Easy.Endpoints
         /// </summary>
         /// <param name="httpContext">Context of the request</param>
         /// <returns>A task for the operation</returns>
-        Task HandleRequest(HttpContext httpContext);
+        Task HandleRequest(EndpointContext httpContext);
     }
 }

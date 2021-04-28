@@ -68,8 +68,26 @@
         <member name="P:Easy.Endpoints.EndpointMethodAttribute.Name">
             <inheritdoc cref="P:Microsoft.AspNetCore.Mvc.Routing.IRouteTemplateProvider.Name"/>
         </member>
+        <member name="T:Easy.Endpoints.GenericParameterDiscoveryAttribute">
+            <summary>
+            Declares Generic Parameter Type information for a generic endpoint
+            </summary>
+        </member>
         <member name="M:Easy.Endpoints.GenericParameterDiscoveryAttribute.GetGenericEndpointTypeInfo">
             <inheritdoc cref="M:Easy.Endpoints.IGenericEndpointTypeInfoProvider.GetGenericEndpointTypeInfo"/>
+        </member>
+        <member name="M:Easy.Endpoints.GenericParameterDiscoveryAttribute.GetTypes">
+            <summary>
+            Gets All Generic Type Parameters to use
+            </summary>
+            <returns>All Generic Type Parameters to use</returns>
+        </member>
+        <member name="M:Easy.Endpoints.GenericParameterDiscoveryAttribute.GetRouteVaulesForGenericParameter(System.Type[])">
+            <summary>
+            GetRouteVaulesForGenericParameter defaults to a single EndpointRouteValueMetadata with key: 'type' and value: type[o].Name
+            </summary>
+            <param name="types">Generic Type parameters</param>
+            <returns>EndpointRouteValueMetadata values for generic type parameters</returns>
         </member>
         <member name="T:Easy.Endpoints.GetAttribute">
             <summary>
@@ -86,6 +104,40 @@
             Creates new instance with route template
             </summary>
             <param name="template">Route template</param>
+        </member>
+        <member name="T:Easy.Endpoints.KnownTypesAttribute">
+            <summary>
+            Declares known type parameters for a generic endpoint
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.KnownTypesAttribute.#ctor(System.String,System.Type[])">
+            <summary>
+            Creates new instance of KnownTypesAttribute for type and defined type name
+            </summary>
+            <param name="name">Name to be given to route value 'type'</param>
+            <param name="typeParameters">Type Parameters for the endpoint</param>
+        </member>
+        <member name="M:Easy.Endpoints.KnownTypesAttribute.#ctor(System.Type[])">
+            <summary>
+            Creates new instance of KnownTypesAttribute for type and define type route parameter value as the first types name
+            </summary>
+            <param name="typeParameters">Type Parameters for the endpoint</param>
+        </member>
+        <member name="P:Easy.Endpoints.KnownTypesAttribute.Name">
+            <summary>
+            Type name, used to provide 'type' route parameter
+            </summary>
+        </member>
+        <member name="P:Easy.Endpoints.KnownTypesAttribute.TypeParameters">
+            <summary>
+            Type parameter for generic endpoint
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.KnownTypesAttribute.GetEnumerator">
+            <summary>
+            Gets all EndpointRouteValueMetaData for Generic type parameter
+            </summary>
+            <returns>All endpoint RouteValueMetaData for Generic type parameter</returns>
         </member>
         <member name="T:Easy.Endpoints.PatchAttribute">
             <summary>
@@ -135,8 +187,26 @@
             </summary>
             <param name="template">Route template</param>
         </member>
+        <member name="T:Easy.Endpoints.SingleGenericParameterDiscoveryAttribute">
+            <summary>
+            Declares Generic Type information when there is only a single generic type parameter
+            </summary>
+        </member>
         <member name="M:Easy.Endpoints.SingleGenericParameterDiscoveryAttribute.GetGenericEndpointTypeInfo">
             <inheritdoc cref="M:Easy.Endpoints.IGenericEndpointTypeInfoProvider.GetGenericEndpointTypeInfo"/>
+        </member>
+        <member name="M:Easy.Endpoints.SingleGenericParameterDiscoveryAttribute.GetTypes">
+            <summary>
+            Gets All Generic Type Parameters to use
+            </summary>
+            <returns>All Generic Type Parameters to use</returns>
+        </member>
+        <member name="M:Easy.Endpoints.SingleGenericParameterDiscoveryAttribute.GetRouteVaulesForGenericParameter(System.Type)">
+            <summary>
+            GetRouteVaulesForGenericParameter defaults to a single EndpointRouteValueMetadata with key: 'type' and value: type.Name
+            </summary>
+            <param name="type">Generic Type Parameter</param>
+            <returns>EndpointRouteValueMetadata values for Type</returns>
         </member>
         <member name="T:Easy.Endpoints.EndpointRouteBuilderExtensions">
             <summary>
@@ -230,7 +300,7 @@
             Endpoint for use with Easy.Endpoint
             </summary>
         </member>
-        <member name="M:Easy.Endpoints.IEndpoint.HandleRequest(Microsoft.AspNetCore.Http.HttpContext)">
+        <member name="M:Easy.Endpoints.IEndpoint.HandleRequest(Easy.Endpoints.EndpointContext)">
             <summary>
             Handles the Http Request
             </summary>
@@ -687,6 +757,18 @@
             </summary>
             <returns>Returns context for request</returns>
         </member>
+        <member name="T:Easy.Endpoints.IGuidIdRouteParser">
+            <summary>
+            Parses id part of route as int
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IGuidIdRouteParser.GetIdFromRoute">
+            <summary>
+            Gets id part of route as an Guid
+            </summary>
+            <returns>id from route</returns>
+            <exception cref="T:Easy.Endpoints.EndpointStatusCodeResponseException">With as Status code of 404 if cannot parse id</exception>
+        </member>
         <member name="T:Easy.Endpoints.IIntIdRouteParser">
             <summary>
             Parses id part of route as int
@@ -695,6 +777,18 @@
         <member name="M:Easy.Endpoints.IIntIdRouteParser.GetIdFromRoute">
             <summary>
             Gets id part of route as an int
+            </summary>
+            <returns>id from route</returns>
+            <exception cref="T:Easy.Endpoints.EndpointStatusCodeResponseException">With as Status code of 404 if cannot parse id</exception>
+        </member>
+        <member name="T:Easy.Endpoints.IStringIdRouteParser">
+            <summary>
+            Parses id part of route as string
+            </summary>
+        </member>
+        <member name="M:Easy.Endpoints.IStringIdRouteParser.GetIdFromRoute">
+            <summary>
+            Gets id part of route as a string
             </summary>
             <returns>id from route</returns>
             <exception cref="T:Easy.Endpoints.EndpointStatusCodeResponseException">With as Status code of 404 if cannot parse id</exception>

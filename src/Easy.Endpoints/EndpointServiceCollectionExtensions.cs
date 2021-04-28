@@ -69,6 +69,9 @@ namespace Easy.Endpoints
             services.AddScoped<EndpointContextAccessor>();
             services.AddTransient<IEndpointContextAccessor>(s => s.GetRequiredService<EndpointContextAccessor>());
             services.AddTransient<IIntIdRouteParser, IntIdRouteParser>();
+            services.AddTransient<IGuidIdRouteParser, GuidIdRouteParser>();
+            services.AddTransient<IStringIdRouteParser, StringIdRouteParser>();
+
         }
 
         private static void NullOptionModifications(EndpointOptionBuilders options)

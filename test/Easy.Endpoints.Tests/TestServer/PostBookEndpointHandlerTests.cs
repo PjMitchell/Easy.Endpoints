@@ -1,4 +1,5 @@
-﻿using Easy.Endpoints.TestServer.Endpoints;
+﻿using Easy.Endpoints.TestService.Endpoints;
+using Microsoft.AspNetCore.TestHost;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -6,7 +7,7 @@ namespace Easy.Endpoints.Tests
 {
     public class PostBookEndpointHandlerTests
     {
-        private readonly Microsoft.AspNetCore.TestHost.TestServer server;
+        private readonly TestServer server;
         public PostBookEndpointHandlerTests()
         {
             server = TestEndpointServerFactory.CreateEndpointServer();

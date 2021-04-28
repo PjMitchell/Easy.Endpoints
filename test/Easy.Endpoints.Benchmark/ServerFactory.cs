@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Easy.Endpoints.Benchmark
 {
     public static class ServerFactory
     {
-        public static Microsoft.AspNetCore.TestHost.TestServer CreateMvcServer()
+        public static TestServer CreateMvcServer()
         {
             var builder = new WebHostBuilder()
                 .ConfigureServices(services =>
@@ -24,10 +25,10 @@ namespace Easy.Endpoints.Benchmark
                     });
                 });
 
-            return new Microsoft.AspNetCore.TestHost.TestServer(builder);
+            return new TestServer(builder);
         }
 
-        public static Microsoft.AspNetCore.TestHost.TestServer CreateEndpointServer()
+        public static TestServer CreateEndpointServer()
         {
             var builder = new WebHostBuilder()
                 .ConfigureServices(services =>
@@ -45,7 +46,7 @@ namespace Easy.Endpoints.Benchmark
                     });
                 });
 
-            return new Microsoft.AspNetCore.TestHost.TestServer(builder);
+            return new TestServer(builder);
         }
 
 

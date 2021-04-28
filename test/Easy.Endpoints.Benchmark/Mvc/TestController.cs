@@ -1,5 +1,5 @@
-﻿using Easy.Endpoints.TestServer.Endpoints;
-using Easy.Endpoints.TestServer.Endpoints.Books;
+﻿using Easy.Endpoints.TestService.Endpoints;
+using Easy.Endpoints.TestService.Endpoints.Books;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 

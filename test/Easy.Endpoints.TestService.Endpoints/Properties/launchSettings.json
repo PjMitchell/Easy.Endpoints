@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Easy.Endpoints.TestServer.Endpoints": {
+    "Easy.Endpoints.TestService.Endpoints": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

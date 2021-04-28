@@ -1,5 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
-using Easy.Endpoints.TestServer.Endpoints;
+using Easy.Endpoints.TestService.Endpoints;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -34,8 +34,10 @@ namespace Easy.Endpoints.Benchmark
 
         private static async Task<string> SendRequest(HttpClient httpClient, string route)
         {
-            var request = new HttpRequestMessage(HttpMethod.Post, route);
-            request.Content = new StringContent(JsonSerializer.Serialize(new Book { Id = 23, Name = "Test" }), Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Post, route)
+            {
+                Content = new StringContent(JsonSerializer.Serialize(new Book { Id = 23, Name = "Test" }), Encoding.UTF8, "application/json")
+            };
             var response = await httpClient.SendAsync(request).ConfigureAwait(false);
             var output = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return output;

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Easy.Endpoints.TestServer.Endpoints
+namespace Easy.Endpoints.TestService.Endpoints
 {
     [EndpointController("Command")]
     [CommandParameterDiscovery]

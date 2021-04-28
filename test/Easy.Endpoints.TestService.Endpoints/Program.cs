@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Easy.Endpoints.TestServer.Endpoints
+namespace Easy.Endpoints.TestService.Endpoints
 {
     public static class Program
     {

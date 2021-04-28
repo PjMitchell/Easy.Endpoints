@@ -34,7 +34,7 @@ namespace Easy.Endpoints
         /// <returns>Same instance of the manifest builder</returns>
         public static EndpointManifestBuilder AddForEndpoint(this EndpointManifestBuilder builder, TypeInfo endpoint)
         {
-            return AddForEndpoint<IEndpoint>(builder, endpoint, (b, e, m) => EndpointInfoFactory.BuildInfoForEndpoint(e, b.Options, m));
+            return AddForEndpoint<IEndpoint>(builder, endpoint, (b, e, m) => b.AddEndpoint(EndpointInfoFactory.BuildInfoForEndpoint(e, b.Options, m)));
         }
 
         /// <summary>
