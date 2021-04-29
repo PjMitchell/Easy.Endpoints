@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,6 +19,19 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateClient().GetAsync("/swagger/v1/swagger.json");            
             Assert.Equal(System.Net.HttpStatusCode.OK, result.StatusCode);
+            var observed = await result.GetJsonBody<TestOpenApiModel>();
+            var expected = JsonSerializer.Deserialize<TestOpenApiModel>(File.ReadAllText("./ExpectedFiles/swagger.json"), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }); 
+            Assert.Equal(expected.Paths.Keys, observed.Paths.Keys);
+        }
+
+        public class TestOpenApiModel
+        {
+            public Dictionary<string, Dictionary<string, TestOperation>> Paths {get; set;}
+        }
+
+        public class TestOperation
+        {
+            public string[] Tags { get; set; }
         }
     }    
 }

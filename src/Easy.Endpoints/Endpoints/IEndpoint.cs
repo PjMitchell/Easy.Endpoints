@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
@@ -11,8 +10,8 @@ namespace Easy.Endpoints
         /// <summary>
         /// Handles the Http Request
         /// </summary>
-        /// <param name="httpContext">Context of the request</param>
+        /// <param name="endpointContext">Context of the request</param>
         /// <returns>A task for the operation</returns>
-        Task HandleRequest(EndpointContext httpContext);
+        Task HandleRequest(EndpointContext endpointContext);
     }
 }

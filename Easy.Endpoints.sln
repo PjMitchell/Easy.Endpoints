@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\build.yml = .github\workflows\build.yml
 		coverlet.runsettings.xml = coverlet.runsettings.xml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Easy.Endpoints.TestService.Endpoints", "test\Easy.Endpoints.TestService.Endpoints\Easy.Endpoints.TestService.Endpoints.csproj", "{C9534A30-01D1-4CEB-AE20-1BFF00526535}"

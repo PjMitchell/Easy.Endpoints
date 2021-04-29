@@ -8,15 +8,15 @@ namespace Easy.Endpoints
     {
         public static Task WriteJsonResponse<TModel>(EndpointContext httpContext, TModel response, int statusCode = 200)
         {
-            httpContext.HttpContext.Response.StatusCode = statusCode;
-            return httpContext.HttpContext.Response.WriteAsJsonAsync(response);
+            httpContext.Response.StatusCode = statusCode;
+            return httpContext.Response.WriteAsJsonAsync(response);
         }
 
         public static async ValueTask<TModel> ReadJsonBody<TModel>(EndpointContext httpContext)
         {
             try
             {
-                var result = await httpContext.HttpContext.Request.ReadFromJsonAsync<TModel>();
+                var result = await httpContext.Request.ReadFromJsonAsync<TModel>();
                 if (result is null)
                     throw new EndpointStatusCodeResponseException(400, "Invalid request body");
                 return result;

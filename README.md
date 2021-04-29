@@ -22,7 +22,7 @@ Simple endpoint that will be grouped in swagger under Greetings
 [EndpointController("Greetings")]  
 public class HelloWorldEndpoint : IEndpoint  
 {  
-    public Task HandleRequest(HttpContext httpContext)  
+    public Task HandleRequest(EndpointContext httpContext)  
     {  
         httpContext.Response.WriteAsync("Hello World");  
         return Task.CompletedTask;  
@@ -62,6 +62,24 @@ public class PostTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePay
     public Task Handle(TestResponsePayload body)
     {
         return Task.CompletedTask;
+    }
+}
+```
+
+###Generic handler
+Can declare generic handlers that can build routes for types  
+POST: /Animal/Cow  
+POST: /Animal/Dog  
+```csharp
+[EndpointController("Animal")]
+[KnownTypes("Cow", typeof(Cow))]
+[KnownTypes("Dog", typeof(Dog))]
+[Post("[controller]/[type]")]
+public class AnimalEndpointHandler<TAnimal> : IJsonEndpointHandler<TAnimal, string> where TAnimal : IAnimal
+{
+    public Task<string> Handle(TAnimal body, CancellationToken cancellationToken)
+    {
+        return Task.FromResult(body.Says());
     }
 }
 ```

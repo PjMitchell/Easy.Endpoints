@@ -6,9 +6,9 @@ namespace Easy.Endpoints.TestService.Endpoints
     [EndpointController("Greetings")]
     public class HelloWorldEndpoint : IEndpoint
     {
-        public Task HandleRequest(EndpointContext httpContext)
+        public Task HandleRequest(EndpointContext endpointContext)
         {
-            httpContext.HttpContext.Response.WriteAsync("Hello World");
+            endpointContext.Response.WriteAsync("Hello World");
             return Task.CompletedTask;
         }
     }

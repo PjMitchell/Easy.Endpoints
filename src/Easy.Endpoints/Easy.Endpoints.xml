@@ -304,7 +304,7 @@
             <summary>
             Handles the Http Request
             </summary>
-            <param name="httpContext">Context of the request</param>
+            <param name="endpointContext">Context of the request</param>
             <returns>A task for the operation</returns>
         </member>
         <member name="T:Easy.Endpoints.IEndpointHandler">
@@ -690,17 +690,6 @@
         <member name="T:Easy.Endpoints.EndpointContext">
             <summary>
             Provides the context for an endpoint request
-            </summary>
-        </member>
-        <member name="M:Easy.Endpoints.EndpointContext.#ctor(Microsoft.AspNetCore.Http.HttpContext)">
-            <summary>
-            Created a new instance of the Endpoint Context
-            </summary>
-            <param name="context">HttpContext for the request</param>
-        </member>
-        <member name="P:Easy.Endpoints.EndpointContext.HttpContext">
-            <summary>
-            HttpContext for the request
             </summary>
         </member>
         <member name="T:Easy.Endpoints.EndpointOptionBuilders">

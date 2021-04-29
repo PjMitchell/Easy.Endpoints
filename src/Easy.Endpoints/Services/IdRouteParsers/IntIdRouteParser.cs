@@ -25,7 +25,7 @@
         public int GetIdFromRoute()
         {
             var context = httpContextAccessor.GetContext();
-            if (context.HttpContext.Request.RouteValues.TryGetValue("id", out var value)
+            if (context.Request.RouteValues.TryGetValue("id", out var value)
                  && value is string stringValue 
                  && int.TryParse(stringValue, out var result)
             )

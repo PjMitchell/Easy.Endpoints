@@ -51,7 +51,7 @@ namespace Easy.Endpoints
             async Task Request(HttpContext context)
             {
                 var endpointContextAccessor = context.RequestServices.GetRequiredService<EndpointContextAccessor>();
-                var endpointContext = new EndpointContext(context);
+                var endpointContext = new DefaultEndpointContext(context);
                 endpointContextAccessor.SetContext(endpointContext);
                 var endpoint = (IEndpoint)context.RequestServices.GetRequiredService(type);
                 try
