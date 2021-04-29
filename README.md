@@ -66,7 +66,7 @@ public class PostTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePay
 }
 ```
 
-###Generic handler
+### Generic handler
 Can declare generic handlers that can build routes for types  
 POST: /Animal/Cow  
 POST: /Animal/Dog  
