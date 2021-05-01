@@ -18,11 +18,7 @@ namespace Easy.Endpoints.Benchmark
                 .Configure(app =>
                 {
                     app.UseRouting();
-
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapControllers();
-                    });
+                    app.UseEndpoints(endpoints => endpoints.MapControllers());
                 });
 
             return new TestServer(builder);
@@ -34,21 +30,15 @@ namespace Easy.Endpoints.Benchmark
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddRequestEndpoints();
+                    services.AddEasyEndpoints();
                 })
                 .Configure(app =>
                 {
                     app.UseRouting();
-
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.AddEasyEndpoints();
-                    });
+                    app.UseEndpoints(endpoints => endpoints.MapEasyEndpoints());
                 });
 
             return new TestServer(builder);
         }
-
-
     }
 }

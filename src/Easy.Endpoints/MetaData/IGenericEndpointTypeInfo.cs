@@ -12,6 +12,5 @@ namespace Easy.Endpoints
         /// Type parameters of Generic endpoint
         /// </summary>
         Type[] TypeParameters { get; }
-
     }
 }

@@ -15,7 +15,6 @@ namespace Easy.Endpoints.Tests
             context = new Mock<EndpointContext>();
             context.SetupGet(s => s.Request).Returns(Request.Object);
             context.SetupGet(s => s.Response).Returns(Response.Object);
-
         }
         public Mock<HttpResponse> Response { get; }
         public Mock<HttpRequest> Request { get; }

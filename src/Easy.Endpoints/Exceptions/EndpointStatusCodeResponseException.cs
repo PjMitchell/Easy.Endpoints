@@ -55,6 +55,4 @@ namespace Easy.Endpoints
     {
         internal static EndpointStatusCodeResponseException NotFound() => new EndpointStatusCodeResponseException(404, "Not found");
     }
-
 }
- 

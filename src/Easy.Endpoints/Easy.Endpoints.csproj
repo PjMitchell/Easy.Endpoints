@@ -8,6 +8,7 @@
     <RepositoryUrl>https://github.com/PjMitchell/Easy.Endpoints</RepositoryUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Description>Aspnetcore endpoints without the controller</Description>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

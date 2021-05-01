@@ -24,5 +24,4 @@ namespace Easy.Endpoints.Tests
         }
     }
 
-
 }

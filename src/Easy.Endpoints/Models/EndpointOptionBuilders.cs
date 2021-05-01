@@ -1,4 +1,6 @@
-﻿namespace Easy.Endpoints
+﻿using System.Text.Json;
+
+namespace Easy.Endpoints
 {
     /// <summary>
     /// Route Pattern when none is specified, defaults "[endpoint]"
@@ -23,6 +25,17 @@
         public EndpointOptionBuilders WithRoutePattern(string routePattern)
         {
             option.RoutePattern = routePattern;
+            return this;
+        }
+
+        /// <summary>
+        /// Adds Json Serializer Options, if not defined default settings will be used
+        /// </summary>
+        /// <param name="jsonSerializerOptions">jsonSerializerOptions to be used by endpoint</param>
+        /// <returns>Updated instance of the option builder</returns>
+        public EndpointOptionBuilders WithJsonSerializer(JsonSerializerOptions jsonSerializerOptions)
+        {
+            option.JsonSerializerOptions = jsonSerializerOptions;
             return this;
         }
 

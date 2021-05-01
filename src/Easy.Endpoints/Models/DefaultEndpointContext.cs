@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.Features;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading;
 
 namespace Easy.Endpoints
@@ -11,9 +12,10 @@ namespace Easy.Endpoints
     {
         private readonly HttpContext context;
 
-        public DefaultEndpointContext(HttpContext context)
+        public DefaultEndpointContext(HttpContext context, EndpointOptions options)
         {
             this.context = context;
+            JsonSerializerOptions = options.JsonSerializerOptions;
         }
 
         public override IFeatureCollection Features => context.Features;
@@ -21,7 +23,7 @@ namespace Easy.Endpoints
         public override HttpResponse Response => context.Response;
         public override ConnectionInfo Connection => context.Connection;
         public override WebSocketManager WebSockets => context.WebSockets;
-        public override ClaimsPrincipal User 
+        public override ClaimsPrincipal User
         {
             get { return context.User; }
             set { context.User = value; }
@@ -51,6 +53,8 @@ namespace Easy.Endpoints
             get { return context.Session; }
             set { context.Session = value; }
         }
+
+        public override JsonSerializerOptions JsonSerializerOptions { get; }
 
         public override void Abort() => context.Abort();
     }

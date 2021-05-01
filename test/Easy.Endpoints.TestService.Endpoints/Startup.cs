@@ -12,7 +12,7 @@ namespace Easy.Endpoints.TestService.Endpoints
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
-            services.AddRequestEndpoints();
+            services.AddEasyEndpoints();
             services.AddSwaggerGen();
         }
 
@@ -31,11 +31,7 @@ namespace Easy.Endpoints.TestService.Endpoints
             });
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.AddEasyEndpoints();
-            });
+            app.UseEndpoints(endpoints => endpoints.MapEasyEndpoints());
         }
     }
-
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 
 namespace Easy.Endpoints
@@ -30,7 +29,6 @@ namespace Easy.Endpoints
             return builder;
         }
 
-        
         private static bool IsRequestEndpoint(TypeInfo t) => t.IsAssignableTo(typeof(IEndpoint));
         private static bool IsRequestHandler(TypeInfo t) => t.IsAssignableTo(typeof(IEndpointHandler));
     }

@@ -14,7 +14,7 @@ namespace Easy.Endpoints
         public EndpointOptions Options { get; }
 
         /// <summary>
-        /// Constructs new instance of EndpointManifestBuilder 
+        /// Constructs new instance of EndpointManifestBuilder
         /// </summary>
         /// <param name="options">EndpointOptions options for endpoints</param>
         public EndpointManifestBuilder(EndpointOptions options)

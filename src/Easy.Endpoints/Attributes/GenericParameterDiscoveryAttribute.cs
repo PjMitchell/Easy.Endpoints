@@ -10,7 +10,6 @@ namespace Easy.Endpoints
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public abstract class GenericParameterDiscoveryAttribute : Attribute, IGenericEndpointTypeInfoProvider
     {
-        
 
         /// <inheritdoc cref="IGenericEndpointTypeInfoProvider.GetGenericEndpointTypeInfo"/>
         public IEnumerable<IGenericEndpointTypeInfo> GetGenericEndpointTypeInfo()

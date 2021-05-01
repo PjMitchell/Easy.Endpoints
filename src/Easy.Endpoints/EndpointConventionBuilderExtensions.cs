@@ -11,17 +11,27 @@ namespace Easy.Endpoints
     /// <summary>
     /// Adds Easy.Endpoints routes to EndpointRouteBuilder
     /// </summary>
-    public static class EndpointRouteBuilderExtensions
+    public static class EndpointConventionBuilderExtensions
     {
         /// <summary>
         /// Adds Easy.Endpoints routes to EndpointRouteBuilder
         /// </summary>
         /// <param name="endpoints">Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add Easy.Endpoints to</param>
         /// <returns>Returns Microsoft.AspNetCore.Builder.IEndpointConventionBuilder for endpoints</returns>
+        [Obsolete("Use MapEasyEndpoints")]
         public static IEndpointConventionBuilder AddEasyEndpoints(
+            this IEndpointRouteBuilder endpoints) => MapEasyEndpoints(endpoints);
+
+        /// <summary>
+        /// Adds Easy.Endpoints routes to EndpointRouteBuilder
+        /// </summary>
+        /// <param name="endpoints">Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add Easy.Endpoints to</param>
+        /// <returns>Returns Microsoft.AspNetCore.Builder.IEndpointConventionBuilder for endpoints</returns>
+        public static IEndpointConventionBuilder MapEasyEndpoints(
             this IEndpointRouteBuilder endpoints)
         {
             var requestEndPoints = endpoints.ServiceProvider.GetRequiredService<IEndpointManifest>().ToArray();
+            var options = endpoints.ServiceProvider.GetRequiredService<EndpointOptions>();
             var dataSource = endpoints.DataSources.OfType<EasyEndpointDataSource>().FirstOrDefault();
             if (dataSource is null)
             {
@@ -33,7 +43,7 @@ namespace Easy.Endpoints
             foreach (var endPoint in requestEndPoints)
             {
                 var builder = new RouteEndpointBuilder(
-                    BuildDelegate(endPoint.Type),
+                    BuildDelegate(endPoint.Type, options),
                     endPoint.Pattern, endPoint.Order)
                 {
                     DisplayName = endPoint.Name,
@@ -46,12 +56,12 @@ namespace Easy.Endpoints
             return new GroupedEasyEndpointConventionBuilder(results);
         }
 
-        private static RequestDelegate BuildDelegate(Type type)
+        private static RequestDelegate BuildDelegate(Type type, EndpointOptions options)
         {
             async Task Request(HttpContext context)
             {
                 var endpointContextAccessor = context.RequestServices.GetRequiredService<EndpointContextAccessor>();
-                var endpointContext = new DefaultEndpointContext(context);
+                var endpointContext = new DefaultEndpointContext(context, options);
                 endpointContextAccessor.SetContext(endpointContext);
                 var endpoint = (IEndpoint)context.RequestServices.GetRequiredService(type);
                 try
@@ -61,9 +71,8 @@ namespace Easy.Endpoints
                 catch(EndpointStatusCodeResponseException e)
                 {
                     context.Response.StatusCode = e.StatusCode;
-                    await context.Response.WriteAsync(e.Message);
+                    await context.Response.WriteAsync(e.Message).ConfigureAwait(false);
                 }
-                
             }
             return Request;
         }

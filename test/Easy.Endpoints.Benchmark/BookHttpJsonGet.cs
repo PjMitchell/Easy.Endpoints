@@ -37,6 +37,5 @@ namespace Easy.Endpoints.Benchmark
             return output;
         }
 
-        
     }
 }

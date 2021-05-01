@@ -23,19 +23,15 @@ namespace Easy.Endpoints.Tests
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddRequestEndpoints(manifestBuilderActions);
+                    services.AddEasyEndpoints(manifestBuilderActions);
                 })
                 .Configure(app =>
                 {
                     app.UseRouting();
-
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.AddEasyEndpoints();
-                    });
+                    app.UseEndpoints(endpoints => endpoints.MapEasyEndpoints());
                 });
 
-            return new Microsoft.AspNetCore.TestHost.TestServer(builder);
+            return new TestServer(builder);
         }
     }
 }

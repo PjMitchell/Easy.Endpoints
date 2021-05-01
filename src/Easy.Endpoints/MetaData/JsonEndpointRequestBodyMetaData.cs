@@ -4,7 +4,6 @@ using System;
 
 namespace Easy.Endpoints
 {
-
     internal class JsonEndpointRequestBodyMetaData : IEndpointRequestBodyMetadataProvider
     {
         public JsonEndpointRequestBodyMetaData(Type type)

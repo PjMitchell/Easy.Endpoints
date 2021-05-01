@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Easy.Endpoints
 {
@@ -16,6 +17,10 @@ namespace Easy.Endpoints
             {
                 new JsonEndpointForHandlerDeclarations()
             };
+            JsonSerializerOptions = new JsonSerializerOptions {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+            };
         }
 
         /// <summary>
@@ -24,7 +29,12 @@ namespace Easy.Endpoints
         public string RoutePattern { get; internal set; } = "[endpoint]";
 
         /// <summary>
-        /// All EndpointForHandlerDeclaration 
+        /// Json Serializer Options for Endpoints
+        /// </summary>
+        public JsonSerializerOptions JsonSerializerOptions { get; internal set; }
+
+        /// <summary>
+        /// All EndpointForHandlerDeclaration
         /// </summary>
         public IReadOnlyList<IEndpointForHandlerDeclaration> EndpointForHandlerDeclarations { get; internal set; }
     }

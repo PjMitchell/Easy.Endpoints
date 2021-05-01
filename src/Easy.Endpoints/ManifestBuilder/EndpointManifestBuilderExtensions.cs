@@ -25,7 +25,7 @@ namespace Easy.Endpoints
         /// <param name="endpoint">Type of IEndpoint to be added</param>
         /// <returns>Same instance of the manifest builder</returns>
         public static EndpointManifestBuilder AddForEndpoint(this EndpointManifestBuilder builder, Type endpoint) => AddForEndpoint(builder, endpoint.GetTypeInfo());
-        
+
         /// <summary>
         /// Add Endpoints For Implementation of IEndpoint;
         /// </summary>
@@ -77,8 +77,9 @@ namespace Easy.Endpoints
                 }
             }
             else
+            {
                 addHandlerMethod(builder, handler, Array.Empty<object>());
-
+            }
             return builder;
         }
 
@@ -87,7 +88,9 @@ namespace Easy.Endpoints
             foreach(var attribute in handler.GetCustomAttributes())
             {
                 if (attribute is IGenericEndpointTypeInfo info)
+                {
                     yield return info;
+                }
                 else if (attribute is IGenericEndpointTypeInfoProvider infoProvider)
                 {
                     foreach (var item in infoProvider.GetGenericEndpointTypeInfo())
@@ -113,6 +116,5 @@ namespace Easy.Endpoints
             }
             throw new InvalidEndpointSetupException($"Could not find Endpoint for Handler {handler.FullName}");
         }
-
     }
 }

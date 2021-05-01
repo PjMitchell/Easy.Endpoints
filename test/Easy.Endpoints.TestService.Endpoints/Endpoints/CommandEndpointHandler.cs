@@ -35,7 +35,6 @@ namespace Easy.Endpoints.TestService.Endpoints
 
     public interface ICommand
     {
-
     }
 
     public class CreateItemCommand: ICommand

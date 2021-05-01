@@ -14,32 +14,24 @@ namespace Easy.Endpoints
         /// Adds Request endpoints with default options and all Endpoints from calling assembly
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
-        public static void AddRequestEndpoints(this IServiceCollection services)
-        {
-            var assembly = Assembly.GetCallingAssembly();
-            AddRequestEndpoints(services, NullOptionModifications, b => b.AddFromAssembly(assembly));
-        }
+        [Obsolete("Use AddEasyEndpoints")]
+        public static void AddRequestEndpoints(this IServiceCollection services) => AddEasyEndpoints(services);
 
         /// <summary>
         /// Adds Request endpoints with default options and all Endpoints from calling assembly
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
         /// <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
-        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions)
-        {
-            var assembly = Assembly.GetCallingAssembly();
-            AddRequestEndpoints(services, optionBuilderActions, b => b.AddFromAssembly(assembly));
-        }
+        [Obsolete("Use AddEasyEndpoints")]
+        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions) => AddEasyEndpoints(services, optionBuilderActions);
 
         /// <summary>
         /// Adds Request endpoints
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
         /// <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
-        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointManifestBuilder> manifestBuilderActions)
-        {
-            AddRequestEndpoints(services, NullOptionModifications, manifestBuilderActions);
-        }
+        [Obsolete("Use AddEasyEndpoints")]
+        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointManifestBuilder> manifestBuilderActions) => AddEasyEndpoints(services, manifestBuilderActions);
 
         /// <summary>
         /// Adds Request endpoints
@@ -47,7 +39,47 @@ namespace Easy.Endpoints
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
         /// <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
         /// <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
-        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions, Action<EndpointManifestBuilder> manifestBuilderActions)
+        [Obsolete("Use AddEasyEndpoints")]
+        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions, Action<EndpointManifestBuilder> manifestBuilderActions) => AddEasyEndpoints(services, optionBuilderActions, manifestBuilderActions);
+
+        /// <summary>
+        /// Adds Easy endpoints with default options and all Endpoints from calling assembly
+        /// </summary>
+        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+        public static void AddEasyEndpoints(this IServiceCollection services)
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            AddEasyEndpoints(services, NullOptionModifications, b => b.AddFromAssembly(assembly));
+        }
+
+        /// <summary>
+        /// Adds Easy endpoints with default options and all Endpoints from calling assembly
+        /// </summary>
+        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+        /// <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
+        public static void AddEasyEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions)
+        {
+            var assembly = Assembly.GetCallingAssembly();
+            AddEasyEndpoints(services, optionBuilderActions, b => b.AddFromAssembly(assembly));
+        }
+
+        /// <summary>
+        /// Adds Easy endpoints
+        /// </summary>
+        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+        /// <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
+        public static void AddEasyEndpoints(this IServiceCollection services, Action<EndpointManifestBuilder> manifestBuilderActions)
+        {
+            AddEasyEndpoints(services, NullOptionModifications, manifestBuilderActions);
+        }
+
+        /// <summary>
+        /// Adds Easy endpoints
+        /// </summary>
+        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+        /// <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
+        /// <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
+        public static void AddEasyEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions, Action<EndpointManifestBuilder> manifestBuilderActions)
         {
             var optionBuilder = new EndpointOptionBuilders();
             optionBuilderActions(optionBuilder);
@@ -71,7 +103,6 @@ namespace Easy.Endpoints
             services.AddTransient<IIntIdRouteParser, IntIdRouteParser>();
             services.AddTransient<IGuidIdRouteParser, GuidIdRouteParser>();
             services.AddTransient<IStringIdRouteParser, StringIdRouteParser>();
-
         }
 
         private static void NullOptionModifications(EndpointOptionBuilders options)

@@ -208,12 +208,19 @@
             <param name="type">Generic Type Parameter</param>
             <returns>EndpointRouteValueMetadata values for Type</returns>
         </member>
-        <member name="T:Easy.Endpoints.EndpointRouteBuilderExtensions">
+        <member name="T:Easy.Endpoints.EndpointConventionBuilderExtensions">
             <summary>
             Adds Easy.Endpoints routes to EndpointRouteBuilder
             </summary>
         </member>
-        <member name="M:Easy.Endpoints.EndpointRouteBuilderExtensions.AddEasyEndpoints(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder)">
+        <member name="M:Easy.Endpoints.EndpointConventionBuilderExtensions.AddEasyEndpoints(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder)">
+            <summary>
+            Adds Easy.Endpoints routes to EndpointRouteBuilder
+            </summary>
+            <param name="endpoints">Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add Easy.Endpoints to</param>
+            <returns>Returns Microsoft.AspNetCore.Builder.IEndpointConventionBuilder for endpoints</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointConventionBuilderExtensions.MapEasyEndpoints(Microsoft.AspNetCore.Routing.IEndpointRouteBuilder)">
             <summary>
             Adds Easy.Endpoints routes to EndpointRouteBuilder
             </summary>
@@ -248,6 +255,34 @@
         <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddRequestEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Easy.Endpoints.EndpointOptionBuilders},System.Action{Easy.Endpoints.EndpointManifestBuilder})">
             <summary>
             Adds Request endpoints
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+            <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
+            <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddEasyEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds Easy endpoints with default options and all Endpoints from calling assembly
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddEasyEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Easy.Endpoints.EndpointOptionBuilders})">
+            <summary>
+            Adds Easy endpoints with default options and all Endpoints from calling assembly
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+            <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddEasyEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Easy.Endpoints.EndpointManifestBuilder})">
+            <summary>
+            Adds Easy endpoints
+            </summary>
+            <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
+            <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointServiceCollectionExtensions.AddEasyEndpoints(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Easy.Endpoints.EndpointOptionBuilders},System.Action{Easy.Endpoints.EndpointManifestBuilder})">
+            <summary>
+            Adds Easy endpoints
             </summary>
             <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
             <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
@@ -410,7 +445,7 @@
         </member>
         <member name="M:Easy.Endpoints.EndpointManifestBuilder.#ctor(Easy.Endpoints.EndpointOptions)">
             <summary>
-            Constructs new instance of EndpointManifestBuilder 
+            Constructs new instance of EndpointManifestBuilder
             </summary>
             <param name="options">EndpointOptions options for endpoints</param>
         </member>
@@ -692,6 +727,11 @@
             Provides the context for an endpoint request
             </summary>
         </member>
+        <member name="P:Easy.Endpoints.EndpointContext.JsonSerializerOptions">
+            <summary>
+            Json Serializer Options for Endpoints
+            </summary>
+        </member>
         <member name="T:Easy.Endpoints.EndpointOptionBuilders">
             <summary>
             Route Pattern when none is specified, defaults "[endpoint]"
@@ -707,6 +747,13 @@
             Defines Route Pattern when no route is defined for an endpoint
             </summary>
             <param name="routePattern">new route pattern for endpoint</param>
+            <returns>Updated instance of the option builder</returns>
+        </member>
+        <member name="M:Easy.Endpoints.EndpointOptionBuilders.WithJsonSerializer(System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            Adds Json Serializer Options, if not defined default settings will be used
+            </summary>
+            <param name="jsonSerializerOptions">jsonSerializerOptions to be used by endpoint</param>
             <returns>Updated instance of the option builder</returns>
         </member>
         <member name="M:Easy.Endpoints.EndpointOptionBuilders.BuildOption">
@@ -730,9 +777,14 @@
             Route Pattern when none is specified, defaults "[endpoint]"
             </summary>
         </member>
+        <member name="P:Easy.Endpoints.EndpointOptions.JsonSerializerOptions">
+            <summary>
+            Json Serializer Options for Endpoints
+            </summary>
+        </member>
         <member name="P:Easy.Endpoints.EndpointOptions.EndpointForHandlerDeclarations">
             <summary>
-            All EndpointForHandlerDeclaration 
+            All EndpointForHandlerDeclaration
             </summary>
         </member>
         <member name="T:Easy.Endpoints.IEndpointContextAccessor">

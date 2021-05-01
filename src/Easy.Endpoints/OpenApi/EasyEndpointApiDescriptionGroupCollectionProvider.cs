@@ -66,7 +66,6 @@ namespace Easy.Endpoints
                 HttpMethod = httpMethod,
                 RelativePath = BuildRoute(endpoint.Pattern),
                 ActionDescriptor = actionDescriptor,
-                
             };
 
             foreach (var response in GetResponseTypes(endpoint))
@@ -199,5 +198,4 @@ namespace Easy.Endpoints
             return result;
         }
     }
-
 }
