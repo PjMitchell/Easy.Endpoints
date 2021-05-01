@@ -7,12 +7,9 @@
     <Authors>Peter Mitchell</Authors>
     <RepositoryUrl>https://github.com/PjMitchell/Easy.Endpoints</RepositoryUrl>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Description>Aspnetcore endpoints without the controller</Description>
+    <Description>AspNetCore endpoints without the controller</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Version>1.1.0</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>.\Easy.Endpoints.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
