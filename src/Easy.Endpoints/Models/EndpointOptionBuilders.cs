@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
 
 namespace Easy.Endpoints
 {
@@ -36,6 +37,17 @@ namespace Easy.Endpoints
         public EndpointOptionBuilders WithJsonSerializer(JsonSerializerOptions jsonSerializerOptions)
         {
             option.JsonSerializerOptions = jsonSerializerOptions;
+            return this;
+        }
+
+        /// <summary>
+        /// Modifies default JsonSerializerOptions for Endpoints
+        /// </summary>
+        /// <param name="jsonSerializerOptionsModification">Action that modifies JsonSerializerOptions</param>
+        /// <returns>Updated instance of the option builder</returns>
+        public EndpointOptionBuilders WithJsonSerializer(Action<JsonSerializerOptions> jsonSerializerOptionsModification)
+        {
+            jsonSerializerOptionsModification(option.JsonSerializerOptions);
             return this;
         }
 
