@@ -14,5 +14,10 @@
         /// Error when could not parse parameter to expected type
         /// </summary>
         public const string CouldNotParseError = "Could not parse {0} as {1}";
+
+        /// <summary>
+        /// Invalid Route Parameter
+        /// </summary>
+        public const string InvalidRouteParameterError = "Invalid route parameter of {0}";
     }
 }

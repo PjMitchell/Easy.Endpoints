@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static Easy.Endpoints.UrlParameterErrorMessages;
 
 namespace Easy.Endpoints
 {
@@ -21,8 +22,18 @@ namespace Easy.Endpoints
             var bindings = new List<Action<T, HttpRequest>>();
             foreach(var property in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(i => i.CanWrite))
             {
-                if(CanParseSingleValue(property.PropertyType) || CanParseNullableValue(property.PropertyType) || CanParseArrayValue(property.PropertyType))
-                    bindings.Add(GetBindingForProperty<T>(property));
+                var routeParameter = property.GetCustomAttribute<RouteParameterAttribute>();
+                if(routeParameter is not null)
+                {
+                    if (CanParseRouteType(property.PropertyType))
+                        bindings.Add(GetBindingForRouteProperty<T>(routeParameter, property));
+                    continue;
+                }
+                if(CanParseQueryType(property.PropertyType))
+                {
+                    bindings.Add(GetBindingForQueryProperty<T>(property));
+                }
+
             }
             var bindingsAsArray = bindings.ToArray();
             return (T model, HttpRequest r) => {
@@ -31,10 +42,16 @@ namespace Easy.Endpoints
             };
         }
 
-        private static Action<T, HttpRequest> GetBindingForProperty<T>(PropertyInfo info) where T : notnull, UrlParameterModel
+        private static Action<T, HttpRequest> GetBindingForQueryProperty<T>(PropertyInfo info) where T : notnull, UrlParameterModel
         {
-            var parameterName = GetParameterName(info);
+            var parameterName = GetQueryParameterName(info);
             return GetQueryParser<T>(info.PropertyType, parameterName, info.SetValue);
+        }
+
+        private static Action<T, HttpRequest> GetBindingForRouteProperty<T>(RouteParameterAttribute route, PropertyInfo info) where T : notnull, UrlParameterModel
+        {
+            var parameterName = GetRouteParameterName(route, info);
+            return GetRouteParser<T>(info.PropertyType, parameterName, info.SetValue);
         }
 
         private static Action<T, HttpRequest> GetQueryParser<T>(Type type, string parameter, Action<object, object?> setMethod) where T : notnull, UrlParameterModel
@@ -94,12 +111,34 @@ namespace Easy.Endpoints
             throw new InvalidEndpointSetupException($"Cannot map {type}");
         }
 
+        private static Action<T, HttpRequest> GetRouteParser<T>(Type type, string parameter, Action<object, object?> setMethod) where T : notnull, UrlParameterModel
+        {
+            if (type == typeof(string))
+                return ForRouteString<T>(parameter, setMethod);
+            if (type == typeof(int))
+                return ForRouteInt<T>(parameter, setMethod);
+            if (type == typeof(long))
+                return ForRouteLong<T>(parameter, setMethod);
+            if (type == typeof(bool))
+                return ForRouteBool<T>(parameter, setMethod);
+            if (type == typeof(double))
+                return ForRouteDouble<T>(parameter, setMethod);
+            if (type == typeof(DateTime))
+                return ForRouteDateTime<T>(parameter, setMethod);
+            if (type == typeof(DateTimeOffset))
+                return ForRouteDateTimeOffset<T>(parameter, setMethod);
+            if (type == typeof(Guid))
+                return ForRouteGuid<T>(parameter, setMethod);
+            throw new InvalidEndpointSetupException($"Cannot map {type}");
+        }
+
+
         #region string
         private static Action<T, HttpRequest> ForQueryString<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out string result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out string result))
                 {
                     setMethod(model, result);
                 }
@@ -110,12 +149,28 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out string[] result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out string[] result))
                 {
                     setMethod(model, result);
                 }
             };
         }
+
+        private static Action<T, HttpRequest> ForRouteString<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out string result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
+                }
+            };
+        }
+
         #endregion
 
         #region int
@@ -123,7 +178,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out int result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out int result))
                 {
                     setMethod(model, result);
                 }
@@ -134,7 +189,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out int? result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out int? result))
                 {
                     setMethod(model, result);
                 }
@@ -145,9 +200,24 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out int[] result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out int[] result))
                 {
                     setMethod(model, result);
+                }
+            };
+        }
+
+        private static Action<T, HttpRequest> ForRouteInt<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out int result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
                 }
             };
         }
@@ -158,7 +228,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out long result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out long result))
                 {
                     setMethod(model, result);
                 }
@@ -169,7 +239,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out long? result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out long? result))
                 {
                     setMethod(model, result);
                 }
@@ -180,9 +250,24 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out long[] result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out long[] result))
                 {
                     setMethod(model, result);
+                }
+            };
+        }
+
+        private static Action<T, HttpRequest> ForRouteLong<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out long result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
                 }
             };
         }
@@ -193,7 +278,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out bool result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out bool result))
                 {
                     setMethod(model, result);
                 }
@@ -204,9 +289,24 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out bool? result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out bool? result))
                 {
                     setMethod(model, result);
+                }
+            };
+        }
+
+        private static Action<T, HttpRequest> ForRouteBool<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out bool result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
                 }
             };
         }
@@ -217,7 +317,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out double result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out double result))
                 {
                     setMethod(model, result);
                 }
@@ -228,7 +328,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out double? result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out double? result))
                 {
                     setMethod(model, result);
                 }
@@ -239,9 +339,24 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out double[] result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out double[] result))
                 {
                     setMethod(model, result);
+                }
+            };
+        }
+
+        private static Action<T, HttpRequest> ForRouteDouble<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out double result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
                 }
             };
         }
@@ -252,7 +367,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out Guid result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out Guid result))
                 {
                     setMethod(model, result);
                 }
@@ -263,7 +378,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out Guid? result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out Guid? result))
                 {
                     setMethod(model, result);
                 }
@@ -274,9 +389,24 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out Guid[] result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out Guid[] result))
                 {
                     setMethod(model, result);
+                }
+            };
+        }
+
+        private static Action<T, HttpRequest> ForRouteGuid<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out Guid result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
                 }
             };
         }
@@ -287,7 +417,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out DateTime result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out DateTime result))
                 {
                     setMethod(model, result);
                 }
@@ -298,9 +428,24 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out DateTime? result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out DateTime? result))
                 {
                     setMethod(model, result);
+                }
+            };
+        }
+
+        private static Action<T, HttpRequest> ForRouteDateTime<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out DateTime result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
                 }
             };
         }
@@ -311,7 +456,7 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out DateTimeOffset result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out DateTimeOffset result))
                 {
                     setMethod(model, result);
                 }
@@ -322,41 +467,70 @@ namespace Easy.Endpoints
         {
             return (model, request) =>
             {
-                if (request.Query.TryGetQueryParameter(parameter, model.Errors, out DateTimeOffset? result))
+                if (request.TryGetQueryParameter(parameter, model.Errors, out DateTimeOffset? result))
                 {
                     setMethod(model, result);
                 }
             };
         }
+
+        private static Action<T, HttpRequest> ForRouteDateTimeOffset<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
+        {
+            return (model, request) =>
+            {
+                if (request.TryGetRouteParameter(parameter, out DateTimeOffset result))
+                {
+                    setMethod(model, result);
+                }
+                else
+                {
+                    model.Errors.Add(new UrlParameterModelError(parameter, string.Format(InvalidRouteParameterError, parameter)));
+                }
+            };
+        }
+
         #endregion
 
-        private static string GetParameterName(PropertyInfo info)
+        private static string GetQueryParameterName(PropertyInfo info)
         {
             var queryAttribute = info.GetCustomAttribute<QueryParameterAttribute>();
             if (queryAttribute is not null && !string.IsNullOrWhiteSpace(queryAttribute.Name))
                 return queryAttribute.Name;
+            return GetParameterName(info);
+        }
+
+        private static string GetRouteParameterName(RouteParameterAttribute routeAttribute, PropertyInfo info)
+        {
+            if (routeAttribute is not null && !string.IsNullOrWhiteSpace(routeAttribute.Name))
+                return routeAttribute.Name;
+            return GetParameterName(info);
+        }
+
+        private static string GetParameterName(PropertyInfo info)
+        {
             var characters = info.Name.ToCharArray();
             characters[0] = char.ToLower(characters[0]);
             return new string(characters);
         }
 
+        private static bool CanParseQueryType(Type type) => CanParseArrayValue(type) || CanParseNullableValue(type) || CanParseSingleValue(type);
+        private static bool CanParseRouteType(Type type) => CanParseSingleValue(type);
+
         private static bool CanParseSingleValue(Type type)
         {
-            return type == typeof(string) 
-                || type == typeof(int) 
+            return type == typeof(string)
+                || type == typeof(int)
                 || type == typeof(long)
                 || type == typeof(bool)
                 || type == typeof(double)
                 || type == typeof(DateTime)
                 || type == typeof(DateTimeOffset)
-                || type == typeof(Guid)
-
-                ;
+                || type == typeof(Guid);
         }
 
         private static bool CanParseNullableValue(Type type)
         {
-            return type == typeof(int?) 
+            return type == typeof(int?)
                 || type == typeof(long?)
                 || type == typeof(bool?)
                 || type == typeof(double?)
@@ -367,7 +541,7 @@ namespace Easy.Endpoints
 
         private static bool CanParseArrayValue(Type type)
         {
-            return type == typeof(string[]) 
+            return type == typeof(string[])
                 || type == typeof(int[])
                 || type == typeof(long[])
                 || type == typeof(double[])

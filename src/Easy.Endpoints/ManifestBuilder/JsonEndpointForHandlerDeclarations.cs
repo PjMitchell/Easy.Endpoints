@@ -20,9 +20,9 @@ namespace Easy.Endpoints
             if (jsonResponseHandler is not null)
                 return typeof(JsonResponseEndpoint<,>).MakeGenericType(handlerTypeInfo.AsType(), jsonResponseHandler.GenericTypeArguments[0]);
 
-            var jsonHandler = handlerTypeInfo.ImplementedInterfaces.SingleOrDefault(r => r.GenericTypeArguments.Length == 2 && r == typeof(IJsonEndpointHandler<,>).MakeGenericType(r.GenericTypeArguments[0], r.GenericTypeArguments[1]));
+            var jsonHandler = handlerTypeInfo.ImplementedInterfaces.SingleOrDefault(r => r.GenericTypeArguments.Length == 2 && r == typeof(IJsonBodyAndResponseEndpointHandler<,>).MakeGenericType(r.GenericTypeArguments[0], r.GenericTypeArguments[1]));
             if (jsonHandler is not null)
-                return typeof(JsonEndpoint<,,>).MakeGenericType(handlerTypeInfo.AsType(), jsonHandler.GenericTypeArguments[0], jsonHandler.GenericTypeArguments[1]);
+                return typeof(JsonBodyAndResponseEndpoint<,,>).MakeGenericType(handlerTypeInfo.AsType(), jsonHandler.GenericTypeArguments[0], jsonHandler.GenericTypeArguments[1]);
             return null;
         }
     }

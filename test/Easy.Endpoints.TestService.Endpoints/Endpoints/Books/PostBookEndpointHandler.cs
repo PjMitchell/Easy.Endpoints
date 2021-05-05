@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestService.Endpoints.Books
 {
-    public class PostBookEndpointHandler : IJsonEndpointHandler<Book, CommandResult>
+    public class PostBookEndpointHandler : IJsonBodyAndResponseEndpointHandler<Book, CommandResult>
     {
         public PostBookEndpointHandler()
         {

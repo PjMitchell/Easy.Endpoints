@@ -24,11 +24,9 @@
         public string GetIdFromRoute()
         {
             var context = httpContextAccessor.GetContext();
-            if (context.Request.RouteValues.TryGetValue("id", out var value)
-                 && value is string stringValue
-            )
+            if (context.Request.TryGetRouteParameter("id", out string result))
             {
-                return stringValue;
+                return result;
             }
 
             throw EndpointStatusCodeResponseExceptionHelper.NotFound();

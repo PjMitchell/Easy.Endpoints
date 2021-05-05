@@ -27,10 +27,7 @@ namespace Easy.Endpoints
         public Guid GetIdFromRoute()
         {
             var context = httpContextAccessor.GetContext();
-            if (context.Request.RouteValues.TryGetValue("id", out var value)
-                 && value is string stringValue 
-                 && Guid.TryParse(stringValue, out var result)
-            )
+            if (context.Request.TryGetRouteParameter("id", out Guid result))
             {
                 return result;
             }

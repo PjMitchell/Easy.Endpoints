@@ -7,7 +7,7 @@ namespace Easy.Endpoints.TestService.Endpoints
     [KnownTypes("Cow", typeof(Cow))]
     [KnownTypes("Dog", typeof(Dog))]
     [Post("[controller]/[type]")]
-    public class AnimalEndpointHandler<TAnimal> : IJsonEndpointHandler<TAnimal, string> where TAnimal : IAnimal
+    public class AnimalEndpointHandler<TAnimal> : IJsonBodyAndResponseEndpointHandler<TAnimal, string> where TAnimal : IAnimal
     {
         public Task<string> Handle(TAnimal body, CancellationToken cancellationToken)
         {

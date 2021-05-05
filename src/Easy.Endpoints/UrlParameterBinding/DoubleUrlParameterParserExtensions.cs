@@ -5,9 +5,9 @@ using static Easy.Endpoints.UrlParameterErrorMessages;
 namespace Easy.Endpoints
 {
     /// <summary>
-    /// Extensions for parsing double query parameter 
+    /// Extensions for parsing double query parameter
     /// </summary>
-    public static class DoubleQueryParameterParserExtensions
+    public static class DoubleUrlParameterParserExtensions
     {
         /// <summary>
         /// Tries to parse an double query parameter from an IQueryCollection
@@ -15,14 +15,14 @@ namespace Easy.Endpoints
         /// If multiple values are found it will return as unsuccessful
         /// Errors will be added to the errors
         /// </summary>
-        /// <param name="queryCollection">source query collection</param>
+        /// <param name="httpRequest">http request</param>
         /// <param name="parameterName">name of parameter to be found</param>
         /// <param name="errors">error collection to record issue</param>
         /// <param name="result">resulting parameter</param>
         /// <returns>returns true if parameter correctly retrieved, false otherwise</returns>
-        public static bool TryGetQueryParameter(this IQueryCollection queryCollection, string parameterName, ICollection<UrlParameterModelError> errors, out double result)
+        public static bool TryGetQueryParameter(this HttpRequest httpRequest, string parameterName, ICollection<UrlParameterModelError> errors, out double result)
         {
-            if (queryCollection.TryGetValue(parameterName, out var value))
+            if (httpRequest.Query.TryGetValue(parameterName, out var value))
             {
                 if (value.Count != 1)
                 {
@@ -46,14 +46,14 @@ namespace Easy.Endpoints
         /// If multiple values are found it will return as unsuccessful
         /// Errors will be added to the errors
         /// </summary>
-        /// <param name="queryCollection">source query collection</param>
+        /// <param name="httpRequest">http request</param>
         /// <param name="parameterName">name of parameter to be found</param>
         /// <param name="errors">error collection to record issue</param>
         /// <param name="result">resulting parameter</param>
         /// <returns>returns true if parameter correctly retrieved, false otherwise</returns>
-        public static bool TryGetQueryParameter(this IQueryCollection queryCollection, string parameterName, ICollection<UrlParameterModelError> errors, out double? result)
+        public static bool TryGetQueryParameter(this HttpRequest httpRequest, string parameterName, ICollection<UrlParameterModelError> errors, out double? result)
         {
-            if (queryCollection.TryGetValue(parameterName, out var value))
+            if (httpRequest.Query.TryGetValue(parameterName, out var value))
             {
                 if (value.Count != 1)
                 {
@@ -80,20 +80,20 @@ namespace Easy.Endpoints
         /// If no parameters are found it will return success with empty array
         /// Errors will be added to the errors
         /// </summary>
-        /// <param name="queryCollection">source query collection</param>
+        /// <param name="httpRequest">http request</param>
         /// <param name="parameterName">name of parameter to be found</param>
         /// <param name="errors">error collection to record issue</param>
         /// <param name="result">resulting parameters</param>
         /// <returns>returns true if parameter correctly retrieved, false otherwise</returns>
-        public static bool TryGetQueryParameter(this IQueryCollection queryCollection, string parameterName, ICollection<UrlParameterModelError> errors, out double[] result)
+        public static bool TryGetQueryParameter(this HttpRequest httpRequest, string parameterName, ICollection<UrlParameterModelError> errors, out double[] result)
         {
             var isValid = true;
-            if (queryCollection.TryGetValue(parameterName, out var value))
+            if (httpRequest.Query.TryGetValue(parameterName, out var value))
             {
                 result = new double[value.Count];
                 for (var i = 0; i < value.Count; i++)
                 {
-                    if (int.TryParse(value[i], out var intValue))
+                    if (double.TryParse(value[i], out var intValue))
                     {
                         result[i] = intValue;
                     }
@@ -111,6 +111,23 @@ namespace Easy.Endpoints
 
             result = Array.Empty<double>();
             return true;
+        }
+
+        /// <summary>
+        /// Tries to parse an double route parameter from an RouteValueDictionary
+        /// </summary>
+        /// <param name="httpRequest">http request</param>
+        /// <param name="parameterName">name of parameter to be found</param>
+        /// <param name="result">resulting parameter</param>
+        /// <returns>returns true if parameter correctly retrieved, false otherwise</returns>
+        public static bool TryGetRouteParameter(this HttpRequest httpRequest, string parameterName, out double result)
+        {
+            if (httpRequest.RouteValues.TryGetValue(parameterName, out var value) && value is string stringValue && double.TryParse(stringValue, out result))
+            {
+                return true;
+            }
+            result = default;
+            return false;
         }
     }
 }
