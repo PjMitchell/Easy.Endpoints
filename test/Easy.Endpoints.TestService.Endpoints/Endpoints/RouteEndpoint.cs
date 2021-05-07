@@ -36,7 +36,7 @@ namespace Easy.Endpoints.TestService.Endpoints
     }
 
     [Post("TestTwo")]
-    public class PostTestResponseAndBodyEndpoint : IJsonEndpointHandler<TestResponsePayload, TestResponsePayload>
+    public class PostTestResponseAndBodyEndpoint : IJsonBodyAndResponseEndpointHandler<TestResponsePayload, TestResponsePayload>
     {
         public Task<TestResponsePayload> Handle(TestResponsePayload body, CancellationToken cancellationToken)
         {

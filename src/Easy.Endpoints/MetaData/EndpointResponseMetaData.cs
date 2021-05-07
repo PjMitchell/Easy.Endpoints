@@ -6,7 +6,7 @@ using System;
 namespace Easy.Endpoints
 {
     /// <summary>
-    /// Returns Response Type and code meta data for endpoint 
+    /// Returns Response Type and code meta data for endpoint
     /// </summary>
     public class EndpointResponseMetaData : IApiResponseMetadataProvider
     {

@@ -10,7 +10,7 @@ namespace Easy.Endpoints.TestService.Endpoints
     [EndpointController("Command")]
     [CommandParameterDiscovery]
     [Post("[controller]/[type]")]
-    public class CommandEndpointHandler<TCommand> : IJsonEndpointHandler<TCommand, CommandResult> where TCommand : ICommand
+    public class CommandEndpointHandler<TCommand> : IJsonBodyAndResponseEndpointHandler<TCommand, CommandResult> where TCommand : ICommand
     {
         public Task<CommandResult> Handle(TCommand body, CancellationToken cancellationToken)
         {

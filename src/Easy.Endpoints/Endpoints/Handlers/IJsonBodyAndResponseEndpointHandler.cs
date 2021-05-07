@@ -8,7 +8,7 @@ namespace Easy.Endpoints
     /// </summary>
     /// <typeparam name="TBody">Type of Json Body</typeparam>
     /// <typeparam name="TResponse">Type of Json Response</typeparam>
-    public interface IJsonEndpointHandler<TBody, TResponse> : IJsonBody<TBody>, IJsonResponse<TResponse>, IEndpointHandler
+    public interface IJsonBodyAndResponseEndpointHandler<TBody, TResponse> : IJsonBody<TBody>, IJsonResponse<TResponse>, IEndpointHandler
     {
         /// <summary>
         /// Processes json body and returns a new object

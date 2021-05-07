@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
-    internal class JsonEndpoint<THandler, TBody, TResponse> : IEndpoint where THandler : IJsonEndpointHandler<TBody, TResponse>
+    internal class JsonBodyAndResponseEndpoint<THandler, TBody, TResponse> : IEndpoint where THandler : IJsonBodyAndResponseEndpointHandler<TBody, TResponse>
     {
         private readonly THandler handler;
 
-        public JsonEndpoint(THandler handler)
+        public JsonBodyAndResponseEndpoint(THandler handler)
         {
             this.handler = handler;
         }
