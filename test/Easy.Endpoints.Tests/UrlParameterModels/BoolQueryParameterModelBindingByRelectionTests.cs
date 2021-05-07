@@ -6,7 +6,6 @@ using Xunit;
 
 namespace Easy.Endpoints.Tests
 {
-
     public class BoolQueryParameterModelBindingByRelectionTests
     {
         private readonly TestServer server;
@@ -26,7 +25,6 @@ namespace Easy.Endpoints.Tests
             Assert.Equal(false, observed.Result.Nullable);
             Assert.True(observed.Result.Single);
             Assert.True(observed.Result.Route);
-
         }
 
         [Fact]
@@ -58,7 +56,6 @@ namespace Easy.Endpoints.Tests
             var error = Assert.Single(observed.Errors);
             Assert.Equal("nullable", error.ParameterName);
             Assert.Equal(string.Format(UrlParameterErrorMessages.MultipleParametersFoundError, "nullable"), error.Error);
-
         }
 
         [Fact]
@@ -81,7 +78,6 @@ namespace Easy.Endpoints.Tests
             var error = Assert.Single(observed.Errors);
             Assert.Equal("nullable", error.ParameterName);
             Assert.Equal(string.Format(UrlParameterErrorMessages.CouldNotParseError, "nope", typeof(bool)), error.Error);
-
         }
 
         [Fact]

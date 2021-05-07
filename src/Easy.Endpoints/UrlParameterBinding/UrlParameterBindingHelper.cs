@@ -33,13 +33,28 @@ namespace Easy.Endpoints
                 {
                     bindings.Add(GetBindingForQueryProperty<T>(property));
                 }
-
             }
             var bindingsAsArray = bindings.ToArray();
             return (T model, HttpRequest r) => {
                 foreach (var action in bindingsAsArray)
                     action(model, r);
             };
+        }
+
+        internal static IEnumerable<UrlParameterMetaData> GetUrlParameterMetaData(Type type)
+        {
+            foreach (var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(i => i.CanWrite))
+            {
+                var routeParameter = property.GetCustomAttribute<RouteParameterAttribute>();
+                if (routeParameter is not null)
+                {
+                    if (CanParseRouteType(property.PropertyType))
+                        yield return new UrlParameterMetaData(GetRouteParameterName(routeParameter, property), property.PropertyType, IsOptional(property.PropertyType), true);
+                } else if (CanParseQueryType(property.PropertyType))
+                {
+                    yield return new UrlParameterMetaData(GetQueryParameterName(property), property.PropertyType, IsOptional(property.PropertyType));
+                }
+            }
         }
 
         private static Action<T, HttpRequest> GetBindingForQueryProperty<T>(PropertyInfo info) where T : notnull, UrlParameterModel
@@ -111,6 +126,19 @@ namespace Easy.Endpoints
             throw new InvalidEndpointSetupException($"Cannot map {type}");
         }
 
+        private static bool IsOptional(Type type)
+        {
+            return type == typeof(string)
+                || type == typeof(int?)
+                || type == typeof(long?)
+                || type == typeof(bool?)
+                || type == typeof(double?)
+                || type == typeof(DateTime?)
+                || type == typeof(DateTimeOffset?)
+                || type == typeof(Guid?)
+                || type.IsArray;
+        }
+
         private static Action<T, HttpRequest> GetRouteParser<T>(Type type, string parameter, Action<object, object?> setMethod) where T : notnull, UrlParameterModel
         {
             if (type == typeof(string))
@@ -131,7 +159,6 @@ namespace Easy.Endpoints
                 return ForRouteGuid<T>(parameter, setMethod);
             throw new InvalidEndpointSetupException($"Cannot map {type}");
         }
-
 
         #region string
         private static Action<T, HttpRequest> ForQueryString<T>(string parameter, Action<object, object> setMethod) where T : notnull, UrlParameterModel
@@ -547,7 +574,5 @@ namespace Easy.Endpoints
                 || type == typeof(double[])
                 || type == typeof(Guid[]);
         }
-
-
     }
 }

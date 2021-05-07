@@ -2,7 +2,7 @@
 
 namespace Easy.Endpoints
 {
-    internal class JsonResponseWithUrlParametersEndpoint<THandler, TResponse, TUrlParameterModel> : IEndpoint
+    internal class JsonResponseWithUrlParametersEndpoint<THandler, TUrlParameterModel, TResponse> : IEndpoint
        where THandler : IJsonResponseWithUrlParametersEndpointHandler<TUrlParameterModel, TResponse>
        where TUrlParameterModel : notnull, UrlParameterModel, new()
     {

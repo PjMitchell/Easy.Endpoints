@@ -18,7 +18,7 @@ namespace Easy.Endpoints.Tests
         [Fact]
         public async Task SwaggerGenMatchesExpectation()
         {
-            var result = await server.CreateClient().GetAsync("/swagger/v1/swagger.json");            
+            var result = await server.CreateClient().GetAsync("/swagger/v1/swagger.json");
             Assert.Equal(System.Net.HttpStatusCode.OK, result.StatusCode);
             var observed = await result.GetJsonBody<TestOpenApiModel>();
             var expected = JsonSerializer.Deserialize<TestOpenApiModel>(File.ReadAllText("./ExpectedFiles/swagger.json"), new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
@@ -39,5 +39,5 @@ namespace Easy.Endpoints.Tests
         {
             public string[] Tags { get; set; } = Array.Empty<string>();
         }
-    }    
+    }
 }

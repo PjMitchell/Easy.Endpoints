@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Routing.Patterns;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using static Easy.Endpoints.GenericTypeHelper;
+using System;
 
 namespace Easy.Endpoints
 {
@@ -23,6 +25,7 @@ namespace Easy.Endpoints
             var info = BuildInfoWithRoute(declaredEndpoint, endpoint, handler, options, meta.OfType<EndpointRouteValueMetadata>());
             info.MapProducedResponse(declaredEndpoint);
             info.MapBodyParameter(declaredEndpoint);
+            info.MapUrlParameterMetaData(declaredEndpoint);
             foreach (var item in meta)
                 info.Meta.Add(item);
             return info;
@@ -34,7 +37,7 @@ namespace Easy.Endpoints
             var endpointValue = GetEndpointValue(declaredEndpoint);
             var routeValues = BuildRouteParameters(controllerName, endpointValue);
             var routeInfo = GetRouteInfo(declaredEndpoint, routeValues.Concat(routeValueMetaData).ToArray(), endpointValue.Verb, options);
-            var info = new EndpointInfo(endpoint.AsType(),handler is null? null: handler, RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
+            var info = new EndpointInfo(endpoint.AsType(), handler, RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
             info.Meta.Add(new HttpMethodMetadata(routeInfo.HttpMethods));
             foreach (var routeValue in routeValues)
                 info.Meta.Add(routeValue);
@@ -84,16 +87,25 @@ namespace Easy.Endpoints
 
         private static void MapProducedResponse(this EndpointInfo info, TypeInfo t)
         {
-            var jsonResponse = t.ImplementedInterfaces.SingleOrDefault(r => r.GenericTypeArguments.Length == 1 && r == typeof(IJsonResponse<>).MakeGenericType(r.GenericTypeArguments[0]));
+            var jsonResponse = t.ImplementedInterfaces.SingleOrDefault(r => MatchExpectedGeneric(r, typeof(IJsonResponse<>)));
             if (jsonResponse is not null)
                 info.Meta.Add(new JsonEndpointResponseMetaData(200, jsonResponse.GenericTypeArguments[0]));
             if (t.ImplementedInterfaces.Any(r => r == typeof(INoContentResponse)))
                 info.Meta.Add(new EndpointResponseMetaData(201, typeof(void)));
         }
 
+        private static void MapUrlParameterMetaData(this EndpointInfo info, TypeInfo t)
+        {
+            var parameterModel = t.ImplementedInterfaces.SingleOrDefault(r => MatchExpectedGeneric(r, typeof(IUrlParameterModel<>)));
+            if (parameterModel is null)
+                return;
+            foreach (var parameter in UrlParameterBindingHelper.GetUrlParameterMetaData(parameterModel.GenericTypeArguments[0]))
+                info.Meta.Add(parameter);
+        }
+
         private static void MapBodyParameter(this EndpointInfo info, TypeInfo t)
         {
-            var ta = t.ImplementedInterfaces.SingleOrDefault(r => r.GenericTypeArguments.Length == 1 && r == typeof(IJsonBody<>).MakeGenericType(r.GenericTypeArguments[0]));
+            var ta = t.ImplementedInterfaces.SingleOrDefault(r => MatchExpectedGeneric(r, typeof(IJsonBody<>)));
             if (ta is not null)
                 info.Meta.Add(new JsonEndpointRequestBodyMetaData(ta.GenericTypeArguments[0]));
         }
@@ -106,7 +118,6 @@ namespace Easy.Endpoints
                 new EndpointRouteValueMetadata(EndpointRouteKeys.Endpoint, endpoint.Name)
             };
         }
-
 
         private static EndpointRouteInfo GetRouteInfo(TypeInfo type, ICollection<EndpointRouteValueMetadata> routeValues, string? declaredVerb, EndpointOptions option)
         {
@@ -132,7 +143,7 @@ namespace Easy.Endpoints
             return new EndpointRouteInfo(
                 BuildPatternFromRouteValues(routeInfo.Template, routeValues),
                 string.IsNullOrWhiteSpace(routeInfo.Name)? BuildName(routeValues): routeInfo.Name,
-                routeInfo.Order, 
+                routeInfo.Order,
                 verbs);
         }
 

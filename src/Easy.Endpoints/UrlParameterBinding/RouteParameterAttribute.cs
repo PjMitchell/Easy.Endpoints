@@ -2,7 +2,6 @@
 
 namespace Easy.Endpoints
 {
-
     /// <summary>
     /// Declares that a url parameter comes from the route portion
     /// </summary>
