@@ -15,6 +15,7 @@ namespace Easy.Endpoints
         {
             EndpointForHandlerDeclarations = new List<IEndpointForHandlerDeclaration>
             {
+                new EndpointsForEndpointResultHandlerDeclarations(),
                 new JsonEndpointForHandlerDeclarations()
             };
             JsonSerializerOptions = new JsonSerializerOptions {
@@ -29,7 +30,7 @@ namespace Easy.Endpoints
         public string RoutePattern { get; internal set; } = "[endpoint]";
 
         /// <summary>
-        /// Json Serializer Options for Endpoints
+        /// JSON Serializer Options for Endpoints
         /// </summary>
         public JsonSerializerOptions JsonSerializerOptions { get; internal set; }
 

@@ -7,7 +7,7 @@ namespace Easy.Endpoints.TestService.Endpoints.Books
 {
     public class GetBookEndpointHandler : IJsonResponseEndpointHandler<Book[]>
     {
-        public Task<Book[]> Handle(CancellationToken cancellationToken) => Task.FromResult(AllBooks().ToArray());
+        public Task<Book[]> HandleAsync(CancellationToken cancellationToken) => Task.FromResult(AllBooks().ToArray());
         public static IEnumerable<Book> AllBooks()
         {
             return new[]

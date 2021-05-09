@@ -53,7 +53,7 @@ namespace Easy.Endpoints.Tests
                 this.intIdRouteParser = intIdRouteParser;
             }
 
-            public Task HandleRequest(EndpointContext endpointContext)
+            public Task HandleRequestAsync(EndpointContext endpointContext)
             {
                 var id = intIdRouteParser.GetIdFromRoute();
                 endpointContext.Response.StatusCode = 200;

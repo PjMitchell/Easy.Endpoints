@@ -13,7 +13,7 @@ namespace Easy.Endpoints
             this.handler = handler;
         }
 
-        public async Task HandleRequest(EndpointContext endpointContext)
+        public async Task HandleRequestAsync(EndpointContext endpointContext)
         {
             var body = await HttpContextJsonHelper.ReadJsonBody<TBody>(endpointContext).ConfigureAwait(false);
             var parameters = new TUrlParameterModel();
@@ -23,7 +23,7 @@ namespace Easy.Endpoints
                 await HttpContextJsonHelper.WriteJsonResponse(endpointContext, parameters.Errors, 400).ConfigureAwait(false);
                 return;
             }
-            var response = await handler.Handle(body, parameters, endpointContext.RequestAborted).ConfigureAwait(false);
+            var response = await handler.HandleAsync(body, parameters, endpointContext.RequestAborted).ConfigureAwait(false);
             await HttpContextJsonHelper.WriteJsonResponse(endpointContext, response).ConfigureAwait(false);
         }
     }

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Easy.Endpoints.Benchmark.Endpoint;
+using Easy.Endpoints.TestService.Endpoints.Books;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +32,11 @@ namespace Easy.Endpoints.Benchmark
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddEasyEndpoints();
+                    services.AddEasyEndpoints(b => b.AddForEndpointHandler<TestGetEndpoint>()
+                    .AddForEndpointHandler<Test2GetEndpoint>()
+                    .AddForEndpointHandler<GetBookEndpointHandler>()
+                    .AddForEndpointHandler<PostBookEndpointHandler>()
+                    );
                 })
                 .Configure(app =>
                 {

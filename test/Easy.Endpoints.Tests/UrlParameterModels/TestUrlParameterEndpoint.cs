@@ -7,7 +7,7 @@ namespace Easy.Endpoints.Tests
 
     public abstract class TestUrlParameterEndpoint<T> : IEndpoint where T : UrlParameterModel, new()
     {
-        public Task HandleRequest(EndpointContext endpointContext)
+        public Task HandleRequestAsync(EndpointContext endpointContext)
         {
             var model = new T();
             model.BindUrlParameters(endpointContext.Request);

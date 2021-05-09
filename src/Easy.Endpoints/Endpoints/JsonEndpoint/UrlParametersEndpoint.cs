@@ -13,7 +13,7 @@ namespace Easy.Endpoints
             this.handler = handler;
         }
 
-        public async Task HandleRequest(EndpointContext endpointContext)
+        public async Task HandleRequestAsync(EndpointContext endpointContext)
         {
             var parameters = new TUrlParameterModel();
             parameters.BindUrlParameters(endpointContext.Request);
@@ -22,7 +22,7 @@ namespace Easy.Endpoints
                 await HttpContextJsonHelper.WriteJsonResponse(endpointContext, parameters.Errors, 400).ConfigureAwait(false);
                 return;
             }
-            await handler.Handle(parameters, endpointContext.RequestAborted).ConfigureAwait(false);
+            await handler.HandleAsync(parameters, endpointContext.RequestAborted).ConfigureAwait(false);
             endpointContext.Response.StatusCode = 201;
         }
     }

@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 namespace Easy.Endpoints
 {
     /// <summary>
-    /// A handler that processes a json body and will return a 201 response
+    /// A handler that processes a json body and returns an endpointResult
     /// </summary>
     /// <typeparam name="TBody">Type of Json Body</typeparam>
-    public interface IJsonBodyEndpointHandler<TBody> : IJsonBody<TBody>, INoContentResponse, IEndpointHandler
+    public interface IJsonBodyEndpointResultHandler<TBody> : IJsonBody<TBody>, IEndpointHandler
     {
         /// <summary>
-        /// Processes body
+        /// Processes json body and returns a new endpoint result
         /// </summary>
         /// <param name="body">Request body to be handled</param>
         /// <param name="cancellationToken">Request Aborted</param>
-        /// <returns>A Task</returns>
-        Task HandleAsync(TBody body, CancellationToken cancellationToken);
+        /// <returns>Endpoint result</returns>
+        Task<IEndpointResult> HandleAsync(TBody body, CancellationToken cancellationToken);
     }
 }
