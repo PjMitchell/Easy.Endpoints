@@ -9,7 +9,7 @@ namespace Easy.Endpoints.TestService.Endpoints.People
 {
     public class GetPeopleEndpointHandler : IJsonResponseWithUrlParametersEndpointHandler<PeopleUrlParameters, People[]>
     {
-        public Task<People[]> Handle(PeopleUrlParameters urlParameters, CancellationToken cancellationToken)
+        public Task<People[]> HandleAsync(PeopleUrlParameters urlParameters, CancellationToken cancellationToken)
         {
             return Task.FromResult(AllPeople().Where(w =>
             {

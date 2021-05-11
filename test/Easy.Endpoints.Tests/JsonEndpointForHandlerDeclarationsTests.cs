@@ -80,7 +80,7 @@ namespace Easy.Endpoints.Tests
 
         private class TestJsonBodyEndpointHandler : IJsonBodyEndpointHandler<TestBody>
         {
-            public Task Handle(TestBody body, CancellationToken cancellationToken)
+            public Task HandleAsync(TestBody body, CancellationToken cancellationToken)
             {
                 return Task.CompletedTask;
             }
@@ -88,7 +88,7 @@ namespace Easy.Endpoints.Tests
 
         private class TestJsonResponseEndpointHandler : IJsonResponseEndpointHandler<TestResponse>
         {
-            public Task<TestResponse> Handle(CancellationToken cancellationToken)
+            public Task<TestResponse> HandleAsync(CancellationToken cancellationToken)
             {
                 return Task.FromResult(new TestResponse());
             }
@@ -96,7 +96,7 @@ namespace Easy.Endpoints.Tests
 
         private class TestJsonResponseAndBodyEndpointHandler : IJsonBodyAndResponseEndpointHandler<TestBody, TestResponse>
         {
-            public Task<TestResponse> Handle(TestBody body, CancellationToken cancellationToken)
+            public Task<TestResponse> HandleAsync(TestBody body, CancellationToken cancellationToken)
             {
                 return Task.FromResult(new TestResponse());
             }
@@ -104,7 +104,7 @@ namespace Easy.Endpoints.Tests
 
         private class TestJsonBodyWithUrlParamenterEndpointHandler : IJsonBodyWithUrlParametersEndpointHandler<TestBody, TestUrlParameters>
         {
-            public Task Handle(TestBody body, TestUrlParameters urlParameters, CancellationToken cancellationToken)
+            public Task HandleAsync(TestBody body, TestUrlParameters urlParameters, CancellationToken cancellationToken)
             {
                 return Task.CompletedTask;
             }
@@ -112,7 +112,7 @@ namespace Easy.Endpoints.Tests
 
         private class TestJsonResponseWithUrlParamenterEndpointHandler : IJsonResponseWithUrlParametersEndpointHandler<TestUrlParameters, TestResponse>
         {
-            public Task<TestResponse> Handle(TestUrlParameters urlParameters, CancellationToken cancellationToken)
+            public Task<TestResponse> HandleAsync(TestUrlParameters urlParameters, CancellationToken cancellationToken)
             {
                 return Task.FromResult(new TestResponse());
             }
@@ -120,7 +120,7 @@ namespace Easy.Endpoints.Tests
 
         private class TestJsonResponseAndBodyWithUrlParamenterEndpointHandler : IJsonBodyAndResponseWithUrlParametersEndpointHandler<TestBody, TestUrlParameters, TestResponse>
         {
-            public Task<TestResponse> Handle(TestBody body, TestUrlParameters urlParameters, CancellationToken cancellationToken)
+            public Task<TestResponse> HandleAsync(TestBody body, TestUrlParameters urlParameters, CancellationToken cancellationToken)
             {
                 return Task.FromResult(new TestResponse());
             }
@@ -128,7 +128,7 @@ namespace Easy.Endpoints.Tests
 
         private class TestUrlParameterHandler : IUrlParametersEndpointHandler<TestUrlParameters>
         {
-            public Task Handle(TestUrlParameters urlParameters, CancellationToken cancellationToken)
+            public Task HandleAsync(TestUrlParameters urlParameters, CancellationToken cancellationToken)
             {
                 return Task.CompletedTask;
             }

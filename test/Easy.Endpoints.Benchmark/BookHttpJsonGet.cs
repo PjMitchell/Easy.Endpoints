@@ -33,6 +33,8 @@ namespace Easy.Endpoints.Benchmark
         {
             var request = new HttpRequestMessage(HttpMethod.Get, route);
             var response = await httpClient.SendAsync(request).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                throw new InvalidEndpointSetupException("Have not setup the test endpoints correctly");
             var output = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return output;
         }

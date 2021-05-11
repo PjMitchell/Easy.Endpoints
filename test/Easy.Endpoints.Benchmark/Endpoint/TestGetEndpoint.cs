@@ -6,12 +6,12 @@ namespace Easy.Endpoints.Benchmark.Endpoint
     [Get("test1")]
     public class TestGetEndpoint : IJsonResponseEndpointHandler<TestResponsePayload>
     {
-        public Task<TestResponsePayload> Handle(CancellationToken cancellationToken) => Task.FromResult(TestResponsePayload.Default);
+        public Task<TestResponsePayload> HandleAsync(CancellationToken cancellationToken) => Task.FromResult(TestResponsePayload.Default);
     }
 
     [Get("test2")]
-    public class Test2GetEndpoint : IJsonResponseEndpointHandler<TestResponsePayload>
+    public class Test2GetEndpoint : IEndpointResultHandler , IJsonResponse<TestResponsePayload>
     {
-        public Task<TestResponsePayload> Handle(CancellationToken cancellationToken) => Task.FromResult(TestResponsePayload.Default);
+        public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken) => Task.FromResult<IEndpointResult>(new JsonContentResult<TestResponsePayload>(TestResponsePayload.Default));
     }
 }

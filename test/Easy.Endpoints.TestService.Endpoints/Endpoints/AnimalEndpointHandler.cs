@@ -9,7 +9,7 @@ namespace Easy.Endpoints.TestService.Endpoints
     [Post("[controller]/[type]")]
     public class AnimalEndpointHandler<TAnimal> : IJsonBodyAndResponseEndpointHandler<TAnimal, string> where TAnimal : IAnimal
     {
-        public Task<string> Handle(TAnimal body, CancellationToken cancellationToken)
+        public Task<string> HandleAsync(TAnimal body, CancellationToken cancellationToken)
         {
             return Task.FromResult(body.Says());
         }

@@ -11,10 +11,10 @@ namespace Easy.Endpoints
             this.handler = handler;
         }
 
-        public async Task HandleRequest(EndpointContext endpointContext)
+        public async Task HandleRequestAsync(EndpointContext endpointContext)
         {
             var body = await HttpContextJsonHelper.ReadJsonBody<TBody>(endpointContext).ConfigureAwait(false);
-            await handler.Handle(body, endpointContext.RequestAborted).ConfigureAwait(false);
+            await handler.HandleAsync(body, endpointContext.RequestAborted).ConfigureAwait(false);
             endpointContext.Response.StatusCode = 201;
         }
     }

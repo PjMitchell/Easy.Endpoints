@@ -11,38 +11,6 @@ namespace Easy.Endpoints
     public static class EndpointServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds Request endpoints with default options and all Endpoints from calling assembly
-        /// </summary>
-        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
-        [Obsolete("Use AddEasyEndpoints")]
-        public static void AddRequestEndpoints(this IServiceCollection services) => AddEasyEndpoints(services);
-
-        /// <summary>
-        /// Adds Request endpoints with default options and all Endpoints from calling assembly
-        /// </summary>
-        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
-        /// <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
-        [Obsolete("Use AddEasyEndpoints")]
-        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions) => AddEasyEndpoints(services, optionBuilderActions);
-
-        /// <summary>
-        /// Adds Request endpoints
-        /// </summary>
-        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
-        /// <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
-        [Obsolete("Use AddEasyEndpoints")]
-        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointManifestBuilder> manifestBuilderActions) => AddEasyEndpoints(services, manifestBuilderActions);
-
-        /// <summary>
-        /// Adds Request endpoints
-        /// </summary>
-        /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>
-        /// <param name="optionBuilderActions">Declaration of how to build the endpoint options</param>
-        /// <param name="manifestBuilderActions">Declaration of how to build the endpoint manifest</param>
-        [Obsolete("Use AddEasyEndpoints")]
-        public static void AddRequestEndpoints(this IServiceCollection services, Action<EndpointOptionBuilders> optionBuilderActions, Action<EndpointManifestBuilder> manifestBuilderActions) => AddEasyEndpoints(services, optionBuilderActions, manifestBuilderActions);
-
-        /// <summary>
         /// Adds Easy endpoints with default options and all Endpoints from calling assembly
         /// </summary>
         /// <param name="services">The Microsoft.Extensions.DependencyInjection.IServiceCollection to add services to.</param>

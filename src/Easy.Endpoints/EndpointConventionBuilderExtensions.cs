@@ -18,15 +18,6 @@ namespace Easy.Endpoints
         /// </summary>
         /// <param name="endpoints">Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add Easy.Endpoints to</param>
         /// <returns>Returns Microsoft.AspNetCore.Builder.IEndpointConventionBuilder for endpoints</returns>
-        [Obsolete("Use MapEasyEndpoints")]
-        public static IEndpointConventionBuilder AddEasyEndpoints(
-            this IEndpointRouteBuilder endpoints) => MapEasyEndpoints(endpoints);
-
-        /// <summary>
-        /// Adds Easy.Endpoints routes to EndpointRouteBuilder
-        /// </summary>
-        /// <param name="endpoints">Microsoft.AspNetCore.Routing.IEndpointRouteBuilder to add Easy.Endpoints to</param>
-        /// <returns>Returns Microsoft.AspNetCore.Builder.IEndpointConventionBuilder for endpoints</returns>
         public static IEndpointConventionBuilder MapEasyEndpoints(
             this IEndpointRouteBuilder endpoints)
         {
@@ -66,7 +57,7 @@ namespace Easy.Endpoints
                 var endpoint = (IEndpoint)context.RequestServices.GetRequiredService(type);
                 try
                 {
-                    await endpoint.HandleRequest(endpointContext).ConfigureAwait(false);
+                    await endpoint.HandleRequestAsync(endpointContext).ConfigureAwait(false);
                 }
                 catch(EndpointStatusCodeResponseException e)
                 {

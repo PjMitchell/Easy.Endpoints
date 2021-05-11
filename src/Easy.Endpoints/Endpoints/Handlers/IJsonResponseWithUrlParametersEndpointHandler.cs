@@ -17,6 +17,6 @@ namespace Easy.Endpoints
         /// <param name="urlParameters">Model containing url Parameter values</param>
         /// <param name="cancellationToken">Request Aborted</param>
         /// <returns>Handled Response object</returns>
-        Task<TResponse> Handle(TUrlParameterModel urlParameters, CancellationToken cancellationToken);
+        Task<TResponse> HandleAsync(TUrlParameterModel urlParameters, CancellationToken cancellationToken);
     }
 }

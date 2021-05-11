@@ -22,7 +22,7 @@ Simple endpoint that will be grouped in swagger under Greetings
 [EndpointController("Greetings")]  
 public class HelloWorldEndpoint : IEndpoint  
 {  
-    public Task HandleRequest(EndpointContext httpContext)  
+    public Task HandleRequestAsync(EndpointContext httpContext)  
     {  
         httpContext.Response.WriteAsync("Hello World");  
         return Task.CompletedTask;  
@@ -34,7 +34,7 @@ Returns a list of books in json format
 ```csharp
 public class GetBookEndpointHandler : IJsonResponseEndpointHandler<Book[]>
 {
-    public Task<Book[]> Handle() => Task.FromResult(Array.Empty<Book>());
+    public Task<Book[]> HandleAsync() => Task.FromResult(Array.Empty<Book>());
 }
 ```
 
@@ -47,7 +47,7 @@ public class PostBookEndpointHandler : IJsonEndpointHandler<Book, CommandResult>
     {            
     }
 
-    public Task<CommandResult> Handle(Book body)
+    public Task<CommandResult> HandleAsync(Book body)
     {
         return Task.FromResult(new CommandResult { Successful = true, Message = "Yay!" });
     }
@@ -59,7 +59,7 @@ Alternatively can declare route and Method
 [Post("TestOne")]
 public class PostTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePayload>
 {
-    public Task Handle(TestResponsePayload body)
+    public Task HandleAsync(TestResponsePayload body)
     {
         return Task.CompletedTask;
     }
@@ -77,7 +77,7 @@ POST: /Animal/Dog
 [Post("[controller]/[type]")]
 public class AnimalEndpointHandler<TAnimal> : IJsonEndpointHandler<TAnimal, string> where TAnimal : IAnimal
 {
-    public Task<string> Handle(TAnimal body, CancellationToken cancellationToken)
+    public Task<string> HandleAsync(TAnimal body, CancellationToken cancellationToken)
     {
         return Task.FromResult(body.Says());
     }

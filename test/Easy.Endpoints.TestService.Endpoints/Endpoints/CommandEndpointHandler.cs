@@ -12,7 +12,7 @@ namespace Easy.Endpoints.TestService.Endpoints
     [Post("[controller]/[type]")]
     public class CommandEndpointHandler<TCommand> : IJsonBodyAndResponseEndpointHandler<TCommand, CommandResult> where TCommand : ICommand
     {
-        public Task<CommandResult> Handle(TCommand body, CancellationToken cancellationToken)
+        public Task<CommandResult> HandleAsync(TCommand body, CancellationToken cancellationToken)
         {
             return Task.FromResult(new CommandResult { Successful = true, Message = "Success" });
         }

@@ -2,13 +2,12 @@
 
 namespace Easy.Endpoints
 {
-    internal class JsonResponseWithUrlParametersEndpoint<THandler, TUrlParameterModel, TResponse> : IEndpoint
-       where THandler : IJsonResponseWithUrlParametersEndpointHandler<TUrlParameterModel, TResponse>
-       where TUrlParameterModel : notnull, UrlParameterModel, new()
+    internal class UrlParametersEndpointResultHandlerEndpoint<THandler, TUrlParameterModel> : IEndpoint where THandler : IUrlParametersEndpointResultHandler<TUrlParameterModel>
+        where TUrlParameterModel : notnull, UrlParameterModel, new()
     {
         private readonly THandler handler;
 
-        public JsonResponseWithUrlParametersEndpoint(THandler handler)
+        public UrlParametersEndpointResultHandlerEndpoint(THandler handler)
         {
             this.handler = handler;
         }
@@ -22,8 +21,8 @@ namespace Easy.Endpoints
                 await HttpContextJsonHelper.WriteJsonResponse(endpointContext, parameters.Errors, 400).ConfigureAwait(false);
                 return;
             }
-            var response = await handler.HandleAsync(parameters, endpointContext.RequestAborted).ConfigureAwait(false);
-            await HttpContextJsonHelper.WriteJsonResponse(endpointContext, response).ConfigureAwait(false);
+            var endpointResult = await handler.HandleAsync(parameters, endpointContext.RequestAborted).ConfigureAwait(false);
+            await endpointResult.ExecuteResultAsync(endpointContext).ConfigureAwait(false);
         }
     }
 }

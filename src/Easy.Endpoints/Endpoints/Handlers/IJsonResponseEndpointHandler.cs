@@ -14,6 +14,6 @@ namespace Easy.Endpoints
         /// </summary>
         /// <param name="cancellationToken">Request Aborted</param>
         /// <returns>Handled Response object</returns>
-        Task<TResponse> Handle(CancellationToken cancellationToken);
+        Task<TResponse> HandleAsync(CancellationToken cancellationToken);
     }
 }
