@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Easy.Endpoints.SourceGenerators
 {
+    /// <summary>
+    /// Generates implementation for void BindUrlParameters(Microsoft.AspNetCore.Http.HttpRequest request) on partial classes with a base class UrlParameterModel
+    /// </summary>
     [Generator]
     public class UrlParameterModelBindingGenerator : ISourceGenerator
     {
@@ -38,6 +41,9 @@ namespace Easy.Endpoints.SourceGenerators
         private readonly HashSet<string> availableNullablePropertyIdentifiers;
         private readonly HashSet<string> availableArrayPropertyIdentifiers;
 
+        /// <summary>
+        /// Creates new instance UrlParameterModelBindingGenerator
+        /// </summary>
         public UrlParameterModelBindingGenerator()
         {
             availablePrimatives = new HashSet<string>(new[] { "string", "int", "long", "bool", "double" }, StringComparer.InvariantCulture);
@@ -66,6 +72,7 @@ namespace Easy.Endpoints.SourceGenerators
         ";
         }
 
+        /// <inheritdoc cref="ISourceGenerator.Execute"/>
         public void Execute(GeneratorExecutionContext context)
         {
             var syntaxReceiver = (UrlParameterModelBindingSyntaxReceiver)context.SyntaxReceiver;
@@ -76,6 +83,7 @@ namespace Easy.Endpoints.SourceGenerators
                 var source = WrapCodeWithUsings(model, classDeclaration);context.AddSource($"{model.Identifier.Text}.gen.cs", source);
             }
         }
+
 
         private string BindingCode(ClassDeclarationSyntax model)
         {
@@ -96,6 +104,7 @@ namespace Easy.Endpoints.SourceGenerators
             }
         }
 
+        /// <inheritdoc cref="ISourceGenerator.Initialize"/>
         public void Initialize(GeneratorInitializationContext context)
         {
             context.RegisterForSyntaxNotifications(() => new UrlParameterModelBindingSyntaxReceiver());

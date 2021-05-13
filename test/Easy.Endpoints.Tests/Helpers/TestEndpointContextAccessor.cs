@@ -95,12 +95,10 @@ namespace Easy.Endpoints.Tests
         public async Task<string> ReadResponseBodyAsText()
         {
             resultStream.Position = 0;
-            using(var reader = new StreamReader(resultStream))
-            {
-                var result = await reader.ReadToEndAsync();
-                return result;
-            }
-                
+            using var reader = new StreamReader(resultStream);
+            var result = await reader.ReadToEndAsync();
+            return result;
+
         }
 
         private class TestHttpRequest : HttpRequest
