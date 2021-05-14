@@ -140,29 +140,13 @@ namespace Easy.Endpoints.SourceGenerators
         {
             if (!routeTypes && propertyDeclaration.Type is ArrayTypeSyntax arrayType)
             {
-                if (arrayType.ElementType is PredefinedTypeSyntax predefinedType && (availableArrayPrimatives.Contains(predefinedType.Keyword.ValueText)))
-                {
-                    result = $"{predefinedType.Keyword.ValueText}[]";
+                if (TryParseArrayType(arrayType, out result))
                     return true;
-                }
-                if (arrayType.ElementType is IdentifierNameSyntax identifierNameSyntax && availableArrayPropertyIdentifiers.Contains(identifierNameSyntax.Identifier.ValueText))
-                {
-                    result = $"{identifierNameSyntax.Identifier.ValueText}[]";
-                    return true;
-                }
             }
             else if (!routeTypes && propertyDeclaration.Type is NullableTypeSyntax nullableType)
             {
-                if (nullableType.ElementType is PredefinedTypeSyntax predefinedType && (availableNullablePrimatives.Contains(predefinedType.Keyword.ValueText)))
-                {
-                    result = $"{predefinedType.Keyword.ValueText}?";
+                if (TryParseNullableType(nullableType, out result))
                     return true;
-                }
-                if (nullableType.ElementType is IdentifierNameSyntax identifierNameSyntax && availableNullablePropertyIdentifiers.Contains(identifierNameSyntax.Identifier.ValueText))
-                {
-                    result = $"{identifierNameSyntax.Identifier.ValueText}?";
-                    return true;
-                }
             }
             else if (propertyDeclaration.Type is PredefinedTypeSyntax predefinedTypeSyntax && availablePrimatives.Contains(predefinedTypeSyntax.Keyword.ValueText))
             {
@@ -175,6 +159,38 @@ namespace Easy.Endpoints.SourceGenerators
                 return true;
             }
 
+            result = string.Empty;
+            return false;
+        }
+
+        private bool TryParseArrayType(ArrayTypeSyntax arrayType, out string result)
+        {
+            if (arrayType.ElementType is PredefinedTypeSyntax predefinedType && (availableArrayPrimatives.Contains(predefinedType.Keyword.ValueText)))
+            {
+                result = $"{predefinedType.Keyword.ValueText}[]";
+                return true;
+            }
+            if (arrayType.ElementType is IdentifierNameSyntax identifierNameSyntax && availableArrayPropertyIdentifiers.Contains(identifierNameSyntax.Identifier.ValueText))
+            {
+                result = $"{identifierNameSyntax.Identifier.ValueText}[]";
+                return true;
+            }
+            result = string.Empty;
+            return false;
+        }
+
+        private bool TryParseNullableType(NullableTypeSyntax nullableType, out string result)
+        {
+            if (nullableType.ElementType is PredefinedTypeSyntax predefinedType && (availableNullablePrimatives.Contains(predefinedType.Keyword.ValueText)))
+            {
+                result = $"{predefinedType.Keyword.ValueText}?";
+                return true;
+            }
+            if (nullableType.ElementType is IdentifierNameSyntax identifierNameSyntax && availableNullablePropertyIdentifiers.Contains(identifierNameSyntax.Identifier.ValueText))
+            {
+                result = $"{identifierNameSyntax.Identifier.ValueText}?";
+                return true;
+            }
             result = string.Empty;
             return false;
         }
