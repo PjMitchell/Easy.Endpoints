@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Easy.Endpoints.Benchmark
 {
@@ -37,6 +38,23 @@ namespace Easy.Endpoints.Benchmark
                     .AddForEndpointHandler<GetBookEndpointHandler>()
                     .AddForEndpointHandler<PostBookEndpointHandler>()
                     );
+                })
+                .Configure(app =>
+                {
+                    app.UseRouting();
+                    app.UseEndpoints(endpoints => endpoints.MapEasyEndpoints());
+                });
+
+            return new TestServer(builder);
+        }
+
+        public static TestServer CreateEndpointServer(Action<EndpointManifestBuilder> manifestBuilderActions)
+        {
+            var builder = new WebHostBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.AddRouting();
+                    services.AddEasyEndpoints(manifestBuilderActions);
                 })
                 .Configure(app =>
                 {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
 namespace Easy.Endpoints
@@ -13,7 +12,7 @@ namespace Easy.Endpoints
         /// Binds the url parameters from the request to the model
         /// </summary>
         /// <param name="request"></param>
-        public abstract void BindUrlParameters(HttpRequest request);
+        public virtual void BindUrlParameters(HttpRequest request) { }
 
         /// <summary>
         /// Error on model binding
