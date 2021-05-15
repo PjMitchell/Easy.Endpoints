@@ -92,6 +92,10 @@ namespace Easy.Endpoints
                 info.Meta.Add(new JsonEndpointResponseMetaData(200, jsonResponse.GenericTypeArguments[0]));
             if (t.ImplementedInterfaces.Any(r => r == typeof(INoContentResponse)))
                 info.Meta.Add(new EndpointResponseMetaData(201, typeof(void)));
+            foreach (var produces in t.GetCustomAttributes<ProducesResponseTypeAttribute>())
+                info.Meta.Add(produces.Type == typeof(void) ? new EndpointResponseMetaData(produces.StatusCode, produces.Type) : new JsonEndpointResponseMetaData(produces.StatusCode, produces.Type));
+            
+
         }
 
         private static void MapUrlParameterMetaData(this EndpointInfo info, TypeInfo t)

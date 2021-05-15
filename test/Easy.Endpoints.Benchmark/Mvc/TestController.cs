@@ -42,6 +42,6 @@ namespace Easy.Endpoints.Benchmark.Mvc
                     .ToArray());
         }
 
-        public static IEnumerable<People> AllPeople() => GetPeopleEndpointHandler.AllPeople();
+        public static IEnumerable<People> AllPeople() => PeopleService.AllPeople();
     }
 }
