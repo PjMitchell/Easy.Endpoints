@@ -30,6 +30,16 @@ namespace Easy.Endpoints.Tests
             Assert.Equal(expected.Paths.Keys, observed.Paths.Keys);
         }
 
+        [Fact]
+        public async Task SwaggerGen_ProducedTypes()
+        {
+            var result = await server.CreateClient().GetAsync("/swagger/v1/swagger.json");
+            Assert.Equal(System.Net.HttpStatusCode.OK, result.StatusCode);
+            var observed = await result.GetJsonBody<TestOpenApiModel>();
+            var peopleById = observed.Paths["/People/{id}"]["get"];
+            Assert.Equal(new[] { "200", "404" }, peopleById.Responses.Keys);
+        }
+
         public class TestOpenApiModel
         {
             public Dictionary<string, Dictionary<string, TestOperation>> Paths { get; set; } = new Dictionary<string, Dictionary<string, TestOperation>>();
@@ -38,6 +48,20 @@ namespace Easy.Endpoints.Tests
         public class TestOperation
         {
             public string[] Tags { get; set; } = Array.Empty<string>();
+            public OperationParameter[] Parameters { get; set; } = Array.Empty<OperationParameter>();
+            public Dictionary<string, OperationResponse> Responses { get; set; } = new Dictionary<string, OperationResponse>();
+        }
+
+        public class OperationParameter
+        {
+            public string Name { get; set; } = string.Empty;
+            public string In { get; set; } = string.Empty;
+            public bool Required { get; set; }
+        }
+
+        public class OperationResponse
+        {
+            public string Description { get; set; } = string.Empty;
         }
     }
 }
