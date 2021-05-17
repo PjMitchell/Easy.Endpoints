@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Routing.Patterns;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
-using static Easy.Endpoints.GenericTypeHelper;
-using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Easy.Endpoints
 {
@@ -23,12 +22,21 @@ namespace Easy.Endpoints
         {
             var declaredEndpoint = handler ?? endpoint;
             var info = BuildInfoWithRoute(declaredEndpoint, endpoint, handler, options, meta.OfType<EndpointRouteValueMetadata>());
-            info.MapProducedResponse(declaredEndpoint);
-            info.MapBodyParameter(declaredEndpoint);
-            info.MapUrlParameterMetaData(declaredEndpoint);
+            //info.MapProducedResponse(declaredEndpoint);
+            //info.MapBodyParameter(declaredEndpoint);
+            //info.MapUrlParameterMetaData(declaredEndpoint);
+            info.MapAuthMeta(declaredEndpoint);
             foreach (var item in meta)
                 info.Meta.Add(item);
+            
             return info;
+        }
+
+        private static void MapAuthMeta(this EndpointInfo info, TypeInfo declaredEndpoint)
+        {
+            var attributesToMap = declaredEndpoint.GetCustomAttributes().Where(t => t is IAuthorizeData || t is IAllowAnonymous);
+            foreach (var attribute in attributesToMap)
+                info.Meta.Add(attribute);
         }
 
         private static EndpointInfo BuildInfoWithRoute(TypeInfo declaredEndpoint, TypeInfo endpoint, TypeInfo? handler, EndpointOptions options, IEnumerable<EndpointRouteValueMetadata> routeValueMetaData)
@@ -83,35 +91,6 @@ namespace Easy.Endpoints
         private static ParsedEndpointName ParsedEndpoint(string name, string verb)
         {
             return name.Length == verb.Length ? new ParsedEndpointName(name, verb) : new ParsedEndpointName(name[verb.Length..^0], verb);
-        }
-
-        private static void MapProducedResponse(this EndpointInfo info, TypeInfo t)
-        {
-            var jsonResponse = t.ImplementedInterfaces.SingleOrDefault(r => MatchExpectedGeneric(r, typeof(IJsonResponse<>)));
-            if (jsonResponse is not null)
-                info.Meta.Add(new JsonEndpointResponseMetaData(200, jsonResponse.GenericTypeArguments[0]));
-            if (t.ImplementedInterfaces.Any(r => r == typeof(INoContentResponse)))
-                info.Meta.Add(new EndpointResponseMetaData(201, typeof(void)));
-            foreach (var produces in t.GetCustomAttributes<ProducesResponseTypeAttribute>())
-                info.Meta.Add(produces.Type == typeof(void) ? new EndpointResponseMetaData(produces.StatusCode, produces.Type) : new JsonEndpointResponseMetaData(produces.StatusCode, produces.Type));
-            
-
-        }
-
-        private static void MapUrlParameterMetaData(this EndpointInfo info, TypeInfo t)
-        {
-            var parameterModel = t.ImplementedInterfaces.SingleOrDefault(r => MatchExpectedGeneric(r, typeof(IUrlParameterModel<>)));
-            if (parameterModel is null)
-                return;
-            foreach (var parameter in UrlParameterBindingHelper.GetUrlParameterMetaData(parameterModel.GenericTypeArguments[0]))
-                info.Meta.Add(parameter);
-        }
-
-        private static void MapBodyParameter(this EndpointInfo info, TypeInfo t)
-        {
-            var ta = t.ImplementedInterfaces.SingleOrDefault(r => MatchExpectedGeneric(r, typeof(IJsonBody<>)));
-            if (ta is not null)
-                info.Meta.Add(new JsonEndpointRequestBodyMetaData(ta.GenericTypeArguments[0]));
         }
 
         private static ICollection<EndpointRouteValueMetadata> BuildRouteParameters(string controllerName, ParsedEndpointName endpoint)
