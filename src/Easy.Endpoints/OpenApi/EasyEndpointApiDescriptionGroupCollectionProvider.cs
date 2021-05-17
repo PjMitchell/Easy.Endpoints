@@ -115,7 +115,7 @@ namespace Easy.Endpoints
 
         private void ApplyRequestBodyParameters(ApiDescription description, EndpointInfo endpoint)
         {
-            var requestBody = endpoint.GetMetadata<IEndpointRequestBodyMetadataProvider>();
+            var requestBody = endpoint.GetBodyParameterOrDefault();
             if (requestBody is not null)
             {
                 var contentTypes = new MediaTypeCollection();
@@ -129,7 +129,7 @@ namespace Easy.Endpoints
 
         private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointInfo endpoint)
         {
-            var urlParameterMetaData = endpoint.GetAllMetadata<UrlParameterMetaData>();
+            var urlParameterMetaData = endpoint.GetUrlParameterMetaData();
             foreach(var data in urlParameterMetaData)
             {
                 if(description.ParameterDescriptions.All(a=> a.Name != data.Name))
@@ -205,7 +205,7 @@ namespace Easy.Endpoints
 
         private IEnumerable<ApiResponseType> GetResponseTypes(EndpointInfo endpoint)
         {
-            var responses = endpoint.GetAllMetadata<IApiResponseMetadataProvider>().Select(s => GetResponseTypes(s));
+            var responses = endpoint.GetApiResponses().Select(s => GetResponseTypes(s));
             return responses;
         }
 

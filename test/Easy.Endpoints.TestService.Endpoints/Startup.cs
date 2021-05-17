@@ -1,3 +1,4 @@
+using Easy.Endpoints.TestService.Endpoints.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,9 @@ namespace Easy.Endpoints.TestService.Endpoints
             services.AddRouting();
             services.AddEasyEndpoints();
             services.AddSwaggerGen();
+            services.AddSingleton<IAuthService, AuthService>();
+            services.AddAuthentication(TestAuthenticationHandler.Schema).AddScheme<TestAuthOptions, TestAuthenticationHandler>(TestAuthenticationHandler.Schema, o => { });
+            services.AddAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -29,8 +33,10 @@ namespace Easy.Endpoints.TestService.Endpoints
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 c.RoutePrefix = "swagger/ui";
             });
-            app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseRouting();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapEasyEndpoints());
         }
     }
