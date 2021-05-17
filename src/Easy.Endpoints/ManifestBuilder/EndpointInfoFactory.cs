@@ -22,9 +22,6 @@ namespace Easy.Endpoints
         {
             var declaredEndpoint = handler ?? endpoint;
             var info = BuildInfoWithRoute(declaredEndpoint, endpoint, handler, options, meta.OfType<EndpointRouteValueMetadata>());
-            //info.MapProducedResponse(declaredEndpoint);
-            //info.MapBodyParameter(declaredEndpoint);
-            //info.MapUrlParameterMetaData(declaredEndpoint);
             info.MapAuthMeta(declaredEndpoint);
             foreach (var item in meta)
                 info.Meta.Add(item);

@@ -22,7 +22,7 @@ namespace Easy.Endpoints.TestService.Endpoints.Auth
             return Task.FromResult(FromPrincipal(context.User));
         }
 
-        private AuthRequest FromPrincipal(ClaimsPrincipal user)
+        private static AuthRequest FromPrincipal(ClaimsPrincipal user)
         {
             var name = user.Identity.Name;
             var roles = user.Claims.Where(r => r.Type == AuthService.RoleClaimType).Select(s => s.Value).ToArray();
