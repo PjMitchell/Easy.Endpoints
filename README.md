@@ -1,5 +1,8 @@
 # Easy.Endpoints
-Aspnetcore endpoints without the controller
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=PjMitchell_Easy.Endpoints&metric=alert_status)](https://sonarcloud.io/dashboard?id=PjMitchell_Easy.Endpoints)  
+Aspnetcore endpoints without the controller.  
+[Docs](https://github.com/PjMitchell/Easy.Endpoints/wiki)  
+[Sample Project](https://github.com/PjMitchell/Easy.Endpoints/tree/master/test/Easy.Endpoints.TestService.Endpoints) 
 
 ## Setup
 Add Easy.Endpoint services  
@@ -83,3 +86,30 @@ public class AnimalEndpointHandler<TAnimal> : IJsonEndpointHandler<TAnimal, stri
     }
 }
 ```
+### EndpointResults
+Handlers can return IEndpointResult for when more control over the end result is required.
+```csharp
+[ProducesResponseType(200,Type = typeof(People))]  
+[ProducesResponseType(404, Type = typeof(void))]  
+[Get("People/{id:int}")]  
+public class GetPeopleByIdEndpointHandler : IEndpointResultHandler  
+{  
+    private readonly IIntIdRouteParser idRouteParser;  
+  
+    public GetPeopleByIdEndpointHandler(IIntIdRouteParser idRouteParser)  
+    {  
+        this.idRouteParser = idRouteParser;  
+    }   
+  
+    public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken)  
+    {  
+        var id = idRouteParser.GetIdFromRoute();  
+        var person = PeopleService.AllPeople().SingleOrDefault(p => p.Id == id);  
+        if (person is null)  
+            return Task.FromResult<IEndpointResult>(new NoContentResult(404));  
+        return Task.FromResult<IEndpointResult>(new JsonContentResult<People>(person));  
+    }  
+}  
+```
+
+
