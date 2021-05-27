@@ -22,6 +22,10 @@ namespace Easy.Endpoints
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true,
             };
+            EndpointMetaDeclarations = new List<IEndpointMetaDataDeclaration>
+            {
+                new AuthEndpointMetaDataDeclaration()
+            };
         }
 
         /// <summary>
@@ -35,8 +39,15 @@ namespace Easy.Endpoints
         public JsonSerializerOptions JsonSerializerOptions { get; internal set; }
 
         /// <summary>
-        /// All EndpointForHandlerDeclaration
+        /// All EndpointForHandlerDeclarations
         /// </summary>
         public IReadOnlyList<IEndpointForHandlerDeclaration> EndpointForHandlerDeclarations { get; internal set; }
+
+        /// <summary>
+        /// All EndpointMetaDeclarations 
+        /// </summary>
+        public IReadOnlyList<IEndpointMetaDataDeclaration> EndpointMetaDeclarations { get; internal set; }
+
+        
     }
 }
