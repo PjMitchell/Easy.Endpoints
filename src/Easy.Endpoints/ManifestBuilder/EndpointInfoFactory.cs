@@ -128,7 +128,7 @@ namespace Easy.Endpoints
         private static EndpointRouteInfo BuildFromRouteTemplateProvider(IRouteTemplateProvider routeInfo, ICollection<EndpointRouteValueMetadata> routeValues, IEnumerable<string> verbs)
         {
             return new EndpointRouteInfo(
-                BuildPatternFromRouteValues(routeInfo.Template, routeValues),
+                BuildPatternFromRouteValues(routeInfo.Template ?? "", routeValues),
                 string.IsNullOrWhiteSpace(routeInfo.Name)? BuildName(routeValues): routeInfo.Name,
                 routeInfo.Order,
                 verbs);
@@ -148,7 +148,7 @@ namespace Easy.Endpoints
 
         private class EndpointRouteInfo : IRouteTemplateProvider
         {
-            public EndpointRouteInfo(IRouteTemplateProvider routeTemplate, IEnumerable<string> methods) : this(routeTemplate.Template, routeTemplate.Name, routeTemplate.Order, methods)
+            public EndpointRouteInfo(IRouteTemplateProvider routeTemplate, IEnumerable<string> methods) : this(routeTemplate.Template ?? string.Empty, routeTemplate.Name ?? string.Empty, routeTemplate.Order, methods)
             {
             }
 

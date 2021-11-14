@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <Company />
     <Authors>Peter Mitchell</Authors>
@@ -9,7 +8,7 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Description>AspNetCore endpoints without the controller</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>2.0.0$(VersionSuffix)</Version>
+    <Version>3.0.0$(VersionSuffix)</Version>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

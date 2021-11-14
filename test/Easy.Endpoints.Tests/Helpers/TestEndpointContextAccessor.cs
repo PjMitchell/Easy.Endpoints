@@ -125,7 +125,7 @@ namespace Easy.Endpoints.Tests
             public override IHeaderDictionary Headers { get; }
             public override IRequestCookieCollection Cookies { get; set; }
             public override long? ContentLength { get; set; }
-            public override string ContentType { get; set; } = string.Empty;
+            public override string? ContentType { get; set; }
             public override Stream Body { get; set; }
             public override bool HasFormContentType { get; }
             public override IFormCollection Form { get; set; } = FormCollection.Empty;

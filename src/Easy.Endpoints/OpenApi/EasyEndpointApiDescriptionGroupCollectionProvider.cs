@@ -45,9 +45,9 @@ namespace Easy.Endpoints
             return new ApiDescriptionGroupCollection(new[] { group }, 1);
         }
 
-        private static IDictionary<string, string> GetRouteValues(EndpointInfo endpoint)
+        private static IDictionary<string, string?> GetRouteValues(EndpointInfo endpoint)
         {
-            return endpoint.GetAllMetadata<IEndpointRouteValueMetadataProvider>().ToDictionary(k => k.Key, v => v.Value);
+            return endpoint.GetAllMetadata<IEndpointRouteValueMetadataProvider>().ToDictionary<IEndpointRouteValueMetadataProvider, string, string?>(k => k.Key, v => v.Value);
         }
 
         private IEnumerable<ApiDescription> GetApiDescriptions(EndpointInfo endpoint, ActionDescriptor actionDescriptor)
@@ -216,9 +216,10 @@ namespace Easy.Endpoints
             var result = new ApiResponseType
             {
                 StatusCode = meta.StatusCode,
-                Type = meta.Type,
-                ModelMetadata = modelMetadataProvider.GetMetadataForType(meta.Type)
+                Type = meta.Type                
             };
+            if (meta.Type is not null)
+                result.ModelMetadata = modelMetadataProvider.GetMetadataForType(meta.Type);
             result.ApiResponseFormats = contentTypes.Select(s => new ApiResponseFormat { MediaType = s }).ToList();
             return result;
         }
