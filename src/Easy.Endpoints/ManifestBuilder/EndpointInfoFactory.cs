@@ -6,6 +6,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System;
+using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
 
 namespace Easy.Endpoints
 {
@@ -13,15 +18,10 @@ namespace Easy.Endpoints
     {
         private static readonly string[] get = new[] { "GET" };
 
-        public static EndpointInfo BuildInfoForEndpoint(TypeInfo endpoint, EndpointOptions options,params object[] meta)
+        public static EndpointInfo BuildInfoForEndpoint(TypeInfo endpoint, EndpointOptions options, params object[] meta)
         {
-            return BuildInfoForHandler(null, endpoint, options, meta);
-        }
-
-        public static EndpointInfo BuildInfoForHandler(TypeInfo? handler, TypeInfo endpoint, EndpointOptions options, params object[] meta)
-        {
-            var declaredEndpoint = handler ?? endpoint;
-            var info = BuildInfoWithRoute(declaredEndpoint, endpoint, handler, options, meta.OfType<EndpointRouteValueMetadata>());
+            var declaredEndpoint = endpoint;
+            var info = BuildInfoWithRoute(declaredEndpoint, options, meta.OfType<EndpointRouteValueMetadata>());
             info.MapAuthMeta(declaredEndpoint);
             AddMeta(info, options, declaredEndpoint, meta);
             return info;
@@ -43,13 +43,14 @@ namespace Easy.Endpoints
                 info.Meta.Add(attribute);
         }
 
-        private static EndpointInfo BuildInfoWithRoute(TypeInfo declaredEndpoint, TypeInfo endpoint, TypeInfo? handler, EndpointOptions options, IEnumerable<EndpointRouteValueMetadata> routeValueMetaData)
+        private static EndpointInfo BuildInfoWithRoute(TypeInfo endpoint, EndpointOptions options, IEnumerable<EndpointRouteValueMetadata> routeValueMetaData)
         {
-            var controllerName = GetControllerValue(declaredEndpoint);
-            var endpointValue = GetEndpointValue(declaredEndpoint);
+            var controllerName = GetControllerValue(endpoint);
+            var endpointValue = GetEndpointValue(endpoint);
             var routeValues = BuildRouteParameters(controllerName, endpointValue);
-            var routeInfo = GetRouteInfo(declaredEndpoint, routeValues.Concat(routeValueMetaData).ToArray(), endpointValue.Verb, options);
-            var info = new EndpointInfo(endpoint.AsType(), handler, RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
+            var routeInfo = GetRouteInfo(endpoint, routeValues.Concat(routeValueMetaData).ToArray(), endpointValue.Verb, options);
+            var declaredRouteInfo = DeclaredRouteInfoFactory.GetFromTemplate(routeInfo.Template);
+            var info = new EndpointInfo(endpoint.AsType(), EndpointRequestHandlerFactoryBuilder.BuildFactoryForEndpoint(endpoint,declaredRouteInfo, options), RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
             info.Meta.Add(new HttpMethodMetadata(routeInfo.HttpMethods));
             foreach (var routeValue in routeValues)
                 info.Meta.Add(routeValue);
@@ -146,6 +147,8 @@ namespace Easy.Endpoints
             return routeValues.Single(s=> s.Key == "endpoint").Value;
         }
 
+        
+
         private class EndpointRouteInfo : IRouteTemplateProvider
         {
             public EndpointRouteInfo(IRouteTemplateProvider routeTemplate, IEnumerable<string> methods) : this(routeTemplate.Template ?? string.Empty, routeTemplate.Name ?? string.Empty, routeTemplate.Order, methods)
@@ -169,6 +172,27 @@ namespace Easy.Endpoints
         public record ParsedEndpointName(string Name, string? Verb)
         {
 
+        }
+
+        internal static class DeclaredRouteInfoFactory
+        {
+            public static DeclaredRouteInfo GetFromTemplate(string template)
+            {
+                var parameters = Regex.Matches(template, @"\{([^{}]+)\}*")
+                    .Where(w => w.Groups.Count == 2)
+                    .Select(match => {
+                    var values = match.Groups[1].Value.Split(':');
+                    return new DeclaredRouteParameter
+                    {
+                        Name = values[0].Trim('*'),
+                    };
+                }).ToArray();
+                return new DeclaredRouteInfo
+                {
+                    Parameters = parameters,
+                };
+                
+            }
         }
     }
 }

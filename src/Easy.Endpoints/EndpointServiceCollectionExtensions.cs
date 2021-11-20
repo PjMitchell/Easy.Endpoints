@@ -59,8 +59,6 @@ namespace Easy.Endpoints
             foreach (var endpointInfo in manifest)
             {
                 services.AddTransient(endpointInfo.Type);
-                if (endpointInfo.Handler is not null)
-                    services.AddTransient(endpointInfo.Handler);
             }
             services.AddSingleton(manifest);
             services.AddSingleton(options);
@@ -68,9 +66,6 @@ namespace Easy.Endpoints
             services.AddTransient<IApiDescriptionGroupCollectionProvider, EasyEndpointApiDescriptionGroupCollectionProvider>();
             services.AddScoped<EndpointContextAccessor>();
             services.AddTransient<IEndpointContextAccessor>(s => s.GetRequiredService<EndpointContextAccessor>());
-            services.AddTransient<IIntIdRouteParser, IntIdRouteParser>();
-            services.AddTransient<IGuidIdRouteParser, GuidIdRouteParser>();
-            services.AddTransient<IStringIdRouteParser, StringIdRouteParser>();
         }
 
         private static void NullOptionModifications(EndpointOptionBuilders options)

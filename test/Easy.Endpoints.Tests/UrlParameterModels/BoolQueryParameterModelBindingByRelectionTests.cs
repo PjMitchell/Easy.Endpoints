@@ -12,7 +12,7 @@ namespace Easy.Endpoints.Tests
 
         public BoolQueryParameterModelBindingByRelectionTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<UrlModelEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<BoolEndpoint>());
         }
 
         [Fact]
@@ -20,11 +20,10 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest("True/Test?single=true&nullable=false").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Equal(false, observed.Result.Nullable);
-            Assert.True(observed.Result.Single);
-            Assert.True(observed.Result.Route);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Equal(false, observed.Nullable);
+            Assert.True(observed.Single);
+            Assert.True(observed.Route);
         }
 
         [Fact]
@@ -32,9 +31,8 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest("True/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Null(observed.Result.Nullable);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Null(observed.Nullable);
         }
 
         [Fact]
@@ -42,67 +40,55 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest("True/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.False(observed.Result.Single);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.False(observed.Single);
         }
 
         [Fact]
         public async Task MultipleValues_ForNullable_ReturnsError()
         {
             var result = await server.CreateRequest("True/Test?nullable=true&nullable=false").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("nullable", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.MultipleParametersFoundError, "nullable"), error.Error);
-        }
+            Assert.False(result.IsSuccessStatusCode);        }
 
         [Fact]
         public async Task MultipleValues_ForSingle_ReturnsError()
         {
             var result = await server.CreateRequest("True/Test?single=true&single=false").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("single", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.MultipleParametersFoundError, "single"), error.Error);
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task FailedToParses_ForNullable_ReturnsError()
         {
             var result = await server.CreateRequest("True/Test?nullable=nope").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("nullable", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.CouldNotParseError, "nope", typeof(bool)), error.Error);
-        }
+            Assert.False(result.IsSuccessStatusCode);        }
 
         [Fact]
         public async Task FailedToParses_ForSingle_ReturnsError()
         {
             var result = await server.CreateRequest("True/Test?single=yeah").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("single", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.CouldNotParseError, "yeah", typeof(bool)), error.Error);
-        }
+            Assert.False(result.IsSuccessStatusCode);        }
 
         [Get("{route:bool}/Test")]
-        public class UrlModelEndpoint : TestUrlParameterEndpoint<UrlModel> { }
-
-        public class UrlModel : UrlParameterModel
+        public class BoolEndpoint : IEndpoint 
         {
-            private static readonly Action<UrlModel, HttpRequest> binding = UrlParameterBindingHelper.BuildBinder<UrlModel>();
-            [RouteParameter]
+            public UrlModel Handle(bool route, bool? nullable, bool single = false)
+            {
+                return new UrlModel
+                {
+                    Route = route,
+                    Single = single,
+                    Nullable = nullable
+                };
+            }
+        }
+
+        public class UrlModel
+        {
             public bool Route { get; set; }
             public bool Single { get; set; }
             public bool? Nullable { get; set; }
 
-            public override void BindUrlParameters(HttpRequest request) => binding(this, request);
         }
     }
 }

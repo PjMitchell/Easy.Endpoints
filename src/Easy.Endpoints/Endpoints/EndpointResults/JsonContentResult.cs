@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
@@ -32,9 +33,9 @@ namespace Easy.Endpoints
 
 
         /// <inheritdoc cref="IEndpointResult.ExecuteResultAsync"/>
-        public Task ExecuteResultAsync(EndpointContext context)
+        public async ValueTask ExecuteResultAsync(HttpContext context, EndpointOptions options)
         {
-            return HttpContextJsonHelper.WriteJsonResponse(context, Result, StatusCode);
+            await HttpContextJsonHelper.WriteJsonResponse(context, options.JsonSerializerOptions, Result, StatusCode);
         }
     }
 }

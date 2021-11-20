@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestService.Endpoints.Auth
 {
-    public class SignOutEndpointHandler : IEndpointResultHandler
+    public class SignOutEndpointHandler : IEndpoint
     {
         private readonly IAuthService authService;
 
@@ -14,7 +14,7 @@ namespace Easy.Endpoints.TestService.Endpoints.Auth
         public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken)
         {
             authService.SignOut();
-            return Task.FromResult<IEndpointResult>(new NoContentResult());
+            return Task.FromResult(EndpointResult.NoContent());
         }
     }
 }

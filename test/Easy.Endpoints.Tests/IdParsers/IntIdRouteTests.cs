@@ -46,18 +46,11 @@ namespace Easy.Endpoints.Tests
         [Get("Test/{id:int}")]
         public class IdRouteEndpoint : IEndpoint
         {
-            private readonly IIntIdRouteParser intIdRouteParser;
-
-            public IdRouteEndpoint(IIntIdRouteParser intIdRouteParser)
+            public async Task<IEndpointResult> HandleAsync(int id, HttpResponse response)
             {
-                this.intIdRouteParser = intIdRouteParser;
-            }
-
-            public Task HandleRequestAsync(EndpointContext endpointContext)
-            {
-                var id = intIdRouteParser.GetIdFromRoute();
-                endpointContext.Response.StatusCode = 200;
-                return endpointContext.Response.WriteAsync(id.ToString());
+                response.StatusCode = 200;
+                await response.WriteAsync(id.ToString());
+                return EndpointResult.Completed();
             }
         }
     }

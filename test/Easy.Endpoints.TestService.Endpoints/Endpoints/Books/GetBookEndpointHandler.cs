@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestService.Endpoints.Books
 {
-    public class GetBookEndpointHandler : IJsonResponseEndpointHandler<Book[]>
+    public class GetBookEndpointHandler : IEndpoint
     {
         public Task<Book[]> HandleAsync(CancellationToken cancellationToken) => Task.FromResult(AllBooks().ToArray());
         public static IEnumerable<Book> AllBooks()

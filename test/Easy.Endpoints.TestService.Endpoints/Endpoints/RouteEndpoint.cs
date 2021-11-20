@@ -4,30 +4,22 @@ using System.Threading.Tasks;
 namespace Easy.Endpoints.TestService.Endpoints
 {
     [Get("TestOne")]
-    public class GetTestResponseEndpointHandler : IJsonResponseEndpointHandler<TestResponsePayload>
+    public class GetTestResponseEndpointHandler : IEndpoint
     {
         public Task<TestResponsePayload> HandleAsync(CancellationToken cancellationToken) => Task.FromResult(TestResponsePayload.Default);
     }
 
     [Put("TestOne/{id:int:min(0)}")]
-    public class PutTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePayload>
+    public class PutTestResponseEndpoint : IEndpoint
     {
-        private readonly IIntIdRouteParser idRouteParser;
-
-        public PutTestResponseEndpoint(IIntIdRouteParser idRouteParser)
+        public Task HandleAsync(int id, TestResponsePayload body, CancellationToken cancellationToken)
         {
-            this.idRouteParser = idRouteParser;
-        }
-
-        public Task HandleAsync(TestResponsePayload body, CancellationToken cancellationToken)
-        {
-            idRouteParser.GetIdFromRoute();
             return Task.CompletedTask;
         }
     }
 
     [Post("TestOne")]
-    public class PostTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePayload>
+    public class PostTestResponseEndpoint : IEndpoint
     {
         public Task HandleAsync(TestResponsePayload body, CancellationToken cancellationToken)
         {
@@ -36,7 +28,7 @@ namespace Easy.Endpoints.TestService.Endpoints
     }
 
     [Post("TestTwo")]
-    public class PostTestResponseAndBodyEndpoint : IJsonBodyAndResponseEndpointHandler<TestResponsePayload, TestResponsePayload>
+    public class PostTestResponseAndBodyEndpoint : IEndpoint
     {
         public Task<TestResponsePayload> HandleAsync(TestResponsePayload body, CancellationToken cancellationToken)
         {

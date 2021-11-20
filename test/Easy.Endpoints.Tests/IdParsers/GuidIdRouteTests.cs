@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -46,19 +47,13 @@ namespace Easy.Endpoints.Tests
 
         [Get("Test/{id:guid}")]
         public class IdRouteEndpoint : IEndpoint
-        {
-            private readonly IGuidIdRouteParser guidIdRouteParser;
+        {           
 
-            public IdRouteEndpoint(IGuidIdRouteParser guidIdRouteParser)
+            public async Task<IEndpointResult> HandleAsync(Guid id, HttpResponse response)
             {
-                this.guidIdRouteParser = guidIdRouteParser;
-            }
-
-            public Task HandleRequestAsync(EndpointContext endpointContext)
-            {
-                var id = guidIdRouteParser.GetIdFromRoute();
-                endpointContext.Response.StatusCode = 200;
-                return endpointContext.Response.WriteAsync(id.ToString());
+                response.StatusCode = 200;
+                await response.WriteAsync(id.ToString());
+                return EndpointResult.Completed();
             }
         }
     }

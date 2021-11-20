@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
@@ -11,7 +12,8 @@ namespace Easy.Endpoints
         /// Modifies the endpoint context to produce the desired result
         /// </summary>
         /// <param name="context">Current endpoint context</param>
+        /// <param name="options">EndpointOptions</param>
         /// <returns>A Task representing the operation</returns>
-        Task ExecuteResultAsync(EndpointContext context);
+        ValueTask ExecuteResultAsync(HttpContext context, EndpointOptions options);
     }
 }

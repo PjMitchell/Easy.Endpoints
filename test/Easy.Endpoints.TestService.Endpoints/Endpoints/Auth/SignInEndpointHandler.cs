@@ -6,7 +6,7 @@ namespace Easy.Endpoints.TestService.Endpoints.Auth
 {
     [AllowAnonymous]
     [Post]
-    public class SignInEndpointHandler : IJsonBodyEndpointHandler<AuthRequest>
+    public class SignInEndpointHandler : IEndpoint
     {
         private readonly IAuthService authService;
 

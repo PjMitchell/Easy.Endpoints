@@ -10,7 +10,7 @@ namespace Easy.Endpoints.Tests
         private readonly TestServer server;
         public NoContentEndpointResultTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(b=> b.AddForEndpointHandler<NoContentEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(b=> b.AddForEndpoint<NoContentEndpoint>());
         }
 
         [Theory]
@@ -26,19 +26,13 @@ namespace Easy.Endpoints.Tests
         }
 
         [Get("test/{id:int}")]
-        private class NoContentEndpoint : IEndpointResultHandler
+        private class NoContentEndpoint : IEndpoint
         {
-            private readonly IIntIdRouteParser intIdRouteParser;
 
-            public NoContentEndpoint(IIntIdRouteParser intIdRouteParser)
-            {
-                this.intIdRouteParser = intIdRouteParser;
-            }
 
-            public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken)
+            public Task<IEndpointResult> HandleAsync(int id, CancellationToken cancellationToken)
             {
-                var id = intIdRouteParser.GetIdFromRoute();
-                return Task.FromResult<IEndpointResult>(new NoContentResult(id));
+                return Task.FromResult<IEndpointResult>(EndpointResult.StatusCode(id));
             }
         }
     }

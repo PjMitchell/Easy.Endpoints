@@ -129,13 +129,15 @@ namespace Easy.Endpoints
 
         private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointInfo endpoint)
         {
-            var urlParameterMetaData = endpoint.GetUrlParameterMetaData();
-            foreach(var data in urlParameterMetaData)
+            foreach(var data in endpoint.HandlerDeclaration.ParameterInfos
+                .Where(w=> w.Source is EndpointParameterSource.Route or EndpointParameterSource.Query))
             {
                 if(description.ParameterDescriptions.All(a=> a.Name != data.Name))
                     description.ParameterDescriptions.Add(GetParameterDescriptor(data));
             }
         }
+
+
 
         private ApiParameterDescription GetParameterDescriptor(RoutePatternParameterPart parameter)
         {
@@ -151,14 +153,14 @@ namespace Easy.Endpoints
             };
         }
 
-        private ApiParameterDescription GetParameterDescriptor(UrlParameterMetaData parameter)
+        private ApiParameterDescription GetParameterDescriptor(EndpointParameterInfo parameter)
         {
             return new ApiParameterDescription
             {
                 Name = parameter.Name,
-                Type = parameter.Type,
-                ModelMetadata = modelMetadataProvider.GetMetadataForType(parameter.Type),
-                Source = parameter.IsRouteParameter ? BindingSource.Path : BindingSource.Query,
+                Type = parameter.ParameterType,
+                ModelMetadata = modelMetadataProvider.GetMetadataForType(parameter.ParameterType),
+                Source = parameter.Source == EndpointParameterSource.Route ? BindingSource.Path : BindingSource.Query,
                 IsRequired = !parameter.IsOptional,
                 RouteInfo = new ApiParameterRouteInfo { IsOptional = parameter.IsOptional }
             };

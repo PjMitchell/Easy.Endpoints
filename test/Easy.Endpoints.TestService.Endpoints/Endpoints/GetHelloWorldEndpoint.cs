@@ -6,10 +6,11 @@ namespace Easy.Endpoints.TestService.Endpoints
     [EndpointController("Greetings")]
     public class HelloWorldEndpoint : IEndpoint
     {
-        public Task HandleRequestAsync(EndpointContext endpointContext)
+        public async Task<IEndpointResult> HandleAsync(HttpContext ctx)
         {
-            endpointContext.Response.WriteAsync("Hello World");
-            return Task.CompletedTask;
+            ctx.Response.StatusCode = 200;
+            await ctx.Response.WriteAsync("Hello World");
+            return EndpointResult.Completed();
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,7 +28,7 @@ namespace Easy.Endpoints.Tests
                 Assert.NotNull(expected);
                 return;
             }
-            Assert.Equal(expected.Paths.Keys, observed.Paths.Keys);
+            Assert.Equal(expected.Paths.Keys.OrderBy(o => o), observed.Paths.Keys.OrderBy(o => o));
         }
 
         [Fact]

@@ -35,7 +35,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Easy.Endpoints\Easy.Endpoints.csproj" />
     <ProjectReference Include="..\Easy.Endpoints.TestService.Endpoints\Easy.Endpoints.TestService.Endpoints.csproj" />
-    <ProjectReference Include="..\..\src\Easy.Endpoints.SourceGenerators\Easy.Endpoints.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

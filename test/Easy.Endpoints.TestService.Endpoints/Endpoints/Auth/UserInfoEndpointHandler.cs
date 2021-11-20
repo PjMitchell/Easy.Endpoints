@@ -7,19 +7,11 @@ using System.Threading.Tasks;
 namespace Easy.Endpoints.TestService.Endpoints.Auth
 {
     [Authorize]
-    public class UserInfoEndpointHandler : IJsonResponseEndpointHandler<AuthRequest>
+    public class UserInfoEndpointHandler : IEndpoint
     {
-        private readonly IEndpointContextAccessor contextAccessor;
-
-        public UserInfoEndpointHandler(IEndpointContextAccessor contextAccessor)
+        public Task<AuthRequest> HandleAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
         {
-            this.contextAccessor = contextAccessor;
-        }
-
-        public Task<AuthRequest> HandleAsync(CancellationToken cancellationToken)
-        {
-            var context = contextAccessor.GetContext();
-            return Task.FromResult(FromPrincipal(context.User));
+            return Task.FromResult(FromPrincipal(user));
         }
 
         private static AuthRequest FromPrincipal(ClaimsPrincipal user)

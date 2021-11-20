@@ -3,7 +3,7 @@
 namespace Easy.Endpoints.Tests
 {
 
-    public record TestUrlParameterEndpointResult<T>(T Result, List<UrlParameterModelError> Errors)
+    public record TestUrlParameterEndpointResult<T>(T Result)
     {
     }
 }

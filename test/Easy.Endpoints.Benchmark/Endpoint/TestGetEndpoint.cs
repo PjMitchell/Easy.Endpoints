@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints.Benchmark.Endpoint
 {
+
     [Get("test1")]
-    public class TestGetEndpoint : IJsonResponseEndpointHandler<TestResponsePayload>
+    public class TestGetEndpoint : IEndpoint
     {
         public Task<TestResponsePayload> HandleAsync(CancellationToken cancellationToken) => Task.FromResult(TestResponsePayload.Default);
     }
 
     [Get("test2")]
-    public class Test2GetEndpoint : IEndpointResultHandler , IJsonResponse<TestResponsePayload>
+    public class Test2GetEndpoint : IEndpoint
     {
-        public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken) => Task.FromResult<IEndpointResult>(new JsonContentResult<TestResponsePayload>(TestResponsePayload.Default));
+        public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken) => Task.FromResult(EndpointResult.Ok(TestResponsePayload.Default));
     }
 }
