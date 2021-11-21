@@ -46,11 +46,9 @@ namespace Easy.Endpoints.Tests
         [Get("Test/{id:int}")]
         public class IdRouteEndpoint : IEndpoint
         {
-            public async Task<IEndpointResult> HandleAsync(int id, HttpResponse response)
+            public ValueTask<string> HandleAsync(int id)
             {
-                response.StatusCode = 200;
-                await response.WriteAsync(id.ToString());
-                return EndpointResult.Completed();
+                return ValueTask.FromResult(id.ToString());
             }
         }
     }

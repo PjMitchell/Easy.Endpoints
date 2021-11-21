@@ -17,6 +17,8 @@ namespace Easy.Endpoints
             {
                 if (info.HandlerDeclaration.ReturnType == typeof(void))
                     yield return new EndpointResponseMetaData(201, typeof(void));
+                else if (info.HandlerDeclaration.ReturnType == typeof(string))
+                    yield return new PlainTextEndpointResponseMetaData(200);
                 else
                     yield return new JsonEndpointResponseMetaData(200, info.HandlerDeclaration.ReturnType);
             }

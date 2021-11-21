@@ -8,4 +8,11 @@ namespace Easy.Endpoints
         {
         }
     }
+
+    internal class PlainTextEndpointResponseMetaData : EndpointResponseMetaData
+    {
+        public PlainTextEndpointResponseMetaData(int statusCode) : base(statusCode, typeof(string), "text/plain")
+        {
+        }
+    }
 }

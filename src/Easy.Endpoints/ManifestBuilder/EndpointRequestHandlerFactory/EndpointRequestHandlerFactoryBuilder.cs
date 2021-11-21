@@ -21,12 +21,18 @@ namespace Easy.Endpoints
                 return BuildNoContentResponse(new VoidEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
             if (handleMethod.ReturnType == typeof(Task))
                 return BuildNoContentResponse(new TaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
+            if (handleMethod.ReturnType == typeof(ValueTask))
+                return BuildNoContentResponse(new ValueTaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
+
 
             var (endpointMethodExecutor, returnType) = GetMethodExcutorAndReturnTypeFor(endpointType, handleMethod);
 
             if (typeof(IEndpointResult).IsAssignableFrom(returnType))
                 return BuildForEndpointResultResponse(endpointMethodExecutor, parameterInfo, options);
 
+            if (returnType == typeof(string))
+                return BuildForStringResponse(endpointMethodExecutor, parameterInfo, returnType, options);
+            
             return BuildForObjectResponse(endpointMethodExecutor, parameterInfo, returnType, options);
         }
 
@@ -34,7 +40,12 @@ namespace Easy.Endpoints
         {
             if (handleMethod.ReturnType.IsGenericType && handleMethod.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
             {
-                return (new AsyncObjectEndpointMethodExecutor(endpointType, handleMethod), handleMethod.ReturnType.GetGenericArguments()[0]);
+                return (new TaskObjectEndpointMethodExecutor(endpointType, handleMethod), handleMethod.ReturnType.GetGenericArguments()[0]);
+            }
+
+            if (handleMethod.ReturnType.IsGenericType && handleMethod.ReturnType.GetGenericTypeDefinition() == typeof(ValueTask<>))
+            {
+                return (new ValueTaskObjectEndpointMethodExecutor(endpointType, handleMethod), handleMethod.ReturnType.GetGenericArguments()[0]);
             }
 
             return (new SyncObjectEndpointMethodExecutor(endpointType, handleMethod), handleMethod.ReturnType);
@@ -54,6 +65,16 @@ namespace Easy.Endpoints
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
                 (ctx) => new ObjectRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory, options),
+                parameterInfo,
+                returnType
+            );
+        }
+
+        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, Type returnType, EndpointOptions options)
+        {
+            var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
+            return new EndpointRequestHandlerDeclaration(
+                (ctx) => new StringRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory, options),
                 parameterInfo,
                 returnType
             );
