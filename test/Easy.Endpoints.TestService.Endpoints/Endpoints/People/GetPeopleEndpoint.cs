@@ -5,11 +5,18 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestService.Endpoints.People
 {
-    public class GetPeopleEndpointHandler : IEndpoint
+    public class GetPeopleEndpoint : IEndpoint
     {
+        private readonly IPeopleService peopleService;
+
+        public GetPeopleEndpoint(IPeopleService peopleService)
+        {
+            this.peopleService = peopleService;
+        }
+
         public Task<People[]> HandleAsync(string[] firstName, string[] surname, int? minAge, int? maxAge, CancellationToken cancellationToken)
         {
-            return Task.FromResult(PeopleService.AllPeople().Where(w =>
+            return Task.FromResult(peopleService.AllPeople().Where(w =>
             {
                 if (firstName.Length != 0 && !firstName.Contains(w.FirstName))
                     return false;

@@ -36,7 +36,7 @@ namespace Easy.Endpoints
             if (QueryParameterBinder.CanParseQueryParameter(parameterInfo.ParameterType) && parameterInfo.Name is not null)
             {
                 var isOptional = parameterInfo.HasDefaultValue || parameterInfo.ParameterType.IsGenericTypeDefinition && parameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>);
-                return EndpointParameterInfo.Query(QueryParameterBinder.GetParameterFactoryForQuery(parameterInfo.Name, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue), parameterInfo.ParameterType, parameterInfo.Name, isOptional);
+                return QueryParameterBinder.GetParameterInfoForQuery(parameterInfo.Name, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue);
 
             }
 

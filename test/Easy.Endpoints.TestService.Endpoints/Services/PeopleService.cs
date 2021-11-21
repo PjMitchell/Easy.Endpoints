@@ -2,8 +2,15 @@
 
 namespace Easy.Endpoints.TestService.Endpoints.People
 {
-    public static class PeopleService
+    public interface IPeopleService
     {
+        IEnumerable<People> AllPeople();
+    }
+
+    public class PeopleService : IPeopleService
+    {
+        IEnumerable<People> IPeopleService.AllPeople() => AllPeople();
+
         public static IEnumerable<People> AllPeople()
         {
             return new[]

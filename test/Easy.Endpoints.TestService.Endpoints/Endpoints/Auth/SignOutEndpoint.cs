@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Easy.Endpoints.TestService.Endpoints.Auth
 {
-    public class SignOutEndpointHandler : IEndpoint
+    public class SignOutEndpoint : IEndpoint
     {
         private readonly IAuthService authService;
 
-        public SignOutEndpointHandler(IAuthService authService)
+        public SignOutEndpoint(IAuthService authService)
         {
             this.authService = authService;
         }

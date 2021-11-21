@@ -12,7 +12,7 @@ namespace Easy.Endpoints.Benchmark.Mvc
         [HttpGet("Book")]
         public IActionResult Get()
         {
-            return Ok(GetBookEndpointHandler.AllBooks().ToArray());
+            return Ok(GetBookEndpoint.AllBooks().ToArray());
         }
 
         [HttpPost("Book")]

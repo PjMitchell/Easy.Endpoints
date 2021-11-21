@@ -45,7 +45,7 @@ namespace Easy.Endpoints.Benchmark
                     app.UseRouting();
                     app.UseEndpoints(endpoints =>
                     {
-                        endpoints.MapGet("Book", () => GetBookEndpointHandler.AllBooks().ToArray());
+                        endpoints.MapGet("Book", () => GetBookEndpoint.AllBooks().ToArray());
                         //endpoints.MapGet("People", ([FromQuery]string[] firstName, [FromQuery] string[] surname, int? minAge, int? maxAge) =>
                         //{
                         //    return PeopleService.AllPeople().Where(w =>
@@ -79,8 +79,8 @@ namespace Easy.Endpoints.Benchmark
                     services.AddRouting();
                     services.AddEasyEndpoints(b => b.AddForEndpoint<TestGetEndpoint>()
                     .AddForEndpoint<Test2GetEndpoint>()
-                    .AddForEndpoint<GetBookEndpointHandler>()
-                    .AddForEndpoint<PostBookEndpointHandler>()
+                    .AddForEndpoint<GetBookEndpoint>()
+                    .AddForEndpoint<PostBookEndpoint>()
                     );
                 })
                 .Configure(app =>

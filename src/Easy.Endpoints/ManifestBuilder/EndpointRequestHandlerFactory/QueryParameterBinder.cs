@@ -40,15 +40,18 @@ namespace Easy.Endpoints
                 || type == typeof(Guid[]);
         }
 
-        public static ParameterFactory GetParameterFactoryForQuery(string parameterName, Type type, bool hasDefaultValue, object? defaultValue)
+        
+
+        public static EndpointParameterInfo GetParameterInfoForQuery(string parameterName, Type type, bool hasDefaultValue, object? defaultValue)
         {
             if (type.IsArray)
-                return GetArrayParameterFactory(parameterName, type);
-            return GetParameterFactory(parameterName, type, hasDefaultValue, defaultValue);
+                return EndpointParameterInfo.Query(GetArrayParameterFactory(parameterName, type), type, parameterName, true);
+            return GetParameterInfo(parameterName, type, hasDefaultValue, defaultValue);
         }
 
-        private static ParameterFactory GetParameterFactory(string parameterName, Type type,bool hasDefaultValue, object? defaultValue)
+        private static EndpointParameterInfo GetParameterInfo(string parameterName, Type type,bool hasDefaultValue, object? defaultValue)
         {
+            var parameterType = type;
             var allowNull = hasDefaultValue;
             var isNullable = false;
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -57,12 +60,20 @@ namespace Easy.Endpoints
                 allowNull = true;
                 if (!hasDefaultValue)
                     defaultValue = null;
-                type = type.GetGenericArguments()[0];
+                parameterType = type.GetGenericArguments()[0];
             }
+
+            return EndpointParameterInfo.Query(GetParameterFactory(parameterName, parameterType, allowNull, isNullable, defaultValue), type, parameterName, allowNull);
+
+        }
+
+        private static ParameterFactory GetParameterFactory(string parameterName, Type type, bool allowNull, bool isNullable, object? defaultValue)
+        {
+  
             if (type == typeof(string))
                 return GetParameterFactoryForQueryWithStringValue(parameterName, defaultValue);
             if (type == typeof(int))
-                return GetParameterFactoryForQuery(parameterName, IntParser.Instance, allowNull,isNullable, defaultValue);
+                return GetParameterFactoryForQuery(parameterName, IntParser.Instance, allowNull, isNullable, defaultValue);
 
             if (type == typeof(long))
                 return GetParameterFactoryForQuery(parameterName, LongParser.Instance, allowNull, isNullable, defaultValue);

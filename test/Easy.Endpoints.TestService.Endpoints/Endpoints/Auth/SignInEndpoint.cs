@@ -6,11 +6,11 @@ namespace Easy.Endpoints.TestService.Endpoints.Auth
 {
     [AllowAnonymous]
     [Post]
-    public class SignInEndpointHandler : IEndpoint
+    public class SignInEndpoint : IEndpoint
     {
         private readonly IAuthService authService;
 
-        public SignInEndpointHandler(IAuthService authService)
+        public SignInEndpoint(IAuthService authService)
         {
             this.authService = authService;
         }

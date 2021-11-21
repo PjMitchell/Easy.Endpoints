@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Easy.Endpoints.TestService.Endpoints.Auth
 {
     [Authorize]
-    public class UserInfoEndpointHandler : IEndpoint
+    public class UserInfoEndpoint : IEndpoint
     {
         public Task<AuthRequest> HandleAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
         {
