@@ -16,9 +16,10 @@ jobs:
           java-version: 1.11
       - uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: |
-            5.0.x
-            6.0.x
+          dotnet-version: '5.0.x'
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
