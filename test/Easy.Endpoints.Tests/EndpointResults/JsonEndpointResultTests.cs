@@ -11,7 +11,7 @@ namespace Easy.Endpoints.Tests
         private readonly TestServer server;
         public JsonEndpointResultTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(b => b.AddForEndpointHandler<JsonEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(b => b.AddForEndpoint<JsonEndpoint>());
         }
 
         [Theory]
@@ -29,19 +29,11 @@ namespace Easy.Endpoints.Tests
         }
 
         [Get("test/{id:int}")]
-        private class JsonEndpoint : IEndpointResultHandler
+        private class JsonEndpoint : IEndpoint
         {
-            private readonly IIntIdRouteParser intIdRouteParser;
-
-            public JsonEndpoint(IIntIdRouteParser intIdRouteParser)
+            public Task<IEndpointResult> HandleAsync(int id, CancellationToken cancellationToken)
             {
-                this.intIdRouteParser = intIdRouteParser;
-            }
-
-            public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken)
-            {
-                var id = intIdRouteParser.GetIdFromRoute();
-                return Task.FromResult<IEndpointResult>(new JsonContentResult<Book>(new Book { Id = id, Name = id.ToString() }, id));
+                return Task.FromResult(EndpointResult.Json(new Book { Id = id, Name = id.ToString() }, id));
             }
         }
     }

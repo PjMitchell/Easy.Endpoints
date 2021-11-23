@@ -1,4 +1,5 @@
 using Easy.Endpoints.TestService.Endpoints.Auth;
+using Easy.Endpoints.TestService.Endpoints.People;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ namespace Easy.Endpoints.TestService.Endpoints
             services.AddEasyEndpoints();
             services.AddSwaggerGen();
             services.AddSingleton<IAuthService, AuthService>();
+            services.AddTransient<IPeopleService, PeopleService>();
             services.AddAuthentication(TestAuthenticationHandler.Schema).AddScheme<TestAuthOptions, TestAuthenticationHandler>(TestAuthenticationHandler.Schema, o => { });
             services.AddAuthorization();
         }

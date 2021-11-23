@@ -22,7 +22,6 @@ namespace Easy.Endpoints
             this IEndpointRouteBuilder endpoints)
         {
             var requestEndPoints = endpoints.ServiceProvider.GetRequiredService<IEndpointManifest>().ToArray();
-            var options = endpoints.ServiceProvider.GetRequiredService<EndpointOptions>();
             var dataSource = endpoints.DataSources.OfType<EasyEndpointDataSource>().FirstOrDefault();
             if (dataSource is null)
             {
@@ -34,7 +33,7 @@ namespace Easy.Endpoints
             foreach (var endPoint in requestEndPoints)
             {
                 var builder = new RouteEndpointBuilder(
-                    BuildDelegate(endPoint.Type, options),
+                    BuildDelegate(endPoint),
                     endPoint.Pattern, endPoint.Order)
                 {
                     DisplayName = endPoint.Name,
@@ -47,19 +46,16 @@ namespace Easy.Endpoints
             return new GroupedEasyEndpointConventionBuilder(results);
         }
 
-        private static RequestDelegate BuildDelegate(Type type, EndpointOptions options)
+        private static RequestDelegate BuildDelegate(EndpointInfo endpointInfo)
         {
             async Task Request(HttpContext context)
-            {
-                var endpointContextAccessor = context.RequestServices.GetRequiredService<EndpointContextAccessor>();
-                var endpointContext = new DefaultEndpointContext(context, options);
-                endpointContextAccessor.SetContext(endpointContext);
-                var endpoint = (IEndpoint)context.RequestServices.GetRequiredService(type);
+            {   
                 try
                 {
-                    await endpoint.HandleRequestAsync(endpointContext).ConfigureAwait(false);
+                    var endpointHandler = endpointInfo.HandlerDeclaration.Factory(context);
+                    await endpointHandler.HandleRequest().ConfigureAwait(false);
                 }
-                catch(EndpointStatusCodeResponseException e)
+                catch (EndpointStatusCodeResponseException e)
                 {
                     context.Response.StatusCode = e.StatusCode;
                     await context.Response.WriteAsync(e.Message).ConfigureAwait(false);

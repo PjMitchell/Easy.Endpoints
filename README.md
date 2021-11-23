@@ -17,7 +17,8 @@ app.UseEndpoints(endpoints =>
   });
 ```
 
-And it will grab all implementations of IEndpoint and IEndpointHandler and build routes for them.
+And it will grab all implementations of IEndpoint. IEndpoint is expected to implement a single public method named Handle or HandleAsync
+Can extract paramters from route, body, query parameters and from HttpContext
 
 ## Sample
 Simple endpoint that will be grouped in swagger under Greetings  
@@ -25,17 +26,13 @@ Simple endpoint that will be grouped in swagger under Greetings
 [EndpointController("Greetings")]  
 public class HelloWorldEndpoint : IEndpoint  
 {  
-    public Task HandleRequestAsync(EndpointContext httpContext)  
-    {  
-        httpContext.Response.WriteAsync("Hello World");  
-        return Task.CompletedTask;  
-    }  
+    public string Handle()  => "Hello World";
 }
 ```
 GET: /Book
 Returns a list of books in json format
 ```csharp
-public class GetBookEndpointHandler : IJsonResponseEndpointHandler<Book[]>
+public class GetBookEndpointHandler : IEndpoint
 {
     public Task<Book[]> HandleAsync() => Task.FromResult(Array.Empty<Book>());
 }
@@ -44,7 +41,7 @@ public class GetBookEndpointHandler : IJsonResponseEndpointHandler<Book[]>
 POST: /Book
 Accepts a Book in the body as Json and returns a Command Result
 ```csharp
-public class PostBookEndpointHandler : IJsonEndpointHandler<Book, CommandResult>
+public class PostBookEndpointHandler : IEndpoint
 {
     public PostBookEndpointHandler()
     {            
@@ -60,7 +57,7 @@ POST: /TestOne
 Alternatively can declare route and Method
 ```csharp
 [Post("TestOne")]
-public class PostTestResponseEndpoint : IJsonBodyEndpointHandler<TestResponsePayload>
+public class PostTestResponseEndpoint : IEndpoint
 {
     public Task HandleAsync(TestResponsePayload body)
     {
@@ -78,7 +75,7 @@ POST: /Animal/Dog
 [KnownTypes("Cow", typeof(Cow))]
 [KnownTypes("Dog", typeof(Dog))]
 [Post("[controller]/[type]")]
-public class AnimalEndpointHandler<TAnimal> : IJsonEndpointHandler<TAnimal, string> where TAnimal : IAnimal
+public class AnimalEndpointHandler<TAnimal> : IEndpoint where TAnimal : IAnimal
 {
     public Task<string> HandleAsync(TAnimal body, CancellationToken cancellationToken)
     {
@@ -92,19 +89,18 @@ Handlers can return IEndpointResult for when more control over the end result is
 [ProducesResponseType(200,Type = typeof(People))]  
 [ProducesResponseType(404, Type = typeof(void))]  
 [Get("People/{id:int}")]  
-public class GetPeopleByIdEndpointHandler : IEndpointResultHandler  
-{  
-    private readonly IIntIdRouteParser idRouteParser;  
-  
-    public GetPeopleByIdEndpointHandler(IIntIdRouteParser idRouteParser)  
+public class GetPeopleByIdEndpointHandler : IEndpoint  
+{   
+    private readonly IPeopleService peopleService
+
+    public GetPeopleByIdEndpointHandler(IPeopleService peopleService)
+    {
+        this.peopleService = peopleService
+    }
+
+    public Task<IEndpointResult> HandleAsync(int id, CancellationToken cancellationToken)  
     {  
-        this.idRouteParser = idRouteParser;  
-    }   
-  
-    public Task<IEndpointResult> HandleAsync(CancellationToken cancellationToken)  
-    {  
-        var id = idRouteParser.GetIdFromRoute();  
-        var person = PeopleService.AllPeople().SingleOrDefault(p => p.Id == id);  
+        var person = peopleService.AllPeople().SingleOrDefault(p => p.Id == id);  
         if (person is null)  
             return Task.FromResult<IEndpointResult>(new NoContentResult(404));  
         return Task.FromResult<IEndpointResult>(new JsonContentResult<People>(person));  

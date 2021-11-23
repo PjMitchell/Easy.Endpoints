@@ -12,12 +12,15 @@ namespace Easy.Endpoints.Benchmark
     {
         private HttpClient endPointServer;
         private HttpClient mvcServer;
+        private HttpClient minimalServer;
+
 
         [GlobalSetup]
         public void Setup()
         {
             endPointServer = ServerFactory.CreateEndpointServer().CreateClient();
             mvcServer = ServerFactory.CreateMvcServer().CreateClient();
+            minimalServer = ServerFactory.CreateMinimalApiServer().CreateClient();
         }
 
         [Benchmark]
@@ -30,6 +33,12 @@ namespace Easy.Endpoints.Benchmark
         public async Task<string> PostMvc()
         {
             return await SendRequest(mvcServer, "/book").ConfigureAwait(false);
+        }
+
+        [Benchmark]
+        public async Task<string> PostMinimal()
+        {
+            return await SendRequest(minimalServer, "/book").ConfigureAwait(false);
         }
 
         private static async Task<string> SendRequest(HttpClient httpClient, string route)

@@ -13,9 +13,6 @@ namespace Easy.Endpoints.Tests
         {
             var option = new EndpointOptionBuilders().BuildOption();
             Assert.Equal("[endpoint]", option.RoutePattern);
-            Assert.Equal(2, option.EndpointForHandlerDeclarations.Count);
-            Assert.Contains(option.EndpointForHandlerDeclarations, a => a is EndpointsForEndpointResultHandlerDeclarations);
-            Assert.Contains(option.EndpointForHandlerDeclarations, a => a is JsonEndpointForHandlerDeclarations);
             var singleMetaDeclaration = Assert.Single(option.EndpointMetaDeclarations);
             Assert.IsType<AuthEndpointMetaDataDeclaration>(singleMetaDeclaration);
 
@@ -48,24 +45,6 @@ namespace Easy.Endpoints.Tests
                 .BuildOption();
             Assert.Equal(JsonNamingPolicy.CamelCase, option.JsonSerializerOptions.PropertyNamingPolicy);
             Assert.False(option.JsonSerializerOptions.PropertyNameCaseInsensitive);
-        }
-
-        [Fact]
-        public void With_EndpointForHandlerDeclarations()
-        {
-            var declarations = new List<IEndpointForHandlerDeclaration> { new EndpointsForEndpointResultHandlerDeclarations() };
-            var option = new EndpointOptionBuilders().WithEndpointForHandlerDeclarations(declarations)
-                .BuildOption();
-            Assert.Equal(declarations, option.EndpointForHandlerDeclarations);
-        }
-
-        [Fact]
-        public void With_ModifiedEndpointForHandlerDeclarations()
-        {
-            var option = new EndpointOptionBuilders().WithEndpointForHandlerDeclarations(o => o.Where(r => r.GetType() != typeof(EndpointsForEndpointResultHandlerDeclarations)))
-                .BuildOption();
-            var singleMetaDeclaration = Assert.Single(option.EndpointForHandlerDeclarations);
-            Assert.IsType<JsonEndpointForHandlerDeclarations>(singleMetaDeclaration);
         }
 
         [Fact]

@@ -13,14 +13,14 @@ namespace Easy.Endpoints
         /// Constructs new instance of EnpointInfo
         /// </summary>
         /// <param name="type">Type of IEndpoint</param>
-        /// <param name="handler">Type of IEndpointHandler if being used by endpoint</param>
+        /// <param name="handlerDeclaration">Information about the endpoint handler</param>
         /// <param name="pattern">Route pattern of endpoint</param>
         /// <param name="name">Route Name</param>
         /// <param name="order">Route order.</param>
-        public EndpointInfo(Type type, Type? handler, RoutePattern pattern, string name, int order)
+        public EndpointInfo(Type type, EndpointRequestHandlerDeclaration handlerDeclaration,  RoutePattern pattern, string name, int order)
         {
             Type = type;
-            Handler = handler;
+            HandlerDeclaration = handlerDeclaration;
             Pattern = pattern;
             Order = order;
             Name = name;
@@ -33,14 +33,14 @@ namespace Easy.Endpoints
         public Type Type { get; }
 
         /// <summary>
-        /// Gets Type of IEndpointHandler if being used by endpoint
-        /// </summary>
-        public Type? Handler { get; }
-
-        /// <summary>
         /// Gets route pattern of endpoint
         /// </summary>
         public RoutePattern Pattern { get; }
+
+        /// <summary>
+        /// Information on the Endpoint Request Handler
+        /// </summary>
+        public EndpointRequestHandlerDeclaration HandlerDeclaration { get; }
 
         /// <summary>
         /// Gets Route Name

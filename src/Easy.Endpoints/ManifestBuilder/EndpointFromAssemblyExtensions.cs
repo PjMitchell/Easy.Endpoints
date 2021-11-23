@@ -21,15 +21,9 @@ namespace Easy.Endpoints
                 builder.AddForEndpoint(endpoint);
             }
 
-            foreach (var handler in assembly.DefinedTypes.Where(IsRequestHandler))
-            {
-                builder.AddForEndpointHandler(handler);
-            }
-
             return builder;
         }
 
         private static bool IsRequestEndpoint(TypeInfo t) => t.IsAssignableTo(typeof(IEndpoint));
-        private static bool IsRequestHandler(TypeInfo t) => t.IsAssignableTo(typeof(IEndpointHandler));
     }
 }

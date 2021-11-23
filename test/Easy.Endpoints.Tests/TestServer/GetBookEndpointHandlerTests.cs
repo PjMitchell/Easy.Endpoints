@@ -21,7 +21,7 @@ namespace Easy.Endpoints.Tests
             var httpResult = await server.CreateRequest("/Book").GetAsync();
             Assert.Equal(System.Net.HttpStatusCode.OK, httpResult.StatusCode);
             var observed = await httpResult.GetJsonBody<Book[]>();
-            var expected = GetBookEndpointHandler.AllBooks().ToArray();
+            var expected = GetBookEndpoint.AllBooks().ToArray();
             Assert.Equal(expected.Length, observed.Length);
             for(var i = 0; i < expected.Length; i++)
             {

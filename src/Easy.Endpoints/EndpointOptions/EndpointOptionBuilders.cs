@@ -76,28 +76,6 @@ namespace Easy.Endpoints
         }
 
         /// <summary>
-        /// Adds all IEndpointForHandlerDeclaration to builder
-        /// </summary>
-        /// <param name="declarations">All IEndpointForHandlerDeclaration to be added</param>
-        /// <returns>Updated instance of the option builder</returns>
-        public EndpointOptionBuilders WithEndpointForHandlerDeclarations(IEnumerable<IEndpointForHandlerDeclaration> declarations)
-        {
-            option.EndpointForHandlerDeclarations = declarations.ToArray();
-            return this;
-        }
-
-        /// <summary>
-        /// Adds all IEndpointForHandlerDeclaration to builder
-        /// </summary>
-        /// <param name="declarationsModification">Modification of existing IEndpointForHandlerDeclaration</param>
-        /// <returns>Updated instance of the option builder</returns>
-        public EndpointOptionBuilders WithEndpointForHandlerDeclarations(Func<IEnumerable<IEndpointForHandlerDeclaration>, IEnumerable<IEndpointForHandlerDeclaration>> declarationsModification)
-        {
-            option.EndpointForHandlerDeclarations = declarationsModification(option.EndpointForHandlerDeclarations).ToArray();
-            return this;
-        }
-
-        /// <summary>
         /// Build Endpoint option
         /// </summary>
         /// <returns>Option Endpoint for builder</returns>

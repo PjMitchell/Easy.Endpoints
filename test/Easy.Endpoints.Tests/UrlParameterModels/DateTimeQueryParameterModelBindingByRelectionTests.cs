@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
+﻿using Microsoft.AspNetCore.TestHost;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,7 +17,7 @@ namespace Easy.Endpoints.Tests
 
         public DateTimeQueryParameterModelBindingByRelectionTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<UrlModelEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<DateTimeEndpoint>());
         }
 
         [Fact]
@@ -28,11 +27,10 @@ namespace Easy.Endpoints.Tests
           
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?single={one:yyyy-MM-ddTHH:mm:ss}&nullable={two:yyyy-MM-ddTHH:mm:ss}").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Equal(two, observed.Result.Nullable);
-            Assert.Equal(one, observed.Result.Single);
-            Assert.Equal(three, observed.Result.Route);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Equal(two, observed.Nullable);
+            Assert.Equal(one, observed.Single);
+            Assert.Equal(three, observed.Route);
 
 
         }
@@ -42,9 +40,8 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Null(observed.Result.Nullable);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Null(observed.Nullable);
         }
 
         [Fact]
@@ -52,69 +49,58 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Equal(default(DateTime), observed.Result.Single);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Equal(default(DateTime), observed.Single);
         }
 
         [Fact]
         public async Task MultipleValues_ForNullable_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?nullable=12&nullable=12").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("nullable", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.MultipleParametersFoundError, "nullable"), error.Error);
-
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task MultipleValues_ForSingle_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?single=12&single=12").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("single", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.MultipleParametersFoundError, "single"), error.Error);
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task FailedToParses_ForNullable_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?nullable=one").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("nullable", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.CouldNotParseError, "one", typeof(DateTime)), error.Error);
-
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task FailedToParses_ForSingle_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?single=one").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("single", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.CouldNotParseError, "one", typeof(DateTime)), error.Error);
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Get("{route:datetime}/Test")]
-        public class UrlModelEndpoint : TestUrlParameterEndpoint<UrlModel> { }
-
-        public class UrlModel : UrlParameterModel
+        public class DateTimeEndpoint : IEndpoint
         {
-            private static readonly Action<UrlModel, HttpRequest> binding = UrlParameterBindingHelper.BuildBinder<UrlModel>();
+            public UrlModel Handle(DateTime route, DateTime? nullable, DateTime single = default)
+            {
+                return new UrlModel
+                {
+                    Route = route,
+                    Single = single,
+                    Nullable = nullable
+                };
+            }
+        }
+
+        public class UrlModel
+        {
             public DateTime Single { get; set; }
             public DateTime? Nullable { get; set; }
-            [RouteParameter]
             public DateTime Route { get; set; }
 
-            public override void BindUrlParameters(HttpRequest request) => binding(this, request);
         }
     }
 
@@ -129,7 +115,7 @@ namespace Easy.Endpoints.Tests
 
         public DateTimeOffSetQueryParameterModelBindingByRelectionTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<UrlModelEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<DateTimeOffsetEndpoint>());
         }
 
         [Fact]
@@ -139,11 +125,10 @@ namespace Easy.Endpoints.Tests
             var url = $"{three:yyyy-MM-ddTHH:mm:sszzz}/Test?single={one:yyyy-MM-ddTHH:mm:sszzz}&nullable={two:yyyy-MM-ddTHH:mm:ssZ}";
             var result = await server.CreateRequest(url).GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Equal(two, observed.Result.Nullable);
-            Assert.Equal(one, observed.Result.Single);
-            Assert.Equal(three, observed.Result.Route);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Equal(two, observed.Nullable);
+            Assert.Equal(one, observed.Single);
+            Assert.Equal(three, observed.Route);
 
         }
 
@@ -152,9 +137,8 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:sszzz}/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Null(observed.Result.Nullable);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Null(observed.Nullable);
         }
 
         [Fact]
@@ -162,69 +146,57 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:sszzz}/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            Assert.Empty(observed.Errors);
-            Assert.Equal(default(DateTimeOffset), observed.Result.Single);
+            var observed = await result.GetJsonBody<UrlModel>();
+            Assert.Equal(default(DateTimeOffset), observed.Single);
         }
 
         [Fact]
         public async Task MultipleValues_ForNullable_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:sszzz}/Test?nullable=12&nullable=12").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("nullable", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.MultipleParametersFoundError, "nullable"), error.Error);
-
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task MultipleValues_ForSingle_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:sszzz}/Test?single=12&single=12").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("single", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.MultipleParametersFoundError, "single"), error.Error);
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task FailedToParses_ForNullable_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:sszzz}/Test?nullable=one").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("nullable", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.CouldNotParseError, "one", typeof(DateTimeOffset)), error.Error);
-
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task FailedToParses_ForSingle_ReturnsError()
         {
             var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:sszzz}/Test?single=one").GetAsync();
-            Assert.True(result.IsSuccessStatusCode);
-            var observed = await result.GetJsonBody<TestUrlParameterEndpointResult<UrlModel>>();
-            var error = Assert.Single(observed.Errors);
-            Assert.Equal("single", error.ParameterName);
-            Assert.Equal(string.Format(UrlParameterErrorMessages.CouldNotParseError, "one", typeof(DateTimeOffset)), error.Error);
+            Assert.False(result.IsSuccessStatusCode);
         }
 
         [Get("{route:datetime}/Test")]
-        public class UrlModelEndpoint : TestUrlParameterEndpoint<UrlModel> { }
-
-        public class UrlModel : UrlParameterModel
+        public class DateTimeOffsetEndpoint : IEndpoint
         {
-            private static readonly Action<UrlModel, HttpRequest> binding = UrlParameterBindingHelper.BuildBinder<UrlModel>();
+            public UrlModel Handle(DateTimeOffset route, DateTimeOffset? nullable, DateTimeOffset single = default)
+            {
+                return new UrlModel
+                {
+                    Route = route,
+                    Single = single,
+                    Nullable = nullable
+                };
+            }
+        }
+
+        public class UrlModel
+        {
             public DateTimeOffset Single { get; set; }
             public DateTimeOffset? Nullable { get; set; }
-            [RouteParameter]
             public DateTimeOffset Route { get; set; }
-
-            public override void BindUrlParameters(HttpRequest request) => binding(this, request);
         }
     }
 }

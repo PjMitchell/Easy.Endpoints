@@ -45,9 +45,9 @@ namespace Easy.Endpoints
             return new ApiDescriptionGroupCollection(new[] { group }, 1);
         }
 
-        private static IDictionary<string, string> GetRouteValues(EndpointInfo endpoint)
+        private static IDictionary<string, string?> GetRouteValues(EndpointInfo endpoint)
         {
-            return endpoint.GetAllMetadata<IEndpointRouteValueMetadataProvider>().ToDictionary(k => k.Key, v => v.Value);
+            return endpoint.GetAllMetadata<IEndpointRouteValueMetadataProvider>().ToDictionary<IEndpointRouteValueMetadataProvider, string, string?>(k => k.Key, v => v.Value);
         }
 
         private IEnumerable<ApiDescription> GetApiDescriptions(EndpointInfo endpoint, ActionDescriptor actionDescriptor)
@@ -129,13 +129,16 @@ namespace Easy.Endpoints
 
         private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointInfo endpoint)
         {
-            var urlParameterMetaData = endpoint.GetUrlParameterMetaData();
-            foreach(var data in urlParameterMetaData)
+            foreach(var data in endpoint.HandlerDeclaration.ParameterInfos.Where(w=> IsParameterSourceRouteOrQuery(w) && IsParameterIsNotAlreadyInList(w, description)))
             {
-                if(description.ParameterDescriptions.All(a=> a.Name != data.Name))
                     description.ParameterDescriptions.Add(GetParameterDescriptor(data));
             }
         }
+
+        private static bool IsParameterSourceRouteOrQuery(EndpointParameterInfo info) => info.Source is EndpointParameterSource.Route or EndpointParameterSource.Query;
+
+        private static bool IsParameterIsNotAlreadyInList(EndpointParameterInfo info, ApiDescription description) => description.ParameterDescriptions.All(a => a.Name != info.Name);
+
 
         private ApiParameterDescription GetParameterDescriptor(RoutePatternParameterPart parameter)
         {
@@ -151,14 +154,14 @@ namespace Easy.Endpoints
             };
         }
 
-        private ApiParameterDescription GetParameterDescriptor(UrlParameterMetaData parameter)
+        private ApiParameterDescription GetParameterDescriptor(EndpointParameterInfo parameter)
         {
             return new ApiParameterDescription
             {
                 Name = parameter.Name,
-                Type = parameter.Type,
-                ModelMetadata = modelMetadataProvider.GetMetadataForType(parameter.Type),
-                Source = parameter.IsRouteParameter ? BindingSource.Path : BindingSource.Query,
+                Type = parameter.ParameterType,
+                ModelMetadata = modelMetadataProvider.GetMetadataForType(parameter.ParameterType),
+                Source = parameter.Source == EndpointParameterSource.Route ? BindingSource.Path : BindingSource.Query,
                 IsRequired = !parameter.IsOptional,
                 RouteInfo = new ApiParameterRouteInfo { IsOptional = parameter.IsOptional }
             };
@@ -216,9 +219,10 @@ namespace Easy.Endpoints
             var result = new ApiResponseType
             {
                 StatusCode = meta.StatusCode,
-                Type = meta.Type,
-                ModelMetadata = modelMetadataProvider.GetMetadataForType(meta.Type)
+                Type = meta.Type                
             };
+            if (meta.Type is not null)
+                result.ModelMetadata = modelMetadataProvider.GetMetadataForType(meta.Type);
             result.ApiResponseFormats = contentTypes.Select(s => new ApiResponseFormat { MediaType = s }).ToList();
             return result;
         }

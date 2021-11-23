@@ -13,11 +13,6 @@ namespace Easy.Endpoints
         /// </summary>
         public EndpointOptions()
         {
-            EndpointForHandlerDeclarations = new List<IEndpointForHandlerDeclaration>
-            {
-                new EndpointsForEndpointResultHandlerDeclarations(),
-                new JsonEndpointForHandlerDeclarations()
-            };
             JsonSerializerOptions = new JsonSerializerOptions {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true,
@@ -37,11 +32,6 @@ namespace Easy.Endpoints
         /// JSON Serializer Options for Endpoints
         /// </summary>
         public JsonSerializerOptions JsonSerializerOptions { get; internal set; }
-
-        /// <summary>
-        /// All EndpointForHandlerDeclarations
-        /// </summary>
-        public IReadOnlyList<IEndpointForHandlerDeclaration> EndpointForHandlerDeclarations { get; internal set; }
 
         /// <summary>
         /// All EndpointMetaDeclarations 
