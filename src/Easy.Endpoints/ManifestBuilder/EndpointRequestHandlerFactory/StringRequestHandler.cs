@@ -9,14 +9,12 @@ namespace Easy.Endpoints
         private readonly ObjectEndpointMethodExecutor executor;
         protected readonly HttpContext httpContext;
         private readonly ParameterArrayFactory parameterFactory;
-        private readonly EndpointOptions options;
 
-        public StringRequestHandler(ObjectEndpointMethodExecutor executor, HttpContext httpContext, ParameterArrayFactory parameterFactory, EndpointOptions options)
+        public StringRequestHandler(ObjectEndpointMethodExecutor executor, HttpContext httpContext, ParameterArrayFactory parameterFactory)
         {
             this.executor = executor;
             this.httpContext = httpContext;
             this.parameterFactory = parameterFactory;
-            this.options = options;
         }
 
 

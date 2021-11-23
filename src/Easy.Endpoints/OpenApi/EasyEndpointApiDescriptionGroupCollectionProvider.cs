@@ -129,14 +129,15 @@ namespace Easy.Endpoints
 
         private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointInfo endpoint)
         {
-            foreach(var data in endpoint.HandlerDeclaration.ParameterInfos
-                .Where(w=> w.Source is EndpointParameterSource.Route or EndpointParameterSource.Query))
+            foreach(var data in endpoint.HandlerDeclaration.ParameterInfos.Where(w=> IsParameterSourceRouteOrQuery(w) && IsParameterIsNotAlreadyInList(w, description)))
             {
-                if(description.ParameterDescriptions.All(a=> a.Name != data.Name))
                     description.ParameterDescriptions.Add(GetParameterDescriptor(data));
             }
         }
 
+        private static bool IsParameterSourceRouteOrQuery(EndpointParameterInfo info) => info.Source is EndpointParameterSource.Route or EndpointParameterSource.Query;
+
+        private static bool IsParameterIsNotAlreadyInList(EndpointParameterInfo info, ApiDescription description) => description.ParameterDescriptions.All(a => a.Name != info.Name);
 
 
         private ApiParameterDescription GetParameterDescriptor(RoutePatternParameterPart parameter)

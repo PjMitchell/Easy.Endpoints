@@ -22,7 +22,6 @@ namespace Easy.Endpoints
             this IEndpointRouteBuilder endpoints)
         {
             var requestEndPoints = endpoints.ServiceProvider.GetRequiredService<IEndpointManifest>().ToArray();
-            var options = endpoints.ServiceProvider.GetRequiredService<EndpointOptions>();
             var dataSource = endpoints.DataSources.OfType<EasyEndpointDataSource>().FirstOrDefault();
             if (dataSource is null)
             {

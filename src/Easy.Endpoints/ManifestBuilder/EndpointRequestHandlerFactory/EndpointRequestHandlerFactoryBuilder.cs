@@ -16,7 +16,6 @@ namespace Easy.Endpoints
             
             var handleMethod = handleMethods[0];
             var parameterInfo = BuildEndpointParameterInfo(handleMethod,routeInfo, options);
-            var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             if (handleMethod.ReturnType == typeof(void))
                 return BuildNoContentResponse(new VoidEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
             if (handleMethod.ReturnType == typeof(Task))
@@ -31,7 +30,7 @@ namespace Easy.Endpoints
                 return BuildForEndpointResultResponse(endpointMethodExecutor, parameterInfo, options);
 
             if (returnType == typeof(string))
-                return BuildForStringResponse(endpointMethodExecutor, parameterInfo, returnType, options);
+                return BuildForStringResponse(endpointMethodExecutor, parameterInfo, returnType);
             
             return BuildForObjectResponse(endpointMethodExecutor, parameterInfo, returnType, options);
         }
@@ -70,11 +69,11 @@ namespace Easy.Endpoints
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, Type returnType, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, Type returnType)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
-                (ctx) => new StringRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory, options),
+                (ctx) => new StringRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory),
                 parameterInfo,
                 returnType
             );

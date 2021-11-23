@@ -25,7 +25,7 @@ namespace Easy.Endpoints
         /// <param name="builder">The current instance of the manifest builder</param>
         /// <param name="endpoint">Type of IEndpoint to be added</param>
         /// <returns>Same instance of the manifest builder</returns>
-        public static EndpointManifestBuilder AddForEndpoint(this EndpointManifestBuilder builder, Type endpoint) => AddForEndpoint(builder, (Type)endpoint.GetTypeInfo());
+        public static EndpointManifestBuilder AddForEndpoint(this EndpointManifestBuilder builder, Type endpoint) => AddForEndpoint(builder, endpoint.GetTypeInfo());
 
 
         /// <summary>

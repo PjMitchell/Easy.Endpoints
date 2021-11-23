@@ -5,7 +5,7 @@ namespace Easy.Endpoints
 {
     internal abstract class NoResultEndpointMethodExecutor : EndpointMethodExecutor
     {
-        public NoResultEndpointMethodExecutor(Type endpointType) : base(endpointType)
+        protected NoResultEndpointMethodExecutor(Type endpointType) : base(endpointType)
         {
         }
 

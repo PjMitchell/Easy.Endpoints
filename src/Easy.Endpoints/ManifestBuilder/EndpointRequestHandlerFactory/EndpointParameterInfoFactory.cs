@@ -34,11 +34,8 @@ namespace Easy.Endpoints
                 return EndpointParameterInfo.Route(RouteParameterBinder.GetParameterFactoryForRoute(parameterInfo.Name, parameterInfo.ParameterType), parameterInfo.ParameterType, parameterInfo.Name);
 
             if (QueryParameterBinder.CanParseQueryParameter(parameterInfo.ParameterType) && parameterInfo.Name is not null)
-            {
-                var isOptional = parameterInfo.HasDefaultValue || parameterInfo.ParameterType.IsGenericTypeDefinition && parameterInfo.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>);
                 return QueryParameterBinder.GetParameterInfoForQuery(parameterInfo.Name, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue);
 
-            }
 
             return EndpointParameterInfo.Body(Body(parameterInfo.ParameterType, options), parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
         }

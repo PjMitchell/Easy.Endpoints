@@ -8,7 +8,7 @@ namespace Easy.Endpoints
     internal class SyncObjectEndpointMethodExecutor : ObjectEndpointMethodExecutor
     {
         public override Type ObjectReturnType { get; }
-        private ObjectEndpointHandleExcutor executor;
+        private readonly ObjectEndpointHandleExcutor executor;
 
         public SyncObjectEndpointMethodExecutor(Type endpointType, MethodInfo handleMethod) : base(endpointType)
         {

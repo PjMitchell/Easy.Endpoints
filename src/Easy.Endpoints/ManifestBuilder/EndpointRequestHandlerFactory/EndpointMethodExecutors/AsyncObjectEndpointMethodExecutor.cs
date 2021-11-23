@@ -7,7 +7,7 @@ namespace Easy.Endpoints
 {
     internal abstract class AsyncObjectEndpointMethodExecutor : ObjectEndpointMethodExecutor
     {
-        public AsyncObjectEndpointMethodExecutor(Type endpointType) : base(endpointType)
+        protected AsyncObjectEndpointMethodExecutor(Type endpointType) : base(endpointType)
         {
 
         }
@@ -29,7 +29,7 @@ namespace Easy.Endpoints
     internal class ValueTaskObjectEndpointMethodExecutor : AsyncObjectEndpointMethodExecutor
     {
         public override Type ObjectReturnType { get; }
-        private ObjectEndpointHandleExcutor executor;
+        private readonly ObjectEndpointHandleExcutor executor;
 
         public ValueTaskObjectEndpointMethodExecutor(Type endpointType, MethodInfo handleMethod) : base(endpointType)
         {
@@ -54,7 +54,7 @@ namespace Easy.Endpoints
     internal class TaskObjectEndpointMethodExecutor : AsyncObjectEndpointMethodExecutor
     {
         public override Type ObjectReturnType { get; }
-        private ObjectEndpointHandleExcutor executor;
+        private readonly ObjectEndpointHandleExcutor executor;
 
         public TaskObjectEndpointMethodExecutor(Type endpointType, MethodInfo handleMethod) : base(endpointType)
         {

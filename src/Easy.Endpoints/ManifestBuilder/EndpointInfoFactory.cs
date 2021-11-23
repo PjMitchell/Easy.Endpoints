@@ -149,7 +149,7 @@ namespace Easy.Endpoints
 
         
 
-        private class EndpointRouteInfo : IRouteTemplateProvider
+        private sealed class EndpointRouteInfo : IRouteTemplateProvider
         {
             public EndpointRouteInfo(IRouteTemplateProvider routeTemplate, IEnumerable<string> methods) : this(routeTemplate.Template ?? string.Empty, routeTemplate.Name ?? string.Empty, routeTemplate.Order, methods)
             {
