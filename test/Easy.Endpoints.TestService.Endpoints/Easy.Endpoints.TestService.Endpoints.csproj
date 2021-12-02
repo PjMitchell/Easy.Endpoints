@@ -9,7 +9,16 @@
   </ItemGroup>
 
   <ItemGroup>
+	<ProjectReference Include="..\..\Analyzer\Easy.Endpoints.Analyzer\Easy.Endpoints.Analyzer.csproj">
+		<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		<OutputItemType>Analyzer</OutputItemType>
+	</ProjectReference>
+	<ProjectReference Include="..\..\Analyzer\Easy.Endpoints.Analyzer.CodeFixes\Easy.Endpoints.Analyzer.CodeFixes.csproj">
+		<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+		<OutputItemType>Analyzer</OutputItemType>
+	</ProjectReference>
     <ProjectReference Include="..\..\src\Easy.Endpoints\Easy.Endpoints.csproj" />
   </ItemGroup>
+	
 
 </Project>

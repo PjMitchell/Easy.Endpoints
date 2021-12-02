@@ -19,4 +19,7 @@
       <PackagePath></PackagePath>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Easy.Endpoints.Analyzer" Version="1.0.*" />
+  </ItemGroup>
 </Project>

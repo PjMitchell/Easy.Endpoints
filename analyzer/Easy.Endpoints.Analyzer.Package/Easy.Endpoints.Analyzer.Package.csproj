@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Easy.Endpoints.Analyzer</PackageId>
+    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+	<Authors>Peter Mitchell</Authors>
+	<RepositoryUrl>https://github.com/PjMitchell/Easy.Endpoints</RepositoryUrl>
+	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+	<Description>Analyzer for Easy.Endpoints</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>    
+    <PackageTags>Easy.Endpoints.Analyzer, Easy.Endpoints, analyzers</PackageTags>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Easy.Endpoints.Analyzer.CodeFixes\Easy.Endpoints.Analyzer.CodeFixes.csproj" />
+    <ProjectReference Include="..\Easy.Endpoints.Analyzer\Easy.Endpoints.Analyzer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <Target Name="_AddAnalyzersToOutput">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\Easy.Endpoint.Analyzer.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\Easy.Endpoint.Analyzer.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
+    </ItemGroup>
+  </Target>
+    <ItemGroup>
+	    <None Include="..\..\LICENSE.txt">
+		    <Pack>True</Pack>
+		    <PackagePath></PackagePath>
+	    </None>
+    </ItemGroup>
+</Project>
