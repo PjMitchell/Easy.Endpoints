@@ -228,7 +228,7 @@ namespace Easy.Endpoints
         private static bool CanParseArrayValue(Type type)
         {
 
-            return type.IsArray && CanParseSingleValue(type.GetElementType());
+            return type.IsArray && CanParseSingleValue(type.GetElementType()!);
         }
 
         private enum ParameterType
