@@ -123,7 +123,8 @@ namespace Easy.Endpoints
     /// Gets Parameter value from httpContext
     /// </summary>
     /// <param name="httpContext">Source</param>
+    /// <param name="options">Endpoint options</param> 
     /// <returns>Value for Parameter</returns>
-    public delegate ValueTask<object?> ParameterFactory(HttpContext httpContext);
+    public delegate ValueTask<object?> ParameterFactory(HttpContext httpContext, EndpointOptions options);
 
 }

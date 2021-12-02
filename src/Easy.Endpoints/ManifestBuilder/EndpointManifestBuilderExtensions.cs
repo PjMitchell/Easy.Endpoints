@@ -38,7 +38,7 @@ namespace Easy.Endpoints
         {
             if (!endpoint.IsAssignableTo(typeof(IEndpoint)))
                 throw new InvalidEndpointSetupException($"Could not assign {endpoint.FullName} to {nameof(IEndpoint)}");
-            if (endpoint.IsGenericType)
+            if (endpoint.IsGenericTypeDefinition)
             {
                 foreach (var info in GetGenericEndpointInfo(endpoint).Where(i => i.TypeParameters.Length == endpoint.GenericTypeParameters.Length))
                 {

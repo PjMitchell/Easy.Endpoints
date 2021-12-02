@@ -23,7 +23,7 @@ namespace Easy.Endpoints
         public async Task HandleRequest()
         {
             
-            var parameters = await parameterFactory(httpContext);
+            var parameters = await parameterFactory(httpContext, options);
             var endpointHandler = httpContext.RequestServices.GetRequiredService(executor.EndpointType);
             var result = await executor.Execute(endpointHandler, parameters);
             await HttpContextJsonHelper.WriteJsonResponse(httpContext,options.JsonSerializerOptions,result,executor.ObjectReturnType).ConfigureAwait(false);

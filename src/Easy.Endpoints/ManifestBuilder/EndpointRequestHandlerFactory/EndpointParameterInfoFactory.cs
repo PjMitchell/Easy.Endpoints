@@ -30,27 +30,27 @@ namespace Easy.Endpoints
             if (parameterInfo.ParameterType == typeof(ClaimsPrincipal))
                 return EndpointParameterInfo.Predefined(User, parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
 
-            if (delcaredRouteParameters.Any(r => r.Name == parameterInfo.Name) && RouteParameterBinder.CanParseRoute(parameterInfo.ParameterType) && parameterInfo.Name is not null)
-                return EndpointParameterInfo.Route(RouteParameterBinder.GetParameterFactoryForRoute(parameterInfo.Name, parameterInfo.ParameterType), parameterInfo.ParameterType, parameterInfo.Name);
+            if (delcaredRouteParameters.Any(r => r.Name == parameterInfo.Name) && ParameterBinder.CanParseRoute(parameterInfo.ParameterType) && parameterInfo.Name is not null)
+                return ParameterBinder.GetParameterInfoForRoute(parameterInfo.Name, parameterInfo.ParameterType);
 
-            if (QueryParameterBinder.CanParseQueryParameter(parameterInfo.ParameterType) && parameterInfo.Name is not null)
-                return QueryParameterBinder.GetParameterInfoForQuery(parameterInfo.Name, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue);
+            if (ParameterBinder.CanParseQueryParameter(parameterInfo.ParameterType) && parameterInfo.Name is not null)
+                return ParameterBinder.GetParameterInfoForQuery(parameterInfo.Name, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue);
 
 
-            return EndpointParameterInfo.Body(Body(parameterInfo.ParameterType, options), parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
+            return EndpointParameterInfo.Body(Body(parameterInfo.ParameterType), parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
         }
 
-        private static ValueTask<object?> CancelationToken(HttpContext ctx) => ValueTask.FromResult<object?>(ctx.RequestAborted);
-        private static ValueTask<object?> Context(HttpContext ctx) => ValueTask.FromResult<object?>(ctx);
-        private static ValueTask<object?> User(HttpContext ctx) => ValueTask.FromResult<object?>(ctx.User);
-        private static ValueTask<object?> Response(HttpContext ctx) => ValueTask.FromResult<object?>(ctx.Response);
-        private static ValueTask<object?> Request(HttpContext ctx) => ValueTask.FromResult<object?>(ctx.Request);
+        private static ValueTask<object?> CancelationToken(HttpContext ctx, EndpointOptions opts) => ValueTask.FromResult<object?>(ctx.RequestAborted);
+        private static ValueTask<object?> Context(HttpContext ctx, EndpointOptions opts) => ValueTask.FromResult<object?>(ctx);
+        private static ValueTask<object?> User(HttpContext ctx, EndpointOptions opts) => ValueTask.FromResult<object?>(ctx.User);
+        private static ValueTask<object?> Response(HttpContext ctx, EndpointOptions opts) => ValueTask.FromResult<object?>(ctx.Response);
+        private static ValueTask<object?> Request(HttpContext ctx, EndpointOptions opts) => ValueTask.FromResult<object?>(ctx.Request);
 
-        private static ParameterFactory Body(Type type, EndpointOptions options)
+        private static ParameterFactory Body(Type type)
         {
-            return (HttpContext ctx) =>
+            return (HttpContext ctx, EndpointOptions opts) =>
             {
-                return HttpContextJsonHelper.ReadJsonBody(ctx, type, options.JsonSerializerOptions);
+                return HttpContextJsonHelper.ReadJsonBody(ctx, type, opts.JsonSerializerOptions);
             };
         }        
     }

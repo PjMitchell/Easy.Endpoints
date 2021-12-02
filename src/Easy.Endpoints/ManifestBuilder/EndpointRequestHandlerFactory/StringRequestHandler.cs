@@ -8,19 +8,21 @@ namespace Easy.Endpoints
     {
         private readonly ObjectEndpointMethodExecutor executor;
         protected readonly HttpContext httpContext;
+        private readonly EndpointOptions options;
         private readonly ParameterArrayFactory parameterFactory;
 
-        public StringRequestHandler(ObjectEndpointMethodExecutor executor, HttpContext httpContext, ParameterArrayFactory parameterFactory)
+        public StringRequestHandler(ObjectEndpointMethodExecutor executor, HttpContext httpContext, EndpointOptions options, ParameterArrayFactory parameterFactory)
         {
             this.executor = executor;
             this.httpContext = httpContext;
+            this.options = options;
             this.parameterFactory = parameterFactory;
         }
 
 
         public async Task HandleRequest()
         {
-            var parameters = await parameterFactory(httpContext);
+            var parameters = await parameterFactory(httpContext, options);
             var endpointHandler = httpContext.RequestServices.GetRequiredService(executor.EndpointType);
             var result = (string)await executor.Execute(endpointHandler, parameters);
             httpContext.Response.StatusCode = 200;
