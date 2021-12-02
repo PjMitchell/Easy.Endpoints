@@ -54,6 +54,17 @@ namespace Easy.Endpoints
         }
 
         /// <summary>
+        /// Adds IFormatProvider, if not defined Invariant Culture will be used
+        /// </summary>
+        /// <param name="formatProvider">Format Provider to be used by endpoint</param>
+        /// <returns>Updated instance of the option builder</returns>
+        public EndpointOptionBuilders WithFormatProvider(IFormatProvider formatProvider)
+        {
+            option.FormatProvider = formatProvider;
+            return this;
+        }
+
+        /// <summary>
         /// Adds all IEndpointMetaDataDeclaration to builder
         /// </summary>
         /// <param name="declarations">All IEndpointMetaDataDeclaration to be added</param>

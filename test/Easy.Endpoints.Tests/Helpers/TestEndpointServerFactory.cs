@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Text.Json;
 
 namespace Easy.Endpoints.Tests
 {
@@ -23,7 +24,10 @@ namespace Easy.Endpoints.Tests
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddEasyEndpoints(manifestBuilderActions);
+                    services.AddEasyEndpoints(o => o.WithJsonSerializer(s => { 
+                        s.Converters.Add(new DateOnlyJsonConverter());
+                        s.Converters.Add(new TimeOnlyJsonConverter());
+                        }), manifestBuilderActions);
                 })
                 .Configure(app =>
                 {
@@ -32,6 +36,38 @@ namespace Easy.Endpoints.Tests
                 });
 
             return new TestServer(builder);
+        }
+    }
+
+    internal class TimeOnlyJsonConverter : System.Text.Json.Serialization.JsonConverter<TimeOnly>
+    {
+        public override TimeOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var s = reader.GetString();
+            if (string.IsNullOrWhiteSpace(s))
+                return default;
+            return TimeOnly.Parse(s);
+        }
+
+        public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString("HH:mm:ss"));
+        }
+    }
+
+    internal class DateOnlyJsonConverter : System.Text.Json.Serialization.JsonConverter<DateOnly>
+    {
+        public override DateOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var s = reader.GetString();
+            if (string.IsNullOrWhiteSpace(s))
+                return default;
+            return DateOnly.Parse(s);
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateOnly value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString("yyyy-MM-dd"));
         }
     }
 }

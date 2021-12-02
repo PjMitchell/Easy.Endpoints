@@ -22,7 +22,7 @@ namespace Easy.Endpoints
 
         public async Task HandleRequest()
         {
-            var parameters = await parameterFactory(httpContext);
+            var parameters = await parameterFactory(httpContext, options);
             var endpointHandler = httpContext.RequestServices.GetRequiredService(executor.EndpointType);
             var result = (IEndpointResult)await executor.Execute(endpointHandler, parameters);
             await result.ExecuteResultAsync(httpContext, options);

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text.Json;
 
 namespace Easy.Endpoints
@@ -32,6 +34,11 @@ namespace Easy.Endpoints
         /// JSON Serializer Options for Endpoints
         /// </summary>
         public JsonSerializerOptions JsonSerializerOptions { get; internal set; }
+
+        /// <summary>
+        /// Format provider for parsing Query and Route Parameters, defaults to Invariant Culture
+        /// </summary>
+        public IFormatProvider FormatProvider { get; internal set; } = CultureInfo.InvariantCulture;
 
         /// <summary>
         /// All EndpointMetaDeclarations 

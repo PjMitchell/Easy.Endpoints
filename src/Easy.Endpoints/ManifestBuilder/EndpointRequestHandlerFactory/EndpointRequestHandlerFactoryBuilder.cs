@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -17,20 +18,19 @@ namespace Easy.Endpoints
             var handleMethod = handleMethods[0];
             var parameterInfo = BuildEndpointParameterInfo(handleMethod,routeInfo, options);
             if (handleMethod.ReturnType == typeof(void))
-                return BuildNoContentResponse(new VoidEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
+                return BuildNoContentResponse(new VoidEndpointMethodExecutor(endpointType, handleMethod), parameterInfo, options);
             if (handleMethod.ReturnType == typeof(Task))
-                return BuildNoContentResponse(new TaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
+                return BuildNoContentResponse(new TaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo, options);
             if (handleMethod.ReturnType == typeof(ValueTask))
-                return BuildNoContentResponse(new ValueTaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
-
-
+                return BuildNoContentResponse(new ValueTaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo, options);
+            
             var (endpointMethodExecutor, returnType) = GetMethodExcutorAndReturnTypeFor(endpointType, handleMethod);
 
             if (typeof(IEndpointResult).IsAssignableFrom(returnType))
                 return BuildForEndpointResultResponse(endpointMethodExecutor, parameterInfo, options);
 
             if (returnType == typeof(string))
-                return BuildForStringResponse(endpointMethodExecutor, parameterInfo, returnType);
+                return BuildForStringResponse(endpointMethodExecutor, parameterInfo, returnType, options);
             
             return BuildForObjectResponse(endpointMethodExecutor, parameterInfo, returnType, options);
         }
@@ -49,11 +49,11 @@ namespace Easy.Endpoints
 
             return (new SyncObjectEndpointMethodExecutor(endpointType, handleMethod), handleMethod.ReturnType);
         }
-        private static EndpointRequestHandlerDeclaration BuildNoContentResponse(NoResultEndpointMethodExecutor voidEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo)
+        private static EndpointRequestHandlerDeclaration BuildNoContentResponse(NoResultEndpointMethodExecutor voidEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, EndpointOptions options)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return  new EndpointRequestHandlerDeclaration(
-                (ctx) => new NoContentRequestHandler(voidEndpointMethodExecutor, ctx, parameterArrayFactory),
+                (ctx) => new NoContentRequestHandler(voidEndpointMethodExecutor, ctx, options, parameterArrayFactory),
                 parameterInfo,
                 typeof(void)
             );
@@ -69,11 +69,11 @@ namespace Easy.Endpoints
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, Type returnType)
+        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, Type returnType, EndpointOptions options)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
-                (ctx) => new StringRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory),
+                (ctx) => new StringRequestHandler(objectEndpointMethodExecutor, ctx, options, parameterArrayFactory),
                 parameterInfo,
                 returnType
             );
@@ -90,12 +90,12 @@ namespace Easy.Endpoints
 
         private static ParameterArrayFactory BuildParameterArrayFactory(EndpointParameterInfo[] parameter)
         {
-            return async (HttpContext ctx) =>
+            return async (HttpContext ctx, EndpointOptions opts) =>
             {
                 object?[] results = new object?[parameter.Length];
                 for (int i = 0; i < parameter.Length; i++)
                 {
-                    results[i] = await parameter[i].ParameterFactory(ctx);
+                    results[i] = await parameter[i].ParameterFactory(ctx, opts);
                 }
                 return results;
             };
@@ -116,7 +116,7 @@ namespace Easy.Endpoints
 
     }
 
-    internal delegate ValueTask<object?[]> ParameterArrayFactory(HttpContext httpContext);
+    internal delegate ValueTask<object?[]> ParameterArrayFactory(HttpContext httpContext, EndpointOptions opts);
     internal delegate Task<object?> ObjectMethodCaller(object callee, object?[] parameters);
 
 }
