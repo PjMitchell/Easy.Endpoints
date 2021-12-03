@@ -11,11 +11,9 @@ namespace Easy.Endpoints.Analyzer.Test
     {
         public EasyEndpointAnalyzerTest()
         {
-            //var assembly = System.Collections.Immutable.ImmutableArray.Create(typeof(IEndpoint).Assembly.FullName);
-            var refs = new ReferenceAssemblies("net6.0", new PackageIdentity("Microsoft.NETCore.App.Ref", "6.0.0"), Path.Combine("ref", "net6.0")); ;
-            var package = System.Collections.Immutable.ImmutableArray.Create(new PackageIdentity("Easy.Endpoints", "3.0.0"));
+            var refs = new ReferenceAssemblies("net6.0", new PackageIdentity("Microsoft.NETCore.App.Ref", "6.0.0"), Path.Combine("ref", "net6.0"));
+            var package = System.Collections.Immutable.ImmutableArray.Create(new PackageIdentity("Easy.Endpoints.Core", "3.1.0"));
             refs = refs.AddPackages(package);
-            //refs.TargetFramework = "net6";
             ReferenceAssemblies = refs;
         }
     }
@@ -24,11 +22,9 @@ namespace Easy.Endpoints.Analyzer.Test
     {
         public EasyEndpointCodeFixTest()
         {
-            //var assembly = System.Collections.Immutable.ImmutableArray.Create(typeof(IEndpoint).Assembly.FullName);
-            var refs = new ReferenceAssemblies("net6.0", new PackageIdentity("Microsoft.NETCore.App.Ref", "6.0.0"), Path.Combine("ref", "net6.0")); ;
-            var package = System.Collections.Immutable.ImmutableArray.Create(new PackageIdentity("Easy.Endpoints", "3.0.0"));
+            var refs = new ReferenceAssemblies("net6.0", new PackageIdentity("Microsoft.NETCore.App.Ref", "6.0.0"), Path.Combine("ref", "net6.0"));
+            var package = System.Collections.Immutable.ImmutableArray.Create(new PackageIdentity("Easy.Endpoints.Core", "3.1.0"));
             refs = refs.AddPackages(package);
-            //refs.TargetFramework = "net6";
             ReferenceAssemblies = refs;
         }
     }

@@ -9,14 +9,13 @@
 
   <PropertyGroup>
     <PackageId>Easy.Endpoints.Analyzer</PackageId>
-    <PackageVersion>1.0.0$(VersionSuffix)</PackageVersion>
+    <PackageVersion>1.0.1$(VersionSuffix)</PackageVersion>
 	<Authors>Peter Mitchell</Authors>
 	<RepositoryUrl>https://github.com/PjMitchell/Easy.Endpoints</RepositoryUrl>
 	<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 	<Description>Analyzer for Easy.Endpoints</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>    
     <PackageTags>Easy.Endpoints.Analyzer, Easy.Endpoints, analyzers</PackageTags>
-    <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
 
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
@@ -33,14 +32,14 @@
 
   <Target Name="_AddAnalyzersToOutput">
     <ItemGroup>
-      <TfmSpecificPackageFile Include="$(OutputPath)\Easy.Endpoint.Analyzer.dll" PackagePath="analyzers/dotnet/cs" />
-      <TfmSpecificPackageFile Include="$(OutputPath)\Easy.Endpoint.Analyzer.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\Easy.Endpoints.Analyzer.dll" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(OutputPath)\Easy.Endpoints.Analyzer.CodeFixes.dll" PackagePath="analyzers/dotnet/cs" />
     </ItemGroup>
   </Target>
     <ItemGroup>
 	    <None Include="..\..\LICENSE.txt">
 		    <Pack>True</Pack>
-		    <PackagePath></PackagePath>
+			<PackagePath></PackagePath>
 	    </None>
     </ItemGroup>
 </Project>

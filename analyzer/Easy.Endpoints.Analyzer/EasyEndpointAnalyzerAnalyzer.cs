@@ -89,7 +89,7 @@ namespace Easy.Endpoints.Analyzer
 
         private static bool IsIEndpoint(TypeInfo typeInfo)
         {
-            return typeInfo.Type != null && typeInfo.Type.Name == "IEndpoint" && typeInfo.Type.ContainingAssembly.Identity.Name == "Easy.Endpoints";
+            return typeInfo.Type != null && typeInfo.Type.Name == "IEndpoint" && typeInfo.Type.ContainingAssembly.Identity.Name == "Easy.Endpoints.Core";
         }
 
         private static bool IsHandleMethod(MethodDeclarationSyntax method)

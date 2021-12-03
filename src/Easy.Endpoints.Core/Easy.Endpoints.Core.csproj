@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
+  <PropertyGroup>	  
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <Company />
@@ -8,7 +8,9 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Description>AspNetCore endpoints without the controller</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>3.0.0$(VersionSuffix)</Version>
+    <Version>3.1.0$(VersionSuffix)</Version>
+	<PackageTags>Easy.Endpoints</PackageTags>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
@@ -18,8 +20,5 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Easy.Endpoints.Analyzer" Version="1.0.*" />
   </ItemGroup>
 </Project>
