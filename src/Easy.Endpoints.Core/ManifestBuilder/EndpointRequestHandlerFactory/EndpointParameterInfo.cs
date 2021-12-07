@@ -34,12 +34,22 @@ namespace Easy.Endpoints
         /// </summary>
         public ParameterFactory ParameterFactory { get; init; }
 
-        //All uses of this constuctor ensure these properties are not null
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        private EndpointParameterInfo()
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        /// <summary>
+        /// Creates Info for Parameter
+        /// </summary>
+        /// <param name="source">Source of parameter</param>
+        /// <param name="parameterFactory">Parameter factory for property</param>
+        /// <param name="parameterType">Parameter Type</param>
+        /// <param name="name">Name of Parameter</param>
+        /// <param name="isOptional">If parameter is optional</param>
+        /// <returns>New instance of EndpointParameterInfo for parameter</returns>
+        public EndpointParameterInfo(EndpointParameterSource source, ParameterFactory parameterFactory, Type parameterType, string name, bool isOptional = false)
         {
-
+            Source = source;
+            ParameterFactory = parameterFactory;
+            ParameterType = parameterType;  
+            Name = name;
+            IsOptional = isOptional;
         }
 
         /// <summary>
@@ -51,13 +61,7 @@ namespace Easy.Endpoints
         /// <returns>New instance of EndpointParameterInfo for route parameter</returns>
         public static EndpointParameterInfo Route(ParameterFactory parameterFactory, Type parameterType, string name)
         {
-            return new EndpointParameterInfo
-            {
-                ParameterFactory = parameterFactory,
-                Source = EndpointParameterSource.Route,
-                ParameterType = parameterType,
-                Name = name
-            };
+            return new EndpointParameterInfo(EndpointParameterSource.Route, parameterFactory, parameterType, name);
         }
 
         /// <summary>
@@ -70,14 +74,7 @@ namespace Easy.Endpoints
         /// <returns>New instance of EndpointParameterInfo for query parameter</returns>
         public static EndpointParameterInfo Query(ParameterFactory parameterFactory, Type parameterType, string name, bool isOptional)
         {
-            return new EndpointParameterInfo
-            {
-                ParameterFactory = parameterFactory,
-                Source = EndpointParameterSource.Query,
-                ParameterType = parameterType,
-                Name = name,
-                IsOptional = isOptional
-            };
+            return new EndpointParameterInfo(EndpointParameterSource.Query, parameterFactory, parameterType, name, isOptional);
         }
 
         /// <summary>
@@ -89,13 +86,7 @@ namespace Easy.Endpoints
         /// <returns>New instance of EndpointParameterInfo for predefined parameter</returns>
         public static EndpointParameterInfo Predefined(ParameterFactory parameterFactory, Type parameterType, string name)
         {
-            return new EndpointParameterInfo
-            {
-                ParameterFactory = parameterFactory,
-                Source = EndpointParameterSource.Predefined,
-                ParameterType = parameterType,
-                Name = name
-            };
+            return new EndpointParameterInfo(EndpointParameterSource.Predefined, parameterFactory, parameterType, name);
         }
 
 
@@ -108,13 +99,7 @@ namespace Easy.Endpoints
         /// <returns>New instance of EndpointParameterInfo for body parameter</returns>
         public static EndpointParameterInfo Body(ParameterFactory parameterFactory, Type parameterType, string name)
         {
-            return new EndpointParameterInfo
-            {
-                ParameterFactory = parameterFactory,
-                Source = EndpointParameterSource.Body,
-                ParameterType = parameterType,
-                Name = name
-            };
+            return new EndpointParameterInfo(EndpointParameterSource.Body, parameterFactory, parameterType, name);
         }
     }
 

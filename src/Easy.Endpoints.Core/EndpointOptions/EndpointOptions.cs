@@ -23,6 +23,8 @@ namespace Easy.Endpoints
             {
                 new AuthEndpointMetaDataDeclaration()
             };
+
+            Parsers = new EmptyParserCollection();
         }
 
         /// <summary>
@@ -45,6 +47,10 @@ namespace Easy.Endpoints
         /// </summary>
         public IReadOnlyList<IEndpointMetaDataDeclaration> EndpointMetaDeclarations { get; internal set; }
 
-        
+        /// <summary>
+        /// Parsers for Endpoint Parameters
+        /// </summary>
+        public IParserCollection Parsers { get; internal set; }
+
     }
 }

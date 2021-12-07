@@ -14,7 +14,6 @@ namespace Easy.Endpoints
         public static EndpointParameterInfo BuildEndpointParameterInfo(ParameterInfo parameterInfo,ICollection<DeclaredRouteParameter> delcaredRouteParameters, EndpointOptions options)
         {
 
-
             if (parameterInfo.ParameterType == typeof(CancellationToken))
                 return EndpointParameterInfo.Predefined(CancelationToken, parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
 
@@ -30,14 +29,32 @@ namespace Easy.Endpoints
             if (parameterInfo.ParameterType == typeof(ClaimsPrincipal))
                 return EndpointParameterInfo.Predefined(User, parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
 
-            if (delcaredRouteParameters.Any(r => r.Name == parameterInfo.Name) && ParameterBinder.CanParseRoute(parameterInfo.ParameterType) && parameterInfo.Name is not null)
-                return ParameterBinder.GetParameterInfoForRoute(parameterInfo.Name, parameterInfo.ParameterType);
+            var parameterBindingSource = parameterInfo.GetCustomAttributes().OfType<IParameterBindingSourceAttribute>().ToArray();
 
-            if (ParameterBinder.CanParseQueryParameter(parameterInfo.ParameterType) && parameterInfo.Name is not null)
-                return ParameterBinder.GetParameterInfoForQuery(parameterInfo.Name, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue);
+            if (parameterBindingSource.Length > 1)
+                throw new InvalidEndpointSetupException($"Endpoint {parameterInfo.Member.DeclaringType?.Name} contains multiple paramter binding source attributes");
+            if (parameterBindingSource.Length == 1)
+                return ForAttribute(parameterBindingSource[0], parameterInfo, options);
+
+
+            if (delcaredRouteParameters.Any(r => r.Name == parameterInfo.Name) && ParameterBinder.CanParseRoute(parameterInfo.ParameterType, options) && parameterInfo.Name is not null)
+                return ParameterBinder.GetParameterInfoForRoute(parameterInfo.Name, parameterInfo.ParameterType, options);
+
+            if (ParameterBinder.CanParseQueryParameter(parameterInfo.ParameterType, options) && parameterInfo.Name is not null)
+                return ParameterBinder.GetParameterInfoForQuery(parameterInfo.Name, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue, options);
 
 
             return EndpointParameterInfo.Body(Body(parameterInfo.ParameterType), parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
+        }
+
+        private static EndpointParameterInfo ForAttribute(IParameterBindingSourceAttribute attribute, ParameterInfo parameterInfo, EndpointOptions options)
+        {
+            return attribute switch
+            {
+                FromBodyAttribute => EndpointParameterInfo.Body(Body(parameterInfo.ParameterType), parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty),
+                IParameterBindingSourceWithNameAttribute attributeWithName => ParameterBinder.GetParameterInfoForBindingAttribute(attributeWithName, parameterInfo.Name ?? string.Empty, parameterInfo.ParameterType, parameterInfo.HasDefaultValue, parameterInfo.DefaultValue, options),
+                _ => throw new InvalidEndpointSetupException($"Cannot handle IParameterBindingSourceAttribute of {attribute?.GetType()}")
+            };
         }
 
         private static ValueTask<object?> CancelationToken(HttpContext ctx, EndpointOptions opts) => ValueTask.FromResult<object?>(ctx.RequestAborted);

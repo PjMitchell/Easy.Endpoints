@@ -10,8 +10,8 @@ namespace Easy.Endpoints.Tests
     public abstract class ParameterBindingTests<T> where T : struct
     {
         protected readonly TestServer server;
-        protected abstract T expected1 {get; }
-        protected abstract T expected2 {get; }
+        protected abstract T expected1 { get; }
+        protected abstract T expected2 { get; }
         protected abstract T expected3 { get; }
 
         protected ParameterBindingTests()
@@ -28,7 +28,7 @@ namespace Easy.Endpoints.Tests
             Assert.Equal(expected1, observed.Nullable);
             Assert.Equal(expected2, observed.Single);
             Assert.Equal(expected3, observed.Route);
-            Assert.Equal(new[] { expected1, expected3}, observed.Multiple);
+            Assert.Equal(new[] { expected1, expected3 }, observed.Multiple);
 
         }
 

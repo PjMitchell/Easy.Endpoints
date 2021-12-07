@@ -1,22 +1,18 @@
 ﻿using Microsoft.AspNetCore.TestHost;
 using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace Easy.Endpoints.Tests
 {
-
-    public class DateTimeParameterModelBindingTests
+    public class DateOnlyQueryParameterModelBindingTests
     {
         private readonly TestServer server;
-        private readonly DateTime one = new DateTime(2019, 10, 1, 9, 13, 42);
-        private readonly DateTime two = new DateTime(2018, 11, 4, 8, 23, 12);
-        private readonly DateTime three = new DateTime(2019, 11, 4, 8, 23, 12);
+        private readonly DateOnly one = new DateOnly(2019, 10, 1);
+        private readonly DateOnly two = new DateOnly(2018, 11, 4);
+        private readonly DateOnly three = new DateOnly(2019, 11, 4);
 
-
-
-        public DateTimeParameterModelBindingTests()
+        public DateOnlyQueryParameterModelBindingTests()
         {
             server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<DateTimeEndpoint>());
         }
@@ -25,8 +21,8 @@ namespace Easy.Endpoints.Tests
         public async Task CanMapQueryParameters()
         {
 
-          
-            var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?single={one:yyyy-MM-ddTHH:mm:ss}&nullable={two:yyyy-MM-ddTHH:mm:ss}").GetAsync();
+
+            var result = await server.CreateRequest($"{three:yyyy-MM-dd}/Test?single={one:yyyy-MM-dd}&nullable={two:yyyy-MM-dd}").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
             var observed = await result.GetJsonBody<UrlModel>();
             Assert.Equal(two, observed.Nullable);
@@ -39,7 +35,7 @@ namespace Easy.Endpoints.Tests
         [Fact]
         public async Task MissingNullable_ReturnsNull()
         {
-            var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test").GetAsync();
+            var result = await server.CreateRequest($"{three:yyyy-MM-dd}/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
             var observed = await result.GetJsonBody<UrlModel>();
             Assert.Null(observed.Nullable);
@@ -48,44 +44,44 @@ namespace Easy.Endpoints.Tests
         [Fact]
         public async Task MissingSingle_Default()
         {
-            var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test").GetAsync();
+            var result = await server.CreateRequest($"{three:yyyy-MM-dd}/Test").GetAsync();
             Assert.True(result.IsSuccessStatusCode);
             var observed = await result.GetJsonBody<UrlModel>();
-            Assert.Equal(default(DateTime), observed.Single);
+            Assert.Equal(default(DateOnly), observed.Single);
         }
 
         [Fact]
         public async Task MultipleValues_ForNullable_ReturnsError()
         {
-            var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?nullable={three:yyyy-MM-ddTHH:mm:ss}&nullable={three:yyyy-MM-ddTHH:mm:ss}").GetAsync();
+            var result = await server.CreateRequest($"{three:yyyy-MM-dd}/Test?nullable={three:yyyy-MM-dd}&nullable={three:yyyy-MM-dd}").GetAsync();
             Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task MultipleValues_ForSingle_ReturnsError()
         {
-            var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?single={three:yyyy-MM-ddTHH:mm:ss}&single={three:yyyy-MM-ddTHH:mm:ss}").GetAsync();
+            var result = await server.CreateRequest($"{three:yyyy-MM-dd}/Test?single={three:yyyy-MM-dd}&single={three:yyyy-MM-dd}").GetAsync();
             Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task FailedToParses_ForNullable_ReturnsError()
         {
-            var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?nullable=one").GetAsync();
+            var result = await server.CreateRequest($"{three:yyyy-MM-dd}/Test?nullable=one").GetAsync();
             Assert.False(result.IsSuccessStatusCode);
         }
 
         [Fact]
         public async Task FailedToParses_ForSingle_ReturnsError()
         {
-            var result = await server.CreateRequest($"{three:yyyy-MM-ddTHH:mm:ss}/Test?single=one").GetAsync();
+            var result = await server.CreateRequest($"{three:yyyy-MM-dd}/Test?single=one").GetAsync();
             Assert.False(result.IsSuccessStatusCode);
         }
 
-        [Get("{route:datetime}/Test")]
+        [Get("{route}/Test")]
         public class DateTimeEndpoint : IEndpoint
         {
-            public UrlModel Handle(DateTime route, DateTime? nullable, DateTime single = default)
+            public UrlModel Handle(DateOnly route, DateOnly? nullable, DateOnly single = default)
             {
                 return new UrlModel
                 {
@@ -98,9 +94,9 @@ namespace Easy.Endpoints.Tests
 
         public class UrlModel
         {
-            public DateTime Single { get; set; }
-            public DateTime? Nullable { get; set; }
-            public DateTime Route { get; set; }
+            public DateOnly Single { get; set; }
+            public DateOnly? Nullable { get; set; }
+            public DateOnly Route { get; set; }
 
         }
     }
