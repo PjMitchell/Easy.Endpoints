@@ -24,7 +24,12 @@
         /// <summary>
         /// From Url Query param
         /// </summary>
-        Query
+        Query,
+        /// <summary>
+        /// From http header
+        /// </summary>
+        Header
+
     }
 
 }

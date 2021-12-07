@@ -1,32 +1,37 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
     internal static class ParameterBinder
     {
-        public static bool CanParseQueryParameter(Type type) => CanParseArrayValue(type) || CanParseNullableValue(type) || CanParseSingleValue(type);
-        public static bool CanParseRoute(Type type) => CanParseSingleValue(type);
+        public static bool CanParseQueryParameter(Type type, EndpointOptions options) => CanParseArrayValue(type, options) || CanParseNullableValue(type, options) || CanParseSingleValue(type, options);
+        public static bool CanParseRoute(Type type, EndpointOptions options) => CanParseSingleValue(type, options);
 
-        public static EndpointParameterInfo GetParameterInfoForRoute(string parameterName, Type type)
+        public static EndpointParameterInfo GetParameterInfoForRoute(string parameterName, Type type, EndpointOptions options)
         {
-            return EndpointParameterInfo.Route(GetRouteParameterFactory(parameterName, type), type, parameterName);
+            return GetParameterInfo(parameterName, type, false, null, EndpointParameterSource.Route, type.IsArray, options);
         }
 
-        public static EndpointParameterInfo GetParameterInfoForQuery(string parameterName, Type type, bool hasDefaultValue, object? defaultValue)
+        public static EndpointParameterInfo GetParameterInfoForBindingAttribute(IParameterBindingSourceWithNameAttribute parameterBindingSourceWithNameAttribute, string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointOptions options)
         {
-            if (type.IsArray)
-                return EndpointParameterInfo.Query(GetParameterFactoryForArray(parameterName, type.GetElementType()!), type, parameterName, true);
-            return GetParameterInfo(parameterName, type, hasDefaultValue, defaultValue);
+            var parameterNameToBind = parameterBindingSourceWithNameAttribute.Name ?? parameterName;
+            return GetParameterInfo(parameterNameToBind, type, hasDefaultValue, defaultValue, parameterBindingSourceWithNameAttribute.Source, type.IsArray, options);
         }
 
-        private static EndpointParameterInfo GetParameterInfo(string parameterName, Type type,bool hasDefaultValue, object? defaultValue)
+        public static EndpointParameterInfo GetParameterInfoForQuery(string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointOptions options)
+        {
+            return GetParameterInfo(parameterName, type, hasDefaultValue, defaultValue, EndpointParameterSource.Query, type.IsArray, options);
+        }
+
+        private static EndpointParameterInfo GetParameterInfo(string parameterName,Type type, bool hasDefaultValue, object? defaultValue, EndpointParameterSource paramterSource, bool isArray, EndpointOptions options)
         {
             var parameterType = type;
             var allowNull = hasDefaultValue;
             var isNullable = false;
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (!isArray && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 isNullable = true;
                 allowNull = true;
@@ -34,80 +39,58 @@ namespace Easy.Endpoints
                     defaultValue = null;
                 parameterType = type.GetGenericArguments()[0];
             }
-
-            return EndpointParameterInfo.Query(GetParameterFactory(parameterName, parameterType, allowNull, isNullable, defaultValue, ParameterType.Query), type, parameterName, allowNull);
-
-        }
-
-        private static ParameterFactory GetRouteParameterFactory(string parameterName, Type type) => GetParameterFactory(parameterName, type, false, false, null, ParameterType.Route);
-
-        private static ParameterFactory GetParameterFactoryForArray(string parameterName, Type type) => GetParameterFactory(parameterName, type, false, false, null, ParameterType.QueryArray);
-
-        private static ParameterFactory GetParameterFactory(string parameterName, Type type, bool allowNull, bool isNullable, object? defaultValue, ParameterType parameterType)
-        {
-            ParameterFactory GetParameterFactoryForParser<T>(IParser<T> parsable)
+            if(isArray)
             {
-                return GetParameterFactory<T>(parameterName, parsable, allowNull, isNullable, defaultValue, parameterType);
+                allowNull = false;
+                parameterType = type.GetElementType()!;
             }
+            var parameterFactory = GetParameterFactory(parameterName, parameterType, allowNull, isNullable, defaultValue, paramterSource, isArray, options);
+            return new EndpointParameterInfo(paramterSource, parameterFactory, type, parameterName, allowNull);
 
-
-            if (type == typeof(string))
-                return GetParameterFactoryForStringValue(parameterName, defaultValue, parameterType);
-            if (type == typeof(byte))
-                return GetParameterFactoryForParser(NumberParser.Byte);
-            if (type == typeof(ushort))
-                return GetParameterFactoryForParser(NumberParser.UShort);
-            if (type == typeof(short))
-                return GetParameterFactoryForParser(NumberParser.Short);
-            if (type == typeof(uint))
-                return GetParameterFactoryForParser(NumberParser.UInt);
-            if (type == typeof(int))
-                return GetParameterFactoryForParser(NumberParser.Int);
-            if (type == typeof(ulong))
-                return GetParameterFactoryForParser(NumberParser.ULong);
-            if (type == typeof(long))
-                return GetParameterFactoryForParser(NumberParser.Long);
-            if (type == typeof(float))
-                return GetParameterFactoryForParser(NumberParser.Float);
-            if (type == typeof(double))
-                return GetParameterFactoryForParser(NumberParser.Double);
-            if (type == typeof(decimal))
-                return GetParameterFactoryForParser(NumberParser.Decimal);
-            if (type == typeof(bool))
-                return GetParameterFactoryForParser(BoolParser.Instance);
-            if (type == typeof(DateTime))
-                return GetParameterFactoryForParser(DateTimeParser.DateTime);
-            if (type == typeof(DateTimeOffset))
-                return GetParameterFactoryForParser(DateTimeParser.DateTimeOffset);
-            if (type == typeof(DateOnly))
-                return GetParameterFactoryForParser(DateTimeParser.DateOnly);
-            if (type == typeof(TimeOnly))
-                return GetParameterFactoryForParser(DateTimeParser.TimeOnly);
-            if (type == typeof(Guid))
-                return GetParameterFactoryForParser(GuidParser.Instance);
-
-            throw new InvalidEndpointSetupException($"Could not parse route ({parameterName}), cannot parse {type}");
         }
-        
-        private static ParameterFactory GetParameterFactory<T>(string parameterName, IParser<T> parsable, bool allowNull, bool isNullable, object? defaultValue, ParameterType parameterType)
+
+        private static ParameterFactory GetParameterFactory(string parameterName, Type type, bool allowNull, bool isNullable, object? defaultValue, EndpointParameterSource parameterSource, bool isArray, EndpointOptions options)
         {
-            return parameterType switch
+            if (type == typeof(string))
+                return GetParameterFactoryForStringValue(parameterName, defaultValue, parameterSource, isArray);
+            
+            if(!options.Parsers.TryGetParser(type, out var parser))
+                throw new InvalidEndpointSetupException($"Could not parse route ({parameterName}), cannot parse {type}");
+
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
+            var method = typeof(ParameterBinder).GetMethods(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+                            .Single(w => w.Name == nameof(GetParameterFactory) && w.ContainsGenericParameters)
+                            .MakeGenericMethod(type);
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
+
+            var result = (ParameterFactory)method.Invoke(null,new[] { parameterName, parser, allowNull, isNullable, defaultValue, parameterSource, isArray }  )!;
+            return result;
+        }
+
+
+        private static ParameterFactory GetParameterFactory<T>(string parameterName, IParser<T> parsable, bool allowNull, bool isNullable, object? defaultValue, EndpointParameterSource parameterSource, bool isArray)
+        {
+            return (parameterSource, isArray) switch
             {
-                ParameterType.Query => GetParameterFactoryForQuery<T>(parameterName, parsable, allowNull, isNullable, defaultValue),
-                ParameterType.QueryArray => GetParameterFactoryForQueryArray<T>(parameterName, parsable),
-                ParameterType.Route => GetParameterFactoryForRoute<T>(parameterName, parsable),
-                _ => throw new ArgumentOutOfRangeException(nameof(parameterType))
+                (EndpointParameterSource.Query, false) => GetParameterFactoryForQuery<T>(parameterName, parsable, allowNull, isNullable, defaultValue),
+                (EndpointParameterSource.Query, true) => GetParameterFactoryForQueryArray<T>(parameterName, parsable),
+                (EndpointParameterSource.Header, false) => GetParameterFactoryForHeader<T>(parameterName, parsable, allowNull, isNullable, defaultValue),
+                (EndpointParameterSource.Header, true) => GetParameterFactoryForHeaderArray<T>(parameterName, parsable),
+                (EndpointParameterSource.Route, false) => GetParameterFactoryForRoute<T>(parameterName, parsable),
+                _ => throw new InvalidEndpointSetupException($"Cannot bind for {parameterSource} and IsArray {isArray}")
             };
         }
 
-        private static ParameterFactory GetParameterFactoryForStringValue(string parameterName, object? defaultValue, ParameterType parameterType)
+        private static ParameterFactory GetParameterFactoryForStringValue(string parameterName, object? defaultValue, EndpointParameterSource parameterSource, bool isArray)
         {
-            return parameterType switch
+            return (parameterSource, isArray) switch
             {
-                ParameterType.Query => GetParameterFactoryForQueryWithStringValue(parameterName, defaultValue),
-                ParameterType.QueryArray => GetParameterFactoryForQueryWithStringArrayValue(parameterName),
-                ParameterType.Route => GetParameterFactoryForRouteWithStringValue(parameterName),
-                _ => throw new ArgumentOutOfRangeException(nameof(parameterType))
+                (EndpointParameterSource.Query, false) => GetParameterFactoryForQueryWithStringValue(parameterName, defaultValue),
+                (EndpointParameterSource.Query, true) => GetParameterFactoryForQueryWithStringArrayValue(parameterName),
+                (EndpointParameterSource.Header, false) => GetParameterFactoryForHeaderStringValue(parameterName, defaultValue),
+                (EndpointParameterSource.Header, true) => GetParameterFactoryForHeaderWithStringArrayValue(parameterName),
+                (EndpointParameterSource.Route, false) => GetParameterFactoryForRouteWithStringValue(parameterName),
+                _ => throw new InvalidEndpointSetupException($"Cannot bind for {parameterSource} and IsArray {isArray}")
             };
         }
 
@@ -119,6 +102,25 @@ namespace Easy.Endpoints
                 if (ctx.Request.Query.TryGetValue(parameterName, out var results))
                 {
                     if(results.Count == 1 && parsable.TryParse(results[0], opts.FormatProvider, out var result))
+                        return ValueTask.FromResult<object?>(result);
+                    throw new EndpointStatusCodeResponseException();
+                }
+                if (allowNull)
+                    return ValueTask.FromResult<object?>(defaultIfNoQueryFound);
+                throw new EndpointStatusCodeResponseException();
+
+            };
+
+        }
+
+        private static ParameterFactory GetParameterFactoryForHeader<T>(string parameterName, IParser<T> parsable, bool allowNull, bool isNullable, object? defaultValue)
+        {
+            var defaultIfNoQueryFound = isNullable ? defaultValue : defaultValue ?? default(T);
+            return (HttpContext ctx, EndpointOptions opts) =>
+            {
+                if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
+                {
+                    if (results.Count == 1 && parsable.TryParse(results[0], opts.FormatProvider, out var result))
                         return ValueTask.FromResult<object?>(result);
                     throw new EndpointStatusCodeResponseException();
                 }
@@ -154,6 +156,30 @@ namespace Easy.Endpoints
 
         }
 
+        private static ParameterFactory GetParameterFactoryForHeaderArray<T>(string parameterName, IParser<T> parsable)
+        {
+            return (HttpContext ctx, EndpointOptions opts) =>
+            {
+                if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
+                {
+                    var parsedResults = new T[results.Count];
+                    for (var i = 0; i < results.Count; i++)
+                    {
+                        if (parsable.TryParse(results[i], opts.FormatProvider, out var result))
+                            parsedResults[i] = result;
+                        else
+                            throw new EndpointStatusCodeResponseException();
+                    }
+
+                    return ValueTask.FromResult<object?>(parsedResults);
+
+                }
+                return ValueTask.FromResult<object?>(Array.Empty<T>());
+
+            };
+
+        }
+
         public static ParameterFactory GetParameterFactoryForQueryWithStringValue(string parameterName, object? defaultValue)
         {
             return (HttpContext ctx, EndpointOptions opts) =>
@@ -167,11 +193,35 @@ namespace Easy.Endpoints
 
         }
 
+        public static ParameterFactory GetParameterFactoryForHeaderStringValue(string parameterName, object? defaultValue)
+        {
+            return (HttpContext ctx, EndpointOptions opts) =>
+            {
+                if (!ctx.Request.Headers.TryGetValue(parameterName, out var results))
+                    return ValueTask.FromResult<object?>(defaultValue);
+                if (results.Count == 1)
+                    return ValueTask.FromResult<object?>(results[0]);
+                throw new EndpointStatusCodeResponseException();
+            };
+
+        }
+
         private static ParameterFactory GetParameterFactoryForQueryWithStringArrayValue(string parameterName)
         {
             return (HttpContext ctx, EndpointOptions opts) =>
             {
                 if (ctx.Request.Query.TryGetValue(parameterName, out var results))
+                    return ValueTask.FromResult<object?>(results.ToArray());
+                return ValueTask.FromResult<object?>(Array.Empty<string>());
+            };
+
+        }
+
+        private static ParameterFactory GetParameterFactoryForHeaderWithStringArrayValue(string parameterName)
+        {
+            return (HttpContext ctx, EndpointOptions opts) =>
+            {
+                if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
                     return ValueTask.FromResult<object?>(results.ToArray());
                 return ValueTask.FromResult<object?>(Array.Empty<string>());
             };
@@ -211,32 +261,20 @@ namespace Easy.Endpoints
             return false;
         }
 
-        private static bool CanParseSingleValue(Type type)
+        private static bool CanParseSingleValue(Type type, EndpointOptions options)
         {
             return type == typeof(string)
-                || NumberParser.CanParse(type)
-                || DateTimeParser.CanParse(type)
-                || type == typeof(bool)
-                || type == typeof(Guid);
+                || options.Parsers.HasParser(type);
         }
 
-        private static bool CanParseNullableValue(Type type)
+        private static bool CanParseNullableValue(Type type, EndpointOptions options)
         {
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && CanParseSingleValue(type.GetGenericArguments()[0]);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && CanParseSingleValue(type.GetGenericArguments()[0], options);
         }
 
-        private static bool CanParseArrayValue(Type type)
+        private static bool CanParseArrayValue(Type type, EndpointOptions options)
         {
-
-            return type.IsArray && CanParseSingleValue(type.GetElementType()!);
+            return type.IsArray && CanParseSingleValue(type.GetElementType()!, options);
         }
-
-        private enum ParameterType
-        {
-            Route = 0,
-            Query = 1,
-            QueryArray = 2,
-        }
-
     }
 }

@@ -15,7 +15,7 @@ namespace Easy.Endpoints
     internal class EasyEndpointApiDescriptionGroupCollectionProvider : IApiDescriptionGroupCollectionProvider
     {
         private readonly IEndpointManifest manifest;
-        private readonly IModelMetadataProvider modelMetadataProvider;
+        private readonly ModelMetadataProvider modelMetadataProvider;
         private const string groupName = null;
 
         public EasyEndpointApiDescriptionGroupCollectionProvider(IEndpointManifest manifest, IEasyEndpointCompositeMetadataDetailsProvider endpointCompositeMetadataDetailsProvider)
@@ -129,13 +129,11 @@ namespace Easy.Endpoints
 
         private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointInfo endpoint)
         {
-            foreach(var data in endpoint.HandlerDeclaration.ParameterInfos.Where(w=> IsParameterSourceRouteOrQuery(w) && IsParameterIsNotAlreadyInList(w, description)))
+            foreach(var data in endpoint.HandlerDeclaration.ParameterInfos.Where(w=> ParameterHasDescriptor(w) && IsParameterIsNotAlreadyInList(w, description)))
             {
                     description.ParameterDescriptions.Add(GetParameterDescriptor(data));
             }
         }
-
-        private static bool IsParameterSourceRouteOrQuery(EndpointParameterInfo info) => info.Source is EndpointParameterSource.Route or EndpointParameterSource.Query;
 
         private static bool IsParameterIsNotAlreadyInList(EndpointParameterInfo info, ApiDescription description) => description.ParameterDescriptions.All(a => a.Name != info.Name);
 
@@ -147,7 +145,7 @@ namespace Easy.Endpoints
             {
                 Name = parameter.Name,
                 Type = type,
-                ModelMetadata = modelMetadataProvider.GetMetadataForType(type),
+                ModelMetadata = GetModelMetaDataForTypeDefaultingToString(type),
                 Source = BindingSource.Path,
                 IsRequired = !parameter.IsOptional,
                 RouteInfo = new ApiParameterRouteInfo { IsOptional = parameter.IsOptional }
@@ -160,11 +158,19 @@ namespace Easy.Endpoints
             {
                 Name = parameter.Name,
                 Type = parameter.ParameterType,
-                ModelMetadata = modelMetadataProvider.GetMetadataForType(parameter.ParameterType),
-                Source = parameter.Source == EndpointParameterSource.Route ? BindingSource.Path : BindingSource.Query,
+                ModelMetadata = GetModelMetaDataForTypeDefaultingToString(parameter.ParameterType),
+                Source = GetBindingSource(parameter.Source),
                 IsRequired = !parameter.IsOptional,
                 RouteInfo = new ApiParameterRouteInfo { IsOptional = parameter.IsOptional }
             };
+        }
+
+        private ModelMetadata GetModelMetaDataForTypeDefaultingToString(Type type)
+        {
+            var model = modelMetadataProvider.GetMetadataForType(type);
+            if(model.IsComplexType && type !=typeof(string))
+                return modelMetadataProvider.GetMetadataForType(typeof(string));
+            return model;
         }
 
         private ApiParameterDescription GetParameterDescriptor(IEndpointRequestBodyMetadataProvider apiRequestBodyMetadataProvider)
@@ -175,6 +181,18 @@ namespace Easy.Endpoints
                 ModelMetadata = modelMetadataProvider.GetMetadataForType(apiRequestBodyMetadataProvider.Type),
                 Source = BindingSource.Body,
                 IsRequired = true
+            };
+        }
+
+        private static bool ParameterHasDescriptor(EndpointParameterInfo info) => info.Source is EndpointParameterSource.Query or EndpointParameterSource.Header or EndpointParameterSource.Route;
+        private static BindingSource GetBindingSource(EndpointParameterSource source)
+        {
+            return source switch
+            {
+                EndpointParameterSource.Route => BindingSource.Path,
+                EndpointParameterSource.Header => BindingSource.Header,
+                EndpointParameterSource.Query => BindingSource.Query,
+                _ => throw new NotImplementedException()
             };
         }
 
