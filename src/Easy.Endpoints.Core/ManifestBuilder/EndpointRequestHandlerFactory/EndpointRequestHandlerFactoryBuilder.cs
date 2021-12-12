@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -49,7 +48,7 @@ namespace Easy.Endpoints
 
             return (new SyncObjectEndpointMethodExecutor(endpointType, handleMethod), handleMethod.ReturnType);
         }
-        private static EndpointRequestHandlerDeclaration BuildNoContentResponse(NoResultEndpointMethodExecutor voidEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildNoContentResponse(NoResultEndpointMethodExecutor voidEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo, EndpointOptions options)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return  new EndpointRequestHandlerDeclaration(
@@ -59,7 +58,7 @@ namespace Easy.Endpoints
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForObjectResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo,Type returnType, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildForObjectResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo,Type returnType, EndpointOptions options)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
@@ -69,7 +68,7 @@ namespace Easy.Endpoints
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, Type returnType, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo, Type returnType, EndpointOptions options)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
@@ -79,7 +78,7 @@ namespace Easy.Endpoints
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForEndpointResultResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointParameterInfo[] parameterInfo, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildForEndpointResultResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo, EndpointOptions options)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
@@ -88,28 +87,28 @@ namespace Easy.Endpoints
             );
         }
 
-        private static ParameterArrayFactory BuildParameterArrayFactory(EndpointParameterInfo[] parameter)
+        private static ParameterArrayFactory BuildParameterArrayFactory(EndpointHandlerParameterDeclaration[] parameter)
         {
             return async (HttpContext ctx, EndpointOptions opts) =>
             {
                 object?[] results = new object?[parameter.Length];
                 for (int i = 0; i < parameter.Length; i++)
                 {
-                    results[i] = await parameter[i].ParameterFactory(ctx, opts);
+                    results[i] = await parameter[i].Factory(ctx, opts);
                 }
                 return results;
             };
         }
 
-        private static EndpointParameterInfo[] BuildEndpointParameterInfo(MethodInfo methodInfo, DeclaredRouteInfo declaredRouteInfo, EndpointOptions options)
+        private static EndpointHandlerParameterDeclaration[] BuildEndpointParameterInfo(MethodInfo methodInfo, DeclaredRouteInfo declaredRouteInfo, EndpointOptions options)
         {
             var parameters = methodInfo.GetParameters();
             if (parameters is null)
-                return Array.Empty<EndpointParameterInfo>();
-            EndpointParameterInfo[] results = new EndpointParameterInfo[parameters.Length];
+                return Array.Empty<EndpointHandlerParameterDeclaration>();
+            EndpointHandlerParameterDeclaration[] results = new EndpointHandlerParameterDeclaration[parameters.Length];
             for (int i = 0; i < parameters.Length; i++)
             {
-                results[i] = EndpointParameterInfoFactory.BuildEndpointParameterInfo(parameters[i],declaredRouteInfo.Parameters, options);
+                results[i] = EndpointParameterInfoFactory.BuildEndpointParameterDeclaration(parameters[i],declaredRouteInfo.Parameters, options);
             }
             return results;
         }      

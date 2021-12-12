@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Easy.Endpoints
 {
@@ -14,7 +16,7 @@ namespace Easy.Endpoints
         /// <param name="factory">EndpointRequestHandlerFactory for endpoint</param>
         /// <param name="parameterInfos">EndpointParameterInfos for endpoint</param>
         /// <param name="returnType">Return type of endpoint if know. IEndpointResult will return null</param>
-        public EndpointRequestHandlerDeclaration(EndpointRequestHandlerFactory factory, EndpointParameterInfo[] parameterInfos, Type? returnType = null)
+        public EndpointRequestHandlerDeclaration(EndpointRequestHandlerFactory factory, EndpointHandlerParameterDeclaration[] parameterInfos, Type? returnType = null)
         {
             Factory = factory;
             ParameterInfos = parameterInfos;
@@ -34,7 +36,7 @@ namespace Easy.Endpoints
         /// <summary>
         /// Parameters for endpoint
         /// </summary>
-        public EndpointParameterInfo[] ParameterInfos { get; }
+        public EndpointHandlerParameterDeclaration[] ParameterInfos { get; }
 
     }
 
@@ -44,4 +46,12 @@ namespace Easy.Endpoints
     /// <param name="context">Request HttpContext</param>
     /// <returns>IEndpointRequestHandler for endpoint</returns>
     public delegate IEndpointRequestHandler EndpointRequestHandlerFactory(HttpContext context);
+
+    internal static class EndpointRequestHandlerDeclarationExtensions
+    {
+        public static IEnumerable<EndpointParameterDescriptor> GetDetails(this EndpointRequestHandlerDeclaration declaration)
+        {
+            return declaration.ParameterInfos.SelectMany(s => s.GetParameterDescriptors());
+        }
+    }
 }

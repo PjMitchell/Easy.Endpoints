@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using static Easy.Endpoints.GenericTypeHelper;
 
 namespace Easy.Endpoints
 {
@@ -35,7 +33,7 @@ namespace Easy.Endpoints
 
         public static IEndpointRequestBodyMetadataProvider? GetBodyParameterOrDefault(this EndpointInfo info)
         {
-            var bodyParameter = info.HandlerDeclaration.ParameterInfos.FirstOrDefault(r => r.Source == EndpointParameterSource.Body);
+            var bodyParameter = info.HandlerDeclaration.GetDetails().FirstOrDefault(r => r.Source == EndpointParameterSource.Body);
             if (bodyParameter is not null)
                 return new JsonEndpointRequestBodyMetaData(bodyParameter.ParameterType);
             return null;
