@@ -129,13 +129,13 @@ namespace Easy.Endpoints
 
         private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointInfo endpoint)
         {
-            foreach(var data in endpoint.HandlerDeclaration.ParameterInfos.Where(w=> ParameterHasDescriptor(w) && IsParameterIsNotAlreadyInList(w, description)))
+            foreach(var data in endpoint.HandlerDeclaration.GetDetails().Where(w=> ParameterHasDescriptor(w) && IsParameterIsNotAlreadyInList(w, description)))
             {
                     description.ParameterDescriptions.Add(GetParameterDescriptor(data));
             }
         }
 
-        private static bool IsParameterIsNotAlreadyInList(EndpointParameterInfo info, ApiDescription description) => description.ParameterDescriptions.All(a => a.Name != info.Name);
+        private static bool IsParameterIsNotAlreadyInList(EndpointParameterDescriptor info, ApiDescription description) => description.ParameterDescriptions.All(a => a.Name != info.Name);
 
 
         private ApiParameterDescription GetParameterDescriptor(RoutePatternParameterPart parameter)
@@ -152,7 +152,7 @@ namespace Easy.Endpoints
             };
         }
 
-        private ApiParameterDescription GetParameterDescriptor(EndpointParameterInfo parameter)
+        private ApiParameterDescription GetParameterDescriptor(EndpointParameterDescriptor parameter)
         {
             return new ApiParameterDescription
             {
@@ -163,14 +163,6 @@ namespace Easy.Endpoints
                 IsRequired = !parameter.IsOptional,
                 RouteInfo = new ApiParameterRouteInfo { IsOptional = parameter.IsOptional }
             };
-        }
-
-        private ModelMetadata GetModelMetaDataForTypeDefaultingToString(Type type)
-        {
-            var model = modelMetadataProvider.GetMetadataForType(type);
-            if(model.IsComplexType && type !=typeof(string))
-                return modelMetadataProvider.GetMetadataForType(typeof(string));
-            return model;
         }
 
         private ApiParameterDescription GetParameterDescriptor(IEndpointRequestBodyMetadataProvider apiRequestBodyMetadataProvider)
@@ -184,7 +176,15 @@ namespace Easy.Endpoints
             };
         }
 
-        private static bool ParameterHasDescriptor(EndpointParameterInfo info) => info.Source is EndpointParameterSource.Query or EndpointParameterSource.Header or EndpointParameterSource.Route;
+        private ModelMetadata GetModelMetaDataForTypeDefaultingToString(Type type)
+        {
+            var model = modelMetadataProvider.GetMetadataForType(type);
+            if (model.IsComplexType && type != typeof(string))
+                return modelMetadataProvider.GetMetadataForType(typeof(string));
+            return model;
+        }
+
+        private static bool ParameterHasDescriptor(EndpointParameterDescriptor info) => info.Source is EndpointParameterSource.Query or EndpointParameterSource.Header or EndpointParameterSource.Route;
         private static BindingSource GetBindingSource(EndpointParameterSource source)
         {
             return source switch

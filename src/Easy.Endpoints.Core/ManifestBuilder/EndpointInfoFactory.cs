@@ -6,10 +6,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using System;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text.RegularExpressions;
 
 namespace Easy.Endpoints

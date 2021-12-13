@@ -8,7 +8,7 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Description>AspNetCore endpoints without the controller</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>3.1.0$(VersionSuffix)</Version>
+    <Version>4.0.0$(VersionSuffix)</Version>
 	<PackageTags>Easy.Endpoints</PackageTags>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
