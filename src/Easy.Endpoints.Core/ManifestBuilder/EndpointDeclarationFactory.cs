@@ -10,11 +10,11 @@ using System.Text.RegularExpressions;
 
 namespace Easy.Endpoints
 {
-    internal static class EndpointInfoFactory
+    internal static class EndpointDeclarationFactory
     {
         private static readonly string[] get = new[] { "GET" };
 
-        public static EndpointInfo BuildInfoForEndpoint(TypeInfo endpoint, EndpointOptions options, params object[] meta)
+        public static EndpointDeclaration BuildDeclarationForEndpoint(TypeInfo endpoint, EndpointDeclarationFactoryOptions options, params object[] meta)
         {
             var declaredEndpoint = endpoint;
             var info = BuildInfoWithRoute(declaredEndpoint, options, meta.OfType<EndpointRouteValueMetadata>());
@@ -23,7 +23,7 @@ namespace Easy.Endpoints
             return info;
         }
 
-        private static void AddMeta(EndpointInfo info, EndpointOptions options, TypeInfo declaredEndpoint, object[] meta)
+        private static void AddMeta(EndpointDeclaration info, EndpointDeclarationFactoryOptions options, TypeInfo declaredEndpoint, object[] meta)
         {
             var allMeta = options.EndpointMetaDeclarations
                 .SelectMany(declaration => declaration.GetMetaDataFromDeclaredEndpoint(declaredEndpoint))
@@ -32,21 +32,21 @@ namespace Easy.Endpoints
                 info.Meta.Add(item);
         }
 
-        private static void MapAuthMeta(this EndpointInfo info, TypeInfo declaredEndpoint)
+        private static void MapAuthMeta(this EndpointDeclaration info, TypeInfo declaredEndpoint)
         {
             var attributesToMap = declaredEndpoint.GetCustomAttributes().Where(t => t is IAuthorizeData || t is IAllowAnonymous);
             foreach (var attribute in attributesToMap)
                 info.Meta.Add(attribute);
         }
 
-        private static EndpointInfo BuildInfoWithRoute(TypeInfo endpoint, EndpointOptions options, IEnumerable<EndpointRouteValueMetadata> routeValueMetaData)
+        private static EndpointDeclaration BuildInfoWithRoute(TypeInfo endpoint, EndpointDeclarationFactoryOptions options, IEnumerable<EndpointRouteValueMetadata> routeValueMetaData)
         {
             var controllerName = GetControllerValue(endpoint);
             var endpointValue = GetEndpointValue(endpoint);
             var routeValues = BuildRouteParameters(controllerName, endpointValue);
             var routeInfo = GetRouteInfo(endpoint, routeValues.Concat(routeValueMetaData).ToArray(), endpointValue.Verb, options);
             var declaredRouteInfo = DeclaredRouteInfoFactory.GetFromTemplate(routeInfo.Template);
-            var info = new EndpointInfo(endpoint.AsType(), EndpointRequestHandlerFactoryBuilder.BuildFactoryForEndpoint(endpoint,declaredRouteInfo, options), RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
+            var info = new EndpointDeclaration(endpoint.AsType(), EndpointRequestHandlerFactoryBuilder.BuildFactoryForEndpoint(endpoint,declaredRouteInfo, options), RoutePatternFactory.Parse(routeInfo.Template), routeInfo.Name, routeInfo.Order ?? 0);
             info.Meta.Add(new HttpMethodMetadata(routeInfo.HttpMethods));
             foreach (var routeValue in routeValues)
                 info.Meta.Add(routeValue);
@@ -103,7 +103,7 @@ namespace Easy.Endpoints
             };
         }
 
-        private static EndpointRouteInfo GetRouteInfo(TypeInfo type, ICollection<EndpointRouteValueMetadata> routeValues, string? declaredVerb, EndpointOptions option)
+        private static EndpointRouteInfo GetRouteInfo(TypeInfo type, ICollection<EndpointRouteValueMetadata> routeValues, string? declaredVerb, EndpointDeclarationFactoryOptions option)
         {
             IEnumerable<string> verbs = get;
             var routeInfo = type.GetCustomAttribute<RouteAttribute>();

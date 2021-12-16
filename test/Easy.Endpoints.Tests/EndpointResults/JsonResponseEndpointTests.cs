@@ -13,8 +13,8 @@ namespace Easy.Endpoints.Tests
         {
             server = TestEndpointServerFactory.CreateEndpointServer(b =>
             {
-                b.AddForEndpoint<JsonResponseEndpoint>();
-                b.AddForEndpoint<AsyncJsonResponseEndpoint>();
+                b.WithEndpoint<JsonResponseEndpoint>();
+                b.WithEndpoint<AsyncJsonResponseEndpoint>();
             });
         }
 
@@ -45,7 +45,7 @@ namespace Easy.Endpoints.Tests
         [Get("test")]
         private class JsonResponseEndpoint : IEndpoint
         {
-            public Book[] Handle(CancellationToken cancellationToken)
+            public Book[] Handle()
             {
                 return new[] { new Book { Id = 1, Name = "Test" } };
             }
@@ -54,7 +54,7 @@ namespace Easy.Endpoints.Tests
         [Get("testAsync")]
         private class AsyncJsonResponseEndpoint : IEndpoint
         {
-            public Task<Book[]> HandleAsync(CancellationToken cancellationToken)
+            public Task<Book[]> HandleAsync()
             {
                 return Task.FromResult(new[] { new Book { Id = 1, Name = "Test" } });
             }

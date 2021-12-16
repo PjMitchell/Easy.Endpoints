@@ -11,7 +11,7 @@ namespace Easy.Endpoints.Tests
         private readonly TestServer server;
         public JsonEndpointResultTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(b => b.AddForEndpoint<JsonEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(b => b.WithEndpoint<JsonEndpoint>());
         }
 
         [Theory]
@@ -31,7 +31,7 @@ namespace Easy.Endpoints.Tests
         [Get("test/{id:int}")]
         private class JsonEndpoint : IEndpoint
         {
-            public Task<IEndpointResult> HandleAsync(int id, CancellationToken cancellationToken)
+            public Task<IEndpointResult> HandleAsync(int id)
             {
                 return Task.FromResult(EndpointResult.Json(new Book { Id = id, Name = id.ToString() }, id));
             }

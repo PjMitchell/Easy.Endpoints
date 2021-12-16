@@ -11,8 +11,8 @@ namespace Easy.Endpoints.Tests
         public NoContentEndpointTests()
         {
             server = TestEndpointServerFactory.CreateEndpointServer(b => {
-                b.AddForEndpoint<NoContentEndpoint>();
-                b.AddForEndpoint<AsyncNoContentEndpoint>();                
+                b.WithEndpoint<NoContentEndpoint>();
+                b.WithEndpoint<AsyncNoContentEndpoint>();                
             });
         }
 
@@ -45,7 +45,7 @@ namespace Easy.Endpoints.Tests
         [Get("testAsync")]
         private class AsyncNoContentEndpoint : IEndpoint
         {
-            public Task Handle(CancellationToken cancellationToken) => Task.CompletedTask;                
+            public Task Handle() => Task.CompletedTask;                
         }
         
     }

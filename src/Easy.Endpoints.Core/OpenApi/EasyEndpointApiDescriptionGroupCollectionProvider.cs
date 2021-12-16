@@ -45,12 +45,12 @@ namespace Easy.Endpoints
             return new ApiDescriptionGroupCollection(new[] { group }, 1);
         }
 
-        private static IDictionary<string, string?> GetRouteValues(EndpointInfo endpoint)
+        private static IDictionary<string, string?> GetRouteValues(EndpointDeclaration endpoint)
         {
             return endpoint.GetAllMetadata<IEndpointRouteValueMetadataProvider>().ToDictionary<IEndpointRouteValueMetadataProvider, string, string?>(k => k.Key, v => v.Value);
         }
 
-        private IEnumerable<ApiDescription> GetApiDescriptions(EndpointInfo endpoint, ActionDescriptor actionDescriptor)
+        private IEnumerable<ApiDescription> GetApiDescriptions(EndpointDeclaration endpoint, ActionDescriptor actionDescriptor)
         {
             var httpMethodMetadata = endpoint.GetMetadata<HttpMethodMetadata>();
             if (httpMethodMetadata is null)
@@ -58,7 +58,7 @@ namespace Easy.Endpoints
             return httpMethodMetadata.HttpMethods.Select(s => GetApiDescriptions(endpoint, s, actionDescriptor));
         }
 
-        private ApiDescription GetApiDescriptions(EndpointInfo endpoint, string httpMethod, ActionDescriptor actionDescriptor)
+        private ApiDescription GetApiDescriptions(EndpointDeclaration endpoint, string httpMethod, ActionDescriptor actionDescriptor)
         {
             var apiDescription = new ApiDescription
             {
@@ -102,7 +102,7 @@ namespace Easy.Endpoints
             };
         }
 
-        private void ApplyRequestParameters(ApiDescription description, EndpointInfo endpoint)
+        private void ApplyRequestParameters(ApiDescription description, EndpointDeclaration endpoint)
         {
             ApplyRequestBodyParameters(description, endpoint);
             foreach (var parameter in endpoint.Pattern.Parameters)
@@ -113,7 +113,7 @@ namespace Easy.Endpoints
             ApplyUrlParameterModelParameters(description, endpoint);
         }
 
-        private void ApplyRequestBodyParameters(ApiDescription description, EndpointInfo endpoint)
+        private void ApplyRequestBodyParameters(ApiDescription description, EndpointDeclaration endpoint)
         {
             var requestBody = endpoint.GetBodyParameterOrDefault();
             if (requestBody is not null)
@@ -127,7 +127,7 @@ namespace Easy.Endpoints
             }
         }
 
-        private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointInfo endpoint)
+        private void ApplyUrlParameterModelParameters(ApiDescription description, EndpointDeclaration endpoint)
         {
             foreach(var data in endpoint.HandlerDeclaration.GetDetails().Where(w=> ParameterHasDescriptor(w) && IsParameterIsNotAlreadyInList(w, description)))
             {
@@ -224,7 +224,7 @@ namespace Easy.Endpoints
             return types[0] ?? string.Empty;
         }
 
-        private IEnumerable<ApiResponseType> GetResponseTypes(EndpointInfo endpoint)
+        private IEnumerable<ApiResponseType> GetResponseTypes(EndpointDeclaration endpoint)
         {
             var responses = endpoint.GetApiResponses().Select(s => GetResponseTypes(s));
             return responses;

@@ -18,7 +18,7 @@ namespace Easy.Endpoints.Tests
 
         public CustomParserParameterModelBindingTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<CoordinatesEndpoint>(), new CoordinatesParser());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<CoordinatesEndpoint>(), new CoordinatesParser());
         }
 
         [Fact]

@@ -15,7 +15,7 @@ namespace Easy.Endpoints.Tests
 
         public HeaderParameterBindingTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<IntHeaderEndpoint>().AddForEndpoint<StringHeaderEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<IntHeaderEndpoint>().WithEndpoint<StringHeaderEndpoint>());
         }
 
         [Fact]

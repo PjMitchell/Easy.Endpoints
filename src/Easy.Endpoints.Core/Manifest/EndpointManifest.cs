@@ -6,14 +6,14 @@ namespace Easy.Endpoints
 {
     internal class EndpointManifest : IEndpointManifest
     {
-        private readonly IEnumerable<EndpointInfo> source;
+        private readonly IEnumerable<EndpointDeclaration> source;
 
-        public EndpointManifest(IEnumerable<EndpointInfo> source)
+        public EndpointManifest(IEnumerable<EndpointDeclaration> source)
         {
             this.source = source.ToArray();
         }
 
-        public IEnumerator<EndpointInfo> GetEnumerator() => source.GetEnumerator();
+        public IEnumerator<EndpointDeclaration> GetEnumerator() => source.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

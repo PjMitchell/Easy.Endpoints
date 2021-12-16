@@ -13,7 +13,7 @@ namespace Easy.Endpoints.Tests
 
         public StringQueryParameterModelBindingByRelectionTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<StringEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<StringEndpoint>());
         }
 
         [Fact]

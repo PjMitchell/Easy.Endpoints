@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
 
@@ -19,38 +18,16 @@ namespace Easy.Endpoints
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true,
             };
-            EndpointMetaDeclarations = new List<IEndpointMetaDataDeclaration>
-            {
-                new AuthEndpointMetaDataDeclaration()
-            };
-
-            Parsers = new EmptyParserCollection();
         }
-
-        /// <summary>
-        /// Route Pattern when none is specified, defaults "[endpoint]"
-        /// </summary>
-        public string RoutePattern { get; internal set; } = "[endpoint]";
 
         /// <summary>
         /// JSON Serializer Options for Endpoints
         /// </summary>
-        public JsonSerializerOptions JsonSerializerOptions { get; internal set; }
+        public JsonSerializerOptions JsonSerializerOptions { get; set; }
 
         /// <summary>
         /// Format provider for parsing Query and Route Parameters, defaults to Invariant Culture
         /// </summary>
-        public IFormatProvider FormatProvider { get; internal set; } = CultureInfo.InvariantCulture;
-
-        /// <summary>
-        /// All EndpointMetaDeclarations 
-        /// </summary>
-        public IReadOnlyList<IEndpointMetaDataDeclaration> EndpointMetaDeclarations { get; internal set; }
-
-        /// <summary>
-        /// Parsers for Endpoint Parameters
-        /// </summary>
-        public IParserCollection Parsers { get; internal set; }
-
+        public IFormatProvider FormatProvider { get; set; } = CultureInfo.InvariantCulture;
     }
 }

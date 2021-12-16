@@ -18,16 +18,20 @@ namespace Easy.Endpoints.Tests
             return new TestServer(builder);
         }
 
-        public static TestServer CreateEndpointServer(Action<EndpointManifestBuilder> manifestBuilderActions, params IParser[] parsers)
+        public static TestServer CreateEndpointServer(Action<EasyEndpointBuilder> manifestBuilderActions, params IParser[] parsers)
         {
             var builder = new WebHostBuilder()
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddEasyEndpoints(o => o.WithJsonSerializer(s => { 
+                    var builder = services.AddEmptyEasyEndpoints().WithJsonSerializer(s =>
+                    {
                         s.Converters.Add(new DateOnlyJsonConverter());
                         s.Converters.Add(new TimeOnlyJsonConverter());
-                        }).AddParsers(parsers), manifestBuilderActions);
+                    });
+                    manifestBuilderActions(builder);
+                    foreach (var parser in parsers)
+                        builder.WithParser(parser);
                 })
                 .Configure(app =>
                 {

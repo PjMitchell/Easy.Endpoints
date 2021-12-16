@@ -16,7 +16,7 @@ namespace Easy.Endpoints.Tests
 
         public DateTimeOffSetQueryParameterModelBindingTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<DateTimeOffsetEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<DateTimeOffsetEndpoint>());
         }
 
         [Fact]

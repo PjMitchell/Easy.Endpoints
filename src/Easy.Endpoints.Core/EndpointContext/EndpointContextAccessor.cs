@@ -14,17 +14,4 @@ namespace Easy.Endpoints
         EndpointContext GetContext();
     }
 
-    internal class EndpointContextAccessor : IEndpointContextAccessor
-    {
-        private EndpointContext? context;
-
-        public EndpointContext SetContext(EndpointContext context) => this.context = context;
-
-        public EndpointContext GetContext()
-        {
-            if (context is null)
-                throw new InvalidOperationException("Context accessor was called before context was set");
-            return context;
-        }
-    }
 }

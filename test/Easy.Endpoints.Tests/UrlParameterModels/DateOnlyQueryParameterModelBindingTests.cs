@@ -14,7 +14,7 @@ namespace Easy.Endpoints.Tests
 
         public DateOnlyQueryParameterModelBindingTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<DateTimeEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<DateTimeEndpoint>());
         }
 
         [Fact]

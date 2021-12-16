@@ -10,7 +10,7 @@ namespace Easy.Endpoints.Tests
         private readonly TestServer server;
         public NoContentEndpointResultTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(b=> b.AddForEndpoint<NoContentEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(b=> b.WithEndpoint<NoContentEndpoint>());
         }
 
         [Theory]
@@ -30,7 +30,7 @@ namespace Easy.Endpoints.Tests
         {
 
 
-            public Task<IEndpointResult> HandleAsync(int id, CancellationToken cancellationToken)
+            public Task<IEndpointResult> HandleAsync(int id)
             {
                 return Task.FromResult<IEndpointResult>(EndpointResult.StatusCode(id));
             }
