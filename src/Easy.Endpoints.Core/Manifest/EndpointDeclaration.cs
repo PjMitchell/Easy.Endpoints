@@ -7,7 +7,7 @@ namespace Easy.Endpoints
     /// <summary>
     /// Information about a Easy.Endpoint
     /// </summary>
-    public class EndpointInfo
+    public class EndpointDeclaration
     {
         /// <summary>
         /// Constructs new instance of EnpointInfo
@@ -17,7 +17,7 @@ namespace Easy.Endpoints
         /// <param name="pattern">Route pattern of endpoint</param>
         /// <param name="name">Route Name</param>
         /// <param name="order">Route order.</param>
-        public EndpointInfo(Type type, EndpointRequestHandlerDeclaration handlerDeclaration,  RoutePattern pattern, string name, int order)
+        public EndpointDeclaration(Type type, EndpointRequestHandlerDeclaration handlerDeclaration,  RoutePattern pattern, string name, int order)
         {
             Type = type;
             HandlerDeclaration = handlerDeclaration;

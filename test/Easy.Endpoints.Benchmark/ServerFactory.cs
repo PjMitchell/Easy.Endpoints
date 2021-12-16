@@ -46,24 +46,6 @@ namespace Easy.Endpoints.Benchmark
                     app.UseEndpoints(endpoints =>
                     {
                         endpoints.MapGet("Book", () => GetBookEndpoint.AllBooks().ToArray());
-                        //endpoints.MapGet("People", ([FromQuery]string[] firstName, [FromQuery] string[] surname, int? minAge, int? maxAge) =>
-                        //{
-                        //    return PeopleService.AllPeople().Where(w =>
-                        //    {
-                        //        if (firstName.Length != 0 && !firstName.Contains(w.FirstName))
-                        //            return false;
-                        //        if (surname.Length != 0 && !surname.Contains(w.Surname))
-                        //            return false;
-
-                        //        if (minAge.HasValue && w.Age < minAge.Value)
-                        //            return false;
-
-                        //        if (maxAge.HasValue && w.Age > maxAge.Value)
-                        //            return false;
-
-                        //        return true;
-                        //    });
-                        //});
                         endpoints.MapPost("Book",([FromBody] Book book) => Task.FromResult(new CommandResult { Successful = true, Message = book.Name }));
                     });
                 });
@@ -77,28 +59,11 @@ namespace Easy.Endpoints.Benchmark
                 .ConfigureServices(services =>
                 {
                     services.AddRouting();
-                    services.AddEasyEndpoints(b => b.AddForEndpoint<TestGetEndpoint>()
-                    .AddForEndpoint<Test2GetEndpoint>()
-                    .AddForEndpoint<GetBookEndpoint>()
-                    .AddForEndpoint<PostBookEndpoint>()
-                    );
-                })
-                .Configure(app =>
-                {
-                    app.UseRouting();
-                    app.UseEndpoints(endpoints => endpoints.MapEasyEndpoints());
-                });
-
-            return new TestServer(builder);
-        }
-
-        public static TestServer CreateEndpointServer(Action<EndpointManifestBuilder> manifestBuilderActions)
-        {
-            var builder = new WebHostBuilder()
-                .ConfigureServices(services =>
-                {
-                    services.AddRouting();
-                    services.AddEasyEndpoints(manifestBuilderActions);
+                    services.AddEmptyEasyEndpoints()
+                        .WithEndpoint<TestGetEndpoint>()
+                        .WithEndpoint<Test2GetEndpoint>()
+                        .WithEndpoint<GetBookEndpoint>()
+                        .WithEndpoint<PostBookEndpoint>();
                 })
                 .Configure(app =>
                 {

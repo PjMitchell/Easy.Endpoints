@@ -8,7 +8,7 @@ namespace Easy.Endpoints
 {
     internal static class EndpointRequestHandlerFactoryBuilder
     {
-        public static EndpointRequestHandlerDeclaration BuildFactoryForEndpoint(TypeInfo endpointType,DeclaredRouteInfo routeInfo, EndpointOptions options)
+        public static EndpointRequestHandlerDeclaration BuildFactoryForEndpoint(TypeInfo endpointType,DeclaredRouteInfo routeInfo, EndpointDeclarationFactoryOptions options)
         {
             var handleMethods = endpointType.DeclaredMethods.Where(m => m.IsPublic && (m.Name is "Handle" or "HandleAsync")).ToArray();
             if (handleMethods.Length != 1 || handleMethods[0] is null)
@@ -17,21 +17,21 @@ namespace Easy.Endpoints
             var handleMethod = handleMethods[0];
             var parameterInfo = BuildEndpointParameterInfo(handleMethod,routeInfo, options);
             if (handleMethod.ReturnType == typeof(void))
-                return BuildNoContentResponse(new VoidEndpointMethodExecutor(endpointType, handleMethod), parameterInfo, options);
+                return BuildNoContentResponse(new VoidEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
             if (handleMethod.ReturnType == typeof(Task))
-                return BuildNoContentResponse(new TaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo, options);
+                return BuildNoContentResponse(new TaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
             if (handleMethod.ReturnType == typeof(ValueTask))
-                return BuildNoContentResponse(new ValueTaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo, options);
+                return BuildNoContentResponse(new ValueTaskEndpointMethodExecutor(endpointType, handleMethod), parameterInfo);
             
             var (endpointMethodExecutor, returnType) = GetMethodExcutorAndReturnTypeFor(endpointType, handleMethod);
 
             if (typeof(IEndpointResult).IsAssignableFrom(returnType))
-                return BuildForEndpointResultResponse(endpointMethodExecutor, parameterInfo, options);
+                return BuildForEndpointResultResponse(endpointMethodExecutor, parameterInfo);
 
             if (returnType == typeof(string))
-                return BuildForStringResponse(endpointMethodExecutor, parameterInfo, returnType, options);
+                return BuildForStringResponse(endpointMethodExecutor, parameterInfo, returnType);
             
-            return BuildForObjectResponse(endpointMethodExecutor, parameterInfo, returnType, options);
+            return BuildForObjectResponse(endpointMethodExecutor, parameterInfo, returnType);
         }
 
         private static (ObjectEndpointMethodExecutor endpointMethodExecutor, Type returnType) GetMethodExcutorAndReturnTypeFor(Type endpointType, MethodInfo handleMethod)
@@ -48,41 +48,41 @@ namespace Easy.Endpoints
 
             return (new SyncObjectEndpointMethodExecutor(endpointType, handleMethod), handleMethod.ReturnType);
         }
-        private static EndpointRequestHandlerDeclaration BuildNoContentResponse(NoResultEndpointMethodExecutor voidEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildNoContentResponse(NoResultEndpointMethodExecutor voidEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return  new EndpointRequestHandlerDeclaration(
-                (ctx) => new NoContentRequestHandler(voidEndpointMethodExecutor, ctx, options, parameterArrayFactory),
+                (ctx) => new NoContentRequestHandler(voidEndpointMethodExecutor, ctx, parameterArrayFactory),
                 parameterInfo,
                 typeof(void)
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForObjectResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo,Type returnType, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildForObjectResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo,Type returnType)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
-                (ctx) => new ObjectRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory, options),
+                (ctx) => new ObjectRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory),
                 parameterInfo,
                 returnType
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo, Type returnType, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildForStringResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo, Type returnType)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
-                (ctx) => new StringRequestHandler(objectEndpointMethodExecutor, ctx, options, parameterArrayFactory),
+                (ctx) => new StringRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory),
                 parameterInfo,
                 returnType
             );
         }
 
-        private static EndpointRequestHandlerDeclaration BuildForEndpointResultResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo, EndpointOptions options)
+        private static EndpointRequestHandlerDeclaration BuildForEndpointResultResponse(ObjectEndpointMethodExecutor objectEndpointMethodExecutor, EndpointHandlerParameterDeclaration[] parameterInfo)
         {
             var parameterArrayFactory = BuildParameterArrayFactory(parameterInfo);
             return new EndpointRequestHandlerDeclaration(
-                (ctx) => new EndpointResultRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory, options),
+                (ctx) => new EndpointResultRequestHandler(objectEndpointMethodExecutor, ctx, parameterArrayFactory),
                 parameterInfo
             );
         }
@@ -100,7 +100,7 @@ namespace Easy.Endpoints
             };
         }
 
-        private static EndpointHandlerParameterDeclaration[] BuildEndpointParameterInfo(MethodInfo methodInfo, DeclaredRouteInfo declaredRouteInfo, EndpointOptions options)
+        private static EndpointHandlerParameterDeclaration[] BuildEndpointParameterInfo(MethodInfo methodInfo, DeclaredRouteInfo declaredRouteInfo, EndpointDeclarationFactoryOptions options)
         {
             var parameters = methodInfo.GetParameters();
             if (parameters is null)

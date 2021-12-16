@@ -9,7 +9,7 @@ namespace Easy.Endpoints
 {
     internal static class EndpointParameterInfoFactory
     {
-        public static EndpointHandlerParameterDeclaration BuildEndpointParameterDeclaration(ParameterInfo parameterInfo,ICollection<DeclaredRouteParameter> delcaredRouteParameters, EndpointOptions options)
+        public static EndpointHandlerParameterDeclaration BuildEndpointParameterDeclaration(ParameterInfo parameterInfo,ICollection<DeclaredRouteParameter> delcaredRouteParameters, EndpointDeclarationFactoryOptions options)
         {
 
             if (parameterInfo.ParameterType == typeof(CancellationToken))
@@ -44,7 +44,7 @@ namespace Easy.Endpoints
             return new JsonBodyEndpointParameterDeclaration(parameterInfo.ParameterType, parameterInfo.Name ?? string.Empty);
         }
 
-        private static EndpointHandlerParameterDeclaration ForAttribute(IParameterBindingSourceAttribute attribute, ParameterInfo parameterInfo, EndpointOptions options)
+        private static EndpointHandlerParameterDeclaration ForAttribute(IParameterBindingSourceAttribute attribute, ParameterInfo parameterInfo, EndpointDeclarationFactoryOptions options)
         {
             return attribute switch
             {

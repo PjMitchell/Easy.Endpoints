@@ -17,7 +17,7 @@ namespace Easy.Endpoints.Tests
 
         public GuidQueryParameterModelBindingByRelectionTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<GuidEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<GuidEndpoint>());
         }
 
         [Fact]

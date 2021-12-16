@@ -45,7 +45,7 @@ namespace Easy.Endpoints
             return new GroupedEasyEndpointConventionBuilder(results);
         }
 
-        private static RequestDelegate BuildDelegate(EndpointInfo endpointInfo)
+        private static RequestDelegate BuildDelegate(EndpointDeclaration endpointInfo)
         {
             async Task Request(HttpContext context)
             {   

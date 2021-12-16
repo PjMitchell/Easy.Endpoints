@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
+﻿using Microsoft.AspNetCore.TestHost;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,7 +11,7 @@ namespace Easy.Endpoints.Tests
 
         public BoolQueryParameterModelBindingByRelectionTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<BoolEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<BoolEndpoint>());
         }
 
         [Fact]

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace Easy.Endpoints
 {
@@ -7,38 +7,20 @@ namespace Easy.Endpoints
     /// </summary>
     public class EndpointManifestBuilder
     {
-        private readonly List<EndpointInfo> source;
-        /// <summary>
-        /// Option for endpoints
-        /// </summary>
-        public EndpointOptions Options { get; }
+        private readonly EasyEndpointBuilder builder;
 
-        /// <summary>
-        /// Constructs new instance of EndpointManifestBuilder
-        /// </summary>
-        /// <param name="options">EndpointOptions options for endpoints</param>
-        public EndpointManifestBuilder(EndpointOptions options)
+        internal EndpointManifestBuilder(EasyEndpointBuilder builder)
         {
-            Options = options;
-            source = new List<EndpointInfo>();
+            this.builder = builder;
         }
 
         /// <summary>
         /// Adds a new endpoint to the manifest
         /// </summary>
         /// <param name="endpoint">Endpoint to be added to manifest</param>
-        public void AddEndpoint(EndpointInfo endpoint)
+        public void AddEndpoint(Type endpoint)
         {
-            source.Add(endpoint);
-        }
-
-        /// <summary>
-        /// Builds Endpoint manifest
-        /// </summary>
-        /// <returns>New Endpoint manifest</returns>
-        public IEndpointManifest Build()
-        {
-            return new EndpointManifest(source);
+            builder.WithEndpoint(endpoint);
         }
     }
 }

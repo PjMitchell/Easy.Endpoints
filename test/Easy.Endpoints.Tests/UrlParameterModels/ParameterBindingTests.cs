@@ -16,7 +16,7 @@ namespace Easy.Endpoints.Tests
 
         protected ParameterBindingTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<NumberEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<NumberEndpoint>());
         }
 
         [Fact]

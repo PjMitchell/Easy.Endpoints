@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 
 namespace Easy.Endpoints
@@ -8,9 +6,9 @@ namespace Easy.Endpoints
     /// <summary>
     /// Used to construct the endpoint options
     /// </summary>
+    [Obsolete("Not required any more")]
     public class EndpointOptionBuilders
     {
-        private readonly List<IParser> parsers;
         private readonly EndpointOptions option;
 
         /// <summary>
@@ -19,18 +17,6 @@ namespace Easy.Endpoints
         public EndpointOptionBuilders()
         {
             option = new EndpointOptions();
-            parsers = new List<IParser>();
-        }
-
-        /// <summary>
-        /// Defines Route Pattern when no route is defined for an endpoint
-        /// </summary>
-        /// <param name="routePattern">new route pattern for endpoint</param>
-        /// <returns>Updated instance of the option builder</returns>
-        public EndpointOptionBuilders WithRoutePattern(string routePattern)
-        {
-            option.RoutePattern = routePattern;
-            return this;
         }
 
         /// <summary>
@@ -67,56 +53,11 @@ namespace Easy.Endpoints
         }
 
         /// <summary>
-        /// Adds all IEndpointMetaDataDeclaration to builder
-        /// </summary>
-        /// <param name="declarations">All IEndpointMetaDataDeclaration to be added</param>
-        /// <returns>Updated instance of the option builder</returns>
-        public EndpointOptionBuilders WithMetaDataDeclarations(IEnumerable<IEndpointMetaDataDeclaration> declarations)
-        {
-            option.EndpointMetaDeclarations = declarations.ToArray();
-            return this;
-        }
-
-        /// <summary>
-        /// Adds all IEndpointMetaDataDeclaration to builder
-        /// </summary>
-        /// <param name="declarationsModification">Modification of existing IEndpointMetaDataDeclarations</param>
-        /// <returns>Updated instance of the option builder</returns>
-        public EndpointOptionBuilders WithMetaDataDeclarations(Func<IEnumerable<IEndpointMetaDataDeclaration>, IEnumerable<IEndpointMetaDataDeclaration>> declarationsModification)
-        {
-            option.EndpointMetaDeclarations = declarationsModification(option.EndpointMetaDeclarations).ToArray();
-            return this;
-        }
-
-        /// <summary>
-        /// Add Parser for parameter binding, for IParser T the last one added will be used for type T
-        /// </summary>
-        /// <param name="parser">Parser to add</param>
-        /// <returns>Updated instance of the option builder</returns>
-        public EndpointOptionBuilders AddParser(IParser parser)
-        {
-            parsers.Add(parser);
-            return this;
-        }
-
-        /// <summary>
-        ///  Add Parser for parameter binding, for IParser T the last one added will be used for type T
-        /// </summary>
-        /// <param name="parser"></param>
-        /// <returns>Updated instance of the option builder</returns>
-        public EndpointOptionBuilders AddParsers(IEnumerable<IParser> parser)
-        {
-            parsers.AddRange(parser);
-            return this;
-        }
-
-        /// <summary>
         /// Build Endpoint option
         /// </summary>
         /// <returns>Option Endpoint for builder</returns>
         public EndpointOptions BuildOption()
         {
-            option.Parsers = new DefaultParserCollection(DefaultParsers.GetParsers().Concat(parsers));
             return option;
         }
     }

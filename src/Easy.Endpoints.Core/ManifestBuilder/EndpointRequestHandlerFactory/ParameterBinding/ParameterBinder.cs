@@ -3,35 +3,34 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Easy.Endpoints
 {
     internal static class ParameterBinder
     {
-        public static bool CanParseQueryParameter(Type type, EndpointOptions options) => CanParseArrayValue(type, options) || CanParseNullableValue(type, options) || CanParseSingleValue(type, options);
-        public static bool CanParseRoute(Type type, EndpointOptions options) => CanParseSingleValue(type, options);
+        public static bool CanParseQueryParameter(Type type, EndpointDeclarationFactoryOptions options) => CanParseArrayValue(type, options) || CanParseNullableValue(type, options) || CanParseSingleValue(type, options);
+        public static bool CanParseRoute(Type type, EndpointDeclarationFactoryOptions options) => CanParseSingleValue(type, options);
 
-        public static EndpointHandlerParameterDeclaration GetParameterDeclarationForRoute(string parameterName, Type type, EndpointOptions options)
+        public static EndpointHandlerParameterDeclaration GetParameterDeclarationForRoute(string parameterName, Type type, EndpointDeclarationFactoryOptions options)
         {
             var (factory, infos) = GetParameterDeclaration(parameterName, type, false, null, EndpointParameterSource.Route, type.IsArray, options);
             return new SyncEndpointParameterDeclaration(factory, infos);
         }
 
-        public static EndpointHandlerParameterDeclaration GetParameterDeclarationForBindingAttribute(IParameterBindingSourceWithNameAttribute parameterBindingSourceWithNameAttribute, string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointOptions options)
+        public static EndpointHandlerParameterDeclaration GetParameterDeclarationForBindingAttribute(IParameterBindingSourceWithNameAttribute parameterBindingSourceWithNameAttribute, string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointDeclarationFactoryOptions options)
         {
             var parameterNameToBind = parameterBindingSourceWithNameAttribute.Name ?? parameterName;
             var (factory, infos) = GetParameterDeclaration(parameterNameToBind, type, hasDefaultValue, defaultValue, parameterBindingSourceWithNameAttribute.Source, type.IsArray, options);
             return new SyncEndpointParameterDeclaration(factory, infos);
         }
 
-        public static EndpointHandlerParameterDeclaration GetParameterDeclarationForQuery(string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointOptions options)
+        public static EndpointHandlerParameterDeclaration GetParameterDeclarationForQuery(string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointDeclarationFactoryOptions options)
         {
             var (factory, infos) = GetParameterDeclaration(parameterName, type, hasDefaultValue, defaultValue, EndpointParameterSource.Query, type.IsArray, options);
             return new SyncEndpointParameterDeclaration(factory, infos);
         }
 
-        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterDeclaration(string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointParameterSource paramterSource, bool isArray, EndpointOptions options)
+        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterDeclaration(string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointParameterSource paramterSource, bool isArray, EndpointDeclarationFactoryOptions options)
         {
             if (IsComplex(type, options))
                 return GetParameterInfoForClass(type, paramterSource, options);
@@ -56,14 +55,14 @@ namespace Easy.Endpoints
 
         }
 
-        private static bool IsComplex(Type type, EndpointOptions options)
+        private static bool IsComplex(Type type, EndpointDeclarationFactoryOptions options)
         {
             if (type.IsArray || type == typeof(string))
                 return false;
             return !CanParseQueryParameter(type, options);
         }
 
-        private static SyncParameterFactory GetParameterFactory(string parameterName, Type type, bool allowNull, bool isNullable, object? defaultValue, EndpointParameterSource parameterSource, bool isArray, EndpointOptions options)
+        private static SyncParameterFactory GetParameterFactory(string parameterName, Type type, bool allowNull, bool isNullable, object? defaultValue, EndpointParameterSource parameterSource, bool isArray, EndpointDeclarationFactoryOptions options)
         {
             if (type == typeof(string))
                 return GetParameterFactoryForStringValue(parameterName, defaultValue, parameterSource, isArray);
@@ -275,23 +274,23 @@ namespace Easy.Endpoints
             return false;
         }
 
-        private static bool CanParseSingleValue(Type type, EndpointOptions options)
+        private static bool CanParseSingleValue(Type type, EndpointDeclarationFactoryOptions options)
         {
             return type == typeof(string)
                 || options.Parsers.HasParser(type);
         }
 
-        private static bool CanParseNullableValue(Type type, EndpointOptions options)
+        private static bool CanParseNullableValue(Type type, EndpointDeclarationFactoryOptions options)
         {
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && CanParseSingleValue(type.GetGenericArguments()[0], options);
         }
 
-        private static bool CanParseArrayValue(Type type, EndpointOptions options)
+        private static bool CanParseArrayValue(Type type, EndpointDeclarationFactoryOptions options)
         {
             return type.IsArray && CanParseSingleValue(type.GetElementType()!, options);
         }
 
-        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterInfoForClass(Type type, EndpointParameterSource source, EndpointOptions options)
+        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterInfoForClass(Type type, EndpointParameterSource source, EndpointDeclarationFactoryOptions options)
         {
             var constructor = type.GetConstructor(Array.Empty<Type>());
             if (constructor is null)
@@ -322,7 +321,7 @@ namespace Easy.Endpoints
             return (factory.Compile(), parameterInfos.SelectMany(s => s.info).ToArray());
         }
 
-        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterInfoForClassProperty(PropertyInfo propertyInfo, EndpointParameterSource source, EndpointOptions options)
+        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterInfoForClassProperty(PropertyInfo propertyInfo, EndpointParameterSource source, EndpointDeclarationFactoryOptions options)
         {
             return GetParameterDeclaration(propertyInfo.Name, propertyInfo.PropertyType, false, null, source, propertyInfo.PropertyType.IsArray, options);
         }

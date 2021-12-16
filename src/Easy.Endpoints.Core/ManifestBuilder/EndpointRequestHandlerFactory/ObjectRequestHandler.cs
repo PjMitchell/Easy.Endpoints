@@ -9,20 +9,18 @@ namespace Easy.Endpoints
         private readonly ObjectEndpointMethodExecutor executor;
         protected readonly HttpContext httpContext;
         private readonly ParameterArrayFactory parameterFactory;
-        private readonly EndpointOptions options;
 
-        public ObjectRequestHandler(ObjectEndpointMethodExecutor executor, HttpContext httpContext, ParameterArrayFactory parameterFactory, EndpointOptions options)
+        public ObjectRequestHandler(ObjectEndpointMethodExecutor executor, HttpContext httpContext, ParameterArrayFactory parameterFactory)
         {
             this.executor = executor;
             this.httpContext = httpContext;
             this.parameterFactory = parameterFactory;
-            this.options = options;
         }
 
 
         public async Task HandleRequest()
         {
-            
+            var options = httpContext.RequestServices.GetRequiredService<EndpointOptions>();
             var parameters = await parameterFactory(httpContext, options);
             var endpointHandler = httpContext.RequestServices.GetRequiredService(executor.EndpointType);
             var result = await executor.Execute(endpointHandler, parameters);

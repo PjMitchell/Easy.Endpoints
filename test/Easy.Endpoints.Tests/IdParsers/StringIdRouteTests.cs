@@ -12,7 +12,7 @@ namespace Easy.Endpoints.Tests
 
         public StringIdRouteTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<IdRouteEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<IdRouteEndpoint>());
         }
 
         [Fact]

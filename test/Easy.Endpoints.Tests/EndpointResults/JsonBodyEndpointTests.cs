@@ -13,8 +13,8 @@ namespace Easy.Endpoints.Tests
         {
             server = TestEndpointServerFactory.CreateEndpointServer(b =>
             {
-                b.AddForEndpoint<JsonBodyEndpoint>();
-                b.AddForEndpoint<PutJsonBodyEndpoint>();
+                b.WithEndpoint<JsonBodyEndpoint>();
+                b.WithEndpoint<PutJsonBodyEndpoint>();
 
             });
         }
@@ -46,7 +46,7 @@ namespace Easy.Endpoints.Tests
         [Post("test")]
         private class JsonBodyEndpoint : IEndpoint
         {
-            public Book Handle(Book book, CancellationToken cancellationToken)
+            public Book Handle(Book book)
             {
                 return book;
             }
@@ -55,7 +55,7 @@ namespace Easy.Endpoints.Tests
         [Put("test/{id:int}")]
         private class PutJsonBodyEndpoint : IEndpoint
         {
-            public Book Handle(int id, Book book, CancellationToken cancellationToken)
+            public Book Handle(int id, Book book)
             {
                 book.Id = id;
                 return book;

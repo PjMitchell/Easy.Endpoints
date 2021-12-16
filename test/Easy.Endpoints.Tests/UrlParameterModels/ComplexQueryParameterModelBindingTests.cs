@@ -11,7 +11,7 @@ namespace Easy.Endpoints.Tests
         
         public ComplexQueryParameterModelBindingTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.AddForEndpoint<TestEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<TestEndpoint>());
         }
 
         [Fact]

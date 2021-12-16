@@ -8,7 +8,7 @@ namespace Easy.Endpoints
 {
     internal static class OpenIdInfoHelpers
     {
-        public static IEnumerable<IApiResponseMetadataProvider> GetApiResponses(this EndpointInfo info)
+        public static IEnumerable<IApiResponseMetadataProvider> GetApiResponses(this EndpointDeclaration info)
         {
             
             if (info.HandlerDeclaration.ReturnType is not null)
@@ -31,7 +31,7 @@ namespace Easy.Endpoints
 
         }
 
-        public static IEndpointRequestBodyMetadataProvider? GetBodyParameterOrDefault(this EndpointInfo info)
+        public static IEndpointRequestBodyMetadataProvider? GetBodyParameterOrDefault(this EndpointDeclaration info)
         {
             var bodyParameter = info.HandlerDeclaration.GetDetails().FirstOrDefault(r => r.Source == EndpointParameterSource.Body);
             if (bodyParameter is not null)

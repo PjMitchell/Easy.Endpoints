@@ -14,7 +14,7 @@ namespace Easy.Endpoints.TestService.Endpoints
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRouting();
-            services.AddEasyEndpoints(o => o.AddParser(new CoordinatesParser()));
+            services.AddEasyEndpoints().WithParser<CoordinatesParser>();
             services.AddSwaggerGen();
             services.AddSingleton<IAuthService, AuthService>();
             services.AddTransient<IPeopleService, PeopleService>();
