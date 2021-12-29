@@ -112,22 +112,22 @@ namespace Easy.Endpoints
             {
                 if (ctx.Request.Query.TryGetValue(parameterName, out var results))
                 {
-                    var state = ParameterBindingFlag.None;
+                    var state = ParameterBindingIssues.None;
                     if (results.Count != 1)
                     {
-                        state = ParameterBindingFlag.Error;
+                        state = ParameterBindingIssues.Error;
                         bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
                     }
 
                     if (parsable.TryParse(results[0], opts.FormatProvider, out var result))
                         return new ParameterBindingResult(result, state);
                     bindingErrors.AddCouldNotParseError(parameterName, results[0]);
-                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Error);
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingIssues.Error);
                 }
                 if (allowNull)
-                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing);
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingIssues.Missing);
                 bindingErrors.AddMissingNonNullableValue(parameterName);
-                return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing | ParameterBindingFlag.Error);
+                return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingIssues.Missing | ParameterBindingIssues.Error);
 
             };
 
@@ -140,22 +140,22 @@ namespace Easy.Endpoints
             {
                 if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
                 {
-                    var state = ParameterBindingFlag.None;
+                    var state = ParameterBindingIssues.None;
                     if(results.Count != 1)
                     {
-                        state = ParameterBindingFlag.Error;
+                        state = ParameterBindingIssues.Error;
                         bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
                     }
 
                     if (parsable.TryParse(results[0], opts.FormatProvider, out var result))
                         return new ParameterBindingResult(result, state);
                     bindingErrors.AddCouldNotParseError(parameterName, results[0]);
-                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Error);
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingIssues.Error);
                 }
                 if (allowNull)
-                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing);
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingIssues.Missing);
                 bindingErrors.AddMissingNonNullableValue(parameterName);
-                return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing | ParameterBindingFlag.Error);
+                return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingIssues.Missing | ParameterBindingIssues.Error);
             };
 
         }
@@ -166,7 +166,7 @@ namespace Easy.Endpoints
             {
                 if (ctx.Request.Query.TryGetValue(parameterName, out var results))
                 {
-                    var state = ParameterBindingFlag.None;
+                    var state = ParameterBindingIssues.None;
                     var parsedResults = new T[results.Count];
                     for (var i = 0; i < results.Count; i++)
                     {
@@ -175,7 +175,7 @@ namespace Easy.Endpoints
                         else
                         {
                             bindingErrors.AddCouldNotParseError($"{parameterName}[{i}]", results[i]);
-                            state = ParameterBindingFlag.Error;
+                            state = ParameterBindingIssues.Error;
                         }
                     }
 
@@ -194,7 +194,7 @@ namespace Easy.Endpoints
             {
                 if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
                 {
-                    var state = ParameterBindingFlag.None;
+                    var state = ParameterBindingIssues.None;
                     var parsedResults = new T[results.Count];
                     for (var i = 0; i < results.Count; i++)
                     {
@@ -203,7 +203,7 @@ namespace Easy.Endpoints
                         else
                         {
                             bindingErrors.AddCouldNotParseError($"{parameterName}[{i}]", results[i]);
-                            state = ParameterBindingFlag.Error;
+                            state = ParameterBindingIssues.Error;
                         }
                     }
 
@@ -221,11 +221,11 @@ namespace Easy.Endpoints
             return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (!ctx.Request.Query.TryGetValue(parameterName, out var results))
-                    return new ParameterBindingResult(defaultValue, ParameterBindingFlag.Missing);
+                    return new ParameterBindingResult(defaultValue, ParameterBindingIssues.Missing);
                 if (results.Count == 1)
                     return new ParameterBindingResult(results[0]);
                 bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
-                return new ParameterBindingResult(results[0], ParameterBindingFlag.Error);
+                return new ParameterBindingResult(results[0], ParameterBindingIssues.Error);
             };
 
         }
@@ -235,11 +235,11 @@ namespace Easy.Endpoints
             return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (!ctx.Request.Headers.TryGetValue(parameterName, out var results))
-                    return new ParameterBindingResult(defaultValue, ParameterBindingFlag.Missing);
+                    return new ParameterBindingResult(defaultValue, ParameterBindingIssues.Missing);
                 if (results.Count == 1)
                     return new ParameterBindingResult(results[0]);
                 bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
-                return new ParameterBindingResult(results[0], ParameterBindingFlag.Error);
+                return new ParameterBindingResult(results[0], ParameterBindingIssues.Error);
             };
 
         }

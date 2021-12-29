@@ -6,7 +6,7 @@ namespace Easy.Endpoints
     /// Information on the Parameter Binding
     /// </summary>
     [Flags]
-    public enum ParameterBindingFlag : byte
+    public enum ParameterBindingIssues : byte
     {
         /// <summary>
         /// No flags

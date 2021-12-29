@@ -16,7 +16,7 @@ namespace Easy.Endpoints
         private static readonly ParameterExpression optionsParameterExpr = Expression.Parameter(typeof(EndpointOptions), "ee_options");
         private static readonly ParameterExpression errorCollectionParameterExpr = Expression.Parameter(typeof(IBindingErrorCollection), "ee_errorCollection");
         private static readonly MethodInfo  invokeMethod = typeof(SyncParameterFactory).GetMethod("Invoke")!;
-        private static readonly ConstructorInfo parameterBindingResultCtor = typeof(ParameterBindingResult).GetConstructor(new[] { typeof(object), typeof(ParameterBindingFlag) })!;
+        private static readonly ConstructorInfo parameterBindingResultCtor = typeof(ParameterBindingResult).GetConstructor(new[] { typeof(object), typeof(ParameterBindingIssues) })!;
         private static readonly PropertyInfo parameterBindingResultProperty = typeof(ParameterBindingResult).GetProperty(nameof(ParameterBindingResult.Result))!;
         private static readonly PropertyInfo parameterBindingStateProperty = typeof(ParameterBindingResult).GetProperty(nameof(ParameterBindingResult.State))!;
         
@@ -43,7 +43,7 @@ namespace Easy.Endpoints
                 blockExpressions.AddRange(BuildPropertyAssignment(properties[i], parameterInfos[i].factory, resultVariable, stateVariable, propertyResultVariable, propertyStateVariable));
             }
 
-            blockExpressions.Add(Expression.New(parameterBindingResultCtor, resultVariable,Expression.Convert(stateVariable, typeof(ParameterBindingFlag))));
+            blockExpressions.Add(Expression.New(parameterBindingResultCtor, resultVariable,Expression.Convert(stateVariable, typeof(ParameterBindingIssues))));
             var block = Expression.Block(typeof(ParameterBindingResult),new[] { stateVariable, resultVariable, propertyResultVariable, propertyStateVariable }, blockExpressions);
             var factory = Expression.Lambda<SyncParameterFactory>(block, ctxParameterExpr, optionsParameterExpr, errorCollectionParameterExpr);
             return (factory.Compile(), parameterInfos.SelectMany(s => s.info).ToArray());

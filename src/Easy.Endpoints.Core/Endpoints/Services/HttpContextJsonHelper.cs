@@ -36,14 +36,14 @@ namespace Easy.Endpoints
                 if (result is null)
                 {
                     bindingErrors.Add(new BindingError("body", "could not parse body"));
-                    return new ParameterBindingResult(null, ParameterBindingFlag.Error);
+                    return new ParameterBindingResult(null, ParameterBindingIssues.Error);
                 }
                 return new ParameterBindingResult(result);
             }
             catch (JsonException e)
             {
                 bindingErrors.Add(new BindingError("body", $"could not parse body; {e.Message}"));
-                return new ParameterBindingResult(null, ParameterBindingFlag.Error);
+                return new ParameterBindingResult(null, ParameterBindingIssues.Error);
             }
         }
     }
