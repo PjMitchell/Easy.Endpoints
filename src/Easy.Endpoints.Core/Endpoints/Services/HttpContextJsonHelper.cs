@@ -28,33 +28,22 @@ namespace Easy.Endpoints
             return JsonSerializer.SerializeAsync(endpointContext.Response.Body, response, inputType, serializerOptions, endpointContext.RequestAborted);
         }
 
-        public static async ValueTask<TModel> ReadJsonBody<TModel>(EndpointContext endpointContext)
-        {
-            try
-            {
-                var result = await endpointContext.Request.ReadFromJsonAsync<TModel>(endpointContext.JsonSerializerOptions, endpointContext.RequestAborted).ConfigureAwait(false);
-                if (result is null)
-                    throw new EndpointStatusCodeResponseException(400, "Invalid request body");
-                return result;
-            }
-            catch(JsonException)
-            {
-                throw new EndpointStatusCodeResponseException(400, "Invalid request body");
-            }
-        }
-
-        public static async ValueTask<object?> ReadJsonBody(HttpContext httpContext,Type type, JsonSerializerOptions serializerOptions)
+        public static async ValueTask<ParameterBindingResult> ReadJsonBody(HttpContext httpContext,Type type, JsonSerializerOptions serializerOptions, IBindingErrorCollection bindingErrors)
         {
             try
             {
                 var result = await httpContext.Request.ReadFromJsonAsync(type, serializerOptions, httpContext.RequestAborted).ConfigureAwait(false);
                 if (result is null)
-                    throw new EndpointStatusCodeResponseException(400, "Invalid request body");
-                return result;
+                {
+                    bindingErrors.Add(new BindingError("body", "could not parse body"));
+                    return new ParameterBindingResult(null, ParameterBindingFlag.Error);
+                }
+                return new ParameterBindingResult(result);
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
-                throw new EndpointStatusCodeResponseException(400, "Invalid request body");
+                bindingErrors.Add(new BindingError("body", $"could not parse body; {e.Message}"));
+                return new ParameterBindingResult(null, ParameterBindingFlag.Error);
             }
         }
     }

@@ -25,6 +25,19 @@ namespace Easy.Endpoints.Tests
             Assert.Equal(new[] { 2, 5 }, observed.Multiple);
         }
 
+        [Fact]
+        public async Task CanMapQueryParametersWithDefaultCalue()
+        {
+            var result = await server.CreateRequest("/Test?two=2.4&multiple=2&multiple=5").GetAsync();
+            Assert.True(result.IsSuccessStatusCode);
+            var observed = await result.GetJsonBody<GetTestModel>();
+            Assert.Equal(23, observed.One);
+            Assert.Equal(2.4m, observed.Two);
+            Assert.Equal(new[] { 2, 5 }, observed.Multiple);
+        }
+
+
+
         [Get("/Test")]
         public class TestEndpoint : IEndpoint
         {
@@ -36,7 +49,7 @@ namespace Easy.Endpoints.Tests
 
         public class GetTestModel
         {
-            public int One { get; init; }
+            public int One { get; init; } = 23;
             public decimal? Two { get; init; }
             public int[] Multiple { get; init; } = Array.Empty<int>();
 

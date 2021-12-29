@@ -91,11 +91,15 @@ namespace Easy.Endpoints
         {
             return async (HttpContext ctx, EndpointOptions opts) =>
             {
+                var modelErrorState = new BindingErrorCollection();
                 object?[] results = new object?[parameter.Length];
                 for (int i = 0; i < parameter.Length; i++)
                 {
-                    results[i] = await parameter[i].Factory(ctx, opts);
+                    var value = await parameter[i].Factory(ctx, opts, modelErrorState);
+                    results[i] = value.Result;
                 }
+                if(modelErrorState.HasErrors)
+                    throw new MalformedRequestException(modelErrorState);
                 return results;
             };
         }

@@ -37,7 +37,7 @@ namespace Easy.Endpoints
         }
 
         /// <summary>
-        /// Creates new instance of InvalidEndpointSetupException with serialization data
+        /// Creates new instance of EndpointStatusCodeResponseException with serialization data
         /// </summary>
         /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
         /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
@@ -49,10 +49,5 @@ namespace Easy.Endpoints
         /// Status Code for Endpoint response
         /// </summary>
         public int StatusCode { get; }
-    }
-
-    internal static class EndpointStatusCodeResponseExceptionHelper
-    {
-        internal static EndpointStatusCodeResponseException NotFound() => new EndpointStatusCodeResponseException(404, "Not found");
     }
 }

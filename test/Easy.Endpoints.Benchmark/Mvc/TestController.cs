@@ -2,6 +2,7 @@
 using Easy.Endpoints.TestService.Endpoints.Books;
 using Easy.Endpoints.TestService.Endpoints.People;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,19 +23,19 @@ namespace Easy.Endpoints.Benchmark.Mvc
         }
 
         [HttpGet("People")]
-        public IActionResult GetPeople(string[] firstName, string[] surname, int? minAge, int? maxAge)
+        public IActionResult GetPeople([FromQuery] PeopleQuery query)
         {
             return Ok(AllPeople().Where(w =>
                 {
-                    if (firstName.Length != 0 && !firstName.Contains(w.FirstName))
+                    if (query.FirstName.Length != 0 && !query.FirstName.Contains(w.FirstName))
                         return false;
-                    if (surname.Length != 0 && !surname.Contains(w.Surname))
-                        return false;
-
-                    if (minAge.HasValue && w.Age < minAge.Value)
+                    if (query.Surname.Length != 0 && !query.Surname.Contains(w.Surname))
                         return false;
 
-                    if (maxAge.HasValue && w.Age > maxAge.Value)
+                    if (query.MinAge.HasValue && w.Age < query.MinAge.Value)
+                        return false;
+
+                    if (query.MaxAge.HasValue && w.Age > query.MaxAge.Value)
                         return false;
 
                     return true;
@@ -43,5 +44,13 @@ namespace Easy.Endpoints.Benchmark.Mvc
         }
 
         public static IEnumerable<People> AllPeople() => PeopleService.AllPeople();
+    }
+
+    public class PeopleQuery
+    {
+        public string[] FirstName { get; set; } = Array.Empty<string>();
+        public string[] Surname { get; set; } = Array.Empty<string>();
+        public int? MinAge { get; set; }
+        public int? MaxAge { get; set; }
     }
 }

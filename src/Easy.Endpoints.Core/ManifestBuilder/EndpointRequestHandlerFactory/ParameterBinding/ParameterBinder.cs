@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Easy.Endpoints
 {
@@ -30,10 +28,10 @@ namespace Easy.Endpoints
             return new SyncEndpointParameterDeclaration(factory, infos);
         }
 
-        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterDeclaration(string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointParameterSource paramterSource, bool isArray, EndpointDeclarationFactoryOptions options)
+        public static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterDeclaration(string parameterName, Type type, bool hasDefaultValue, object? defaultValue, EndpointParameterSource paramterSource, bool isArray, EndpointDeclarationFactoryOptions options)
         {
             if (IsComplex(type, options))
-                return GetParameterInfoForClass(type, paramterSource, options);
+                return ComplexParameterBinder.GetParameterDeclarationForClass(type, paramterSource, options);
             var parameterType = type;
             var allowNull = hasDefaultValue;
             var isNullable = false;
@@ -110,17 +108,26 @@ namespace Easy.Endpoints
         private static SyncParameterFactory GetParameterFactoryForQuery<T>(string parameterName, IParser<T> parsable, bool allowNull, bool isNullable, object? defaultValue)
         {
             var defaultIfNoQueryFound = isNullable ? defaultValue : defaultValue ?? default(T);
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (ctx.Request.Query.TryGetValue(parameterName, out var results))
                 {
-                    if (results.Count == 1 && parsable.TryParse(results[0], opts.FormatProvider, out var result))
-                        return result;
-                    throw new EndpointStatusCodeResponseException();
+                    var state = ParameterBindingFlag.None;
+                    if (results.Count != 1)
+                    {
+                        state = ParameterBindingFlag.Error;
+                        bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
+                    }
+
+                    if (parsable.TryParse(results[0], opts.FormatProvider, out var result))
+                        return new ParameterBindingResult(result, state);
+                    bindingErrors.AddCouldNotParseError(parameterName, results[0]);
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Error);
                 }
                 if (allowNull)
-                    return defaultIfNoQueryFound;
-                throw new EndpointStatusCodeResponseException();
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing);
+                bindingErrors.AddMissingNonNullableValue(parameterName);
+                return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing | ParameterBindingFlag.Error);
 
             };
 
@@ -129,41 +136,53 @@ namespace Easy.Endpoints
         private static SyncParameterFactory GetParameterFactoryForHeader<T>(string parameterName, IParser<T> parsable, bool allowNull, bool isNullable, object? defaultValue)
         {
             var defaultIfNoQueryFound = isNullable ? defaultValue : defaultValue ?? default(T);
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
                 {
-                    if (results.Count == 1 && parsable.TryParse(results[0], opts.FormatProvider, out var result))
-                        return result;
-                    throw new EndpointStatusCodeResponseException();
+                    var state = ParameterBindingFlag.None;
+                    if(results.Count != 1)
+                    {
+                        state = ParameterBindingFlag.Error;
+                        bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
+                    }
+
+                    if (parsable.TryParse(results[0], opts.FormatProvider, out var result))
+                        return new ParameterBindingResult(result, state);
+                    bindingErrors.AddCouldNotParseError(parameterName, results[0]);
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Error);
                 }
                 if (allowNull)
-                    return defaultIfNoQueryFound;
-                throw new EndpointStatusCodeResponseException();
-
+                    return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing);
+                bindingErrors.AddMissingNonNullableValue(parameterName);
+                return new ParameterBindingResult(defaultIfNoQueryFound, ParameterBindingFlag.Missing | ParameterBindingFlag.Error);
             };
 
         }
 
         private static SyncParameterFactory GetParameterFactoryForQueryArray<T>(string parameterName, IParser<T> parsable)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (ctx.Request.Query.TryGetValue(parameterName, out var results))
                 {
+                    var state = ParameterBindingFlag.None;
                     var parsedResults = new T[results.Count];
                     for (var i = 0; i < results.Count; i++)
                     {
                         if (parsable.TryParse(results[i], opts.FormatProvider, out var result))
                             parsedResults[i] = result;
                         else
-                            throw new EndpointStatusCodeResponseException();
+                        {
+                            bindingErrors.AddCouldNotParseError($"{parameterName}[{i}]", results[i]);
+                            state = ParameterBindingFlag.Error;
+                        }
                     }
 
-                    return parsedResults;
+                    return new ParameterBindingResult { Result = parsedResults, State = state };
 
                 }
-                return Array.Empty<T>();
+                return new ParameterBindingResult { Result = Array.Empty<T>() };
 
             };
 
@@ -171,23 +190,27 @@ namespace Easy.Endpoints
 
         private static SyncParameterFactory GetParameterFactoryForHeaderArray<T>(string parameterName, IParser<T> parsable)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
                 {
+                    var state = ParameterBindingFlag.None;
                     var parsedResults = new T[results.Count];
                     for (var i = 0; i < results.Count; i++)
                     {
                         if (parsable.TryParse(results[i], opts.FormatProvider, out var result))
                             parsedResults[i] = result;
                         else
-                            throw new EndpointStatusCodeResponseException();
+                        {
+                            bindingErrors.AddCouldNotParseError($"{parameterName}[{i}]", results[i]);
+                            state = ParameterBindingFlag.Error;
+                        }
                     }
 
-                    return parsedResults;
+                    return new ParameterBindingResult { Result = parsedResults, State = state };
 
                 }
-                return Array.Empty<T>();
+                return new ParameterBindingResult { Result = Array.Empty<T>() };
 
             };
 
@@ -195,70 +218,72 @@ namespace Easy.Endpoints
 
         public static SyncParameterFactory GetParameterFactoryForQueryWithStringValue(string parameterName, object? defaultValue)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (!ctx.Request.Query.TryGetValue(parameterName, out var results))
-                    return defaultValue;
+                    return new ParameterBindingResult(defaultValue, ParameterBindingFlag.Missing);
                 if (results.Count == 1)
-                    return results[0];
-                throw new EndpointStatusCodeResponseException();
+                    return new ParameterBindingResult(results[0]);
+                bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
+                return new ParameterBindingResult(results[0], ParameterBindingFlag.Error);
             };
 
         }
 
         public static SyncParameterFactory GetParameterFactoryForHeaderStringValue(string parameterName, object? defaultValue)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (!ctx.Request.Headers.TryGetValue(parameterName, out var results))
-                    return defaultValue;
+                    return new ParameterBindingResult(defaultValue, ParameterBindingFlag.Missing);
                 if (results.Count == 1)
-                    return results[0];
-                throw new EndpointStatusCodeResponseException();
+                    return new ParameterBindingResult(results[0]);
+                bindingErrors.AddMultipleWhenExpectingSingle(parameterName);
+                return new ParameterBindingResult(results[0], ParameterBindingFlag.Error);
             };
 
         }
 
         private static SyncParameterFactory GetParameterFactoryForQueryWithStringArrayValue(string parameterName)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (ctx.Request.Query.TryGetValue(parameterName, out var results))
-                    return results.ToArray();
-                return Array.Empty<string>();
+                    return new ParameterBindingResult(results.ToArray());
+                return new ParameterBindingResult(Array.Empty<string>());
             };
 
         }
 
         private static SyncParameterFactory GetParameterFactoryForHeaderWithStringArrayValue(string parameterName)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (ctx.Request.Headers.TryGetValue(parameterName, out var results))
-                    return results.ToArray();
-                return Array.Empty<string>();
+                    return new ParameterBindingResult(results.ToArray());
+                return new  ParameterBindingResult(Array.Empty<string>());
             };
 
         }
 
         private static SyncParameterFactory GetParameterFactoryForRoute<T>(string parameterName, IParser<T> parsable)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (TryGetRouteParameter(ctx, parameterName, out var routeValue) && parsable.TryParse(routeValue, opts.FormatProvider, out var result))
-                    return result;
-                throw new EndpointStatusCodeResponseException(404, "Not Found");
+                    return new ParameterBindingResult(result);
+                throw new EndpointNotFoundException();
             };
 
         }
 
         private static SyncParameterFactory GetParameterFactoryForRouteWithStringValue(string parameterName)
         {
-            return (HttpContext ctx, EndpointOptions opts) =>
+            return (HttpContext ctx, EndpointOptions opts, IBindingErrorCollection bindingErrors) =>
             {
                 if (TryGetRouteParameter(ctx, parameterName, out var result))
-                    return result;
-                throw new EndpointStatusCodeResponseException(404, "Not Found");
+                    return new ParameterBindingResult(result);
+                throw new EndpointNotFoundException();
             };
 
         }
@@ -288,53 +313,6 @@ namespace Easy.Endpoints
         private static bool CanParseArrayValue(Type type, EndpointDeclarationFactoryOptions options)
         {
             return type.IsArray && CanParseSingleValue(type.GetElementType()!, options);
-        }
-
-        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterInfoForClass(Type type, EndpointParameterSource source, EndpointDeclarationFactoryOptions options)
-        {
-            var constructor = type.GetConstructor(Array.Empty<Type>());
-            if (constructor is null)
-                throw new InvalidEndpointSetupException($"No parameterless constructor for {type}");
-            var properties = type.GetProperties().Where(IsValidProperty).ToArray();
-            var parameterInfos = properties.Select(p => GetParameterInfoForClassProperty(p, source, options)).ToArray();
-
-            const string ctxParameter = "ee_ctx";
-            const string optionParameter = "ee_options";
-
-            var ctor = Expression.New(constructor);
-            var bindings = new MemberBinding[properties.Length];
-            var ctxParameterExpr = Expression.Parameter(typeof(HttpContext), ctxParameter);
-            var optionsParameterExpr = Expression.Parameter(typeof(EndpointOptions), optionParameter);
-            var invokeMethod = typeof(SyncParameterFactory).GetMethod("Invoke")!;
-            for (var i = 0; i < properties.Length;i++)
-            {
-                var property = properties[i];
-                var (parameterFactory, infos) = parameterInfos[i];
-                var parameterFactoryExpr = Expression.Constant(parameterFactory, typeof(SyncParameterFactory));
-                var invoke = Expression.Call(parameterFactoryExpr, invokeMethod, ctxParameterExpr, optionsParameterExpr); 
-                var invokeToType = Expression.Convert(invoke, property.PropertyType);
-
-                bindings[i] = Expression.Bind(property, invokeToType);
-            }
-            var memberInit = Expression.MemberInit(ctor, bindings);
-            var factory = Expression.Lambda<SyncParameterFactory>(memberInit, ctxParameterExpr, optionsParameterExpr);
-            return (factory.Compile(), parameterInfos.SelectMany(s => s.info).ToArray());
-        }
-
-        private static (SyncParameterFactory factory, EndpointParameterDescriptor[] info) GetParameterInfoForClassProperty(PropertyInfo propertyInfo, EndpointParameterSource source, EndpointDeclarationFactoryOptions options)
-        {
-            return GetParameterDeclaration(propertyInfo.Name, propertyInfo.PropertyType, false, null, source, propertyInfo.PropertyType.IsArray, options);
-        }
-
-        private static bool IsValidProperty(PropertyInfo propertyInfo)
-        {
-            if (!propertyInfo.CanWrite || !propertyInfo.CanRead || propertyInfo.SetMethod is null)
-                return false;
-            var setter = propertyInfo.SetMethod;
-            if (setter.IsPublic)
-                return true;
-            var setMethodReturnParameterModifiers = setter.ReturnParameter.GetRequiredCustomModifiers();
-            return setMethodReturnParameterModifiers.Contains(typeof(System.Runtime.CompilerServices.IsExternalInit));
         }
     }
 }
