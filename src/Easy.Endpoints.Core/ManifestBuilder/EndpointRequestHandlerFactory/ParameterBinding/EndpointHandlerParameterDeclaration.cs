@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -18,6 +19,8 @@ namespace Easy.Endpoints
         /// <summary>
         /// Factory for building parameter from HttpContext
         /// </summary>
-        public abstract ValueTask<object?> Factory(HttpContext httpContext, EndpointOptions options);
+        public abstract ValueTask<ParameterBindingResult> Factory(HttpContext httpContext, EndpointOptions options, IBindingErrorCollection bindingErrorCollection);
+
     }
+
 }

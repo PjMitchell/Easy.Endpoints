@@ -1,4 +1,5 @@
 ﻿using Easy.Endpoints.Benchmark.Endpoint;
+using Easy.Endpoints.Benchmark.Mvc;
 using Easy.Endpoints.TestService.Endpoints;
 using Easy.Endpoints.TestService.Endpoints.Books;
 using Easy.Endpoints.TestService.Endpoints.People;
@@ -47,6 +48,7 @@ namespace Easy.Endpoints.Benchmark
                     {
                         endpoints.MapGet("Book", () => GetBookEndpoint.AllBooks().ToArray());
                         endpoints.MapPost("Book",([FromBody] Book book) => Task.FromResult(new CommandResult { Successful = true, Message = book.Name }));
+                        
                     });
                 });
 
@@ -63,6 +65,7 @@ namespace Easy.Endpoints.Benchmark
                         .WithEndpoint<TestGetEndpoint>()
                         .WithEndpoint<Test2GetEndpoint>()
                         .WithEndpoint<GetBookEndpoint>()
+                        .WithEndpoint<Endpoint.GetPeopleEndpoint>()
                         .WithEndpoint<PostBookEndpoint>();
                 })
                 .Configure(app =>

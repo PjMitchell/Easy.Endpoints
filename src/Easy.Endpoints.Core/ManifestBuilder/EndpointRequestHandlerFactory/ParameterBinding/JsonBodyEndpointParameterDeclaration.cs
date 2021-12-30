@@ -19,9 +19,9 @@ namespace Easy.Endpoints
             yield return descriptor;
         }
 
-        public override ValueTask<object?> Factory(HttpContext httpContext, EndpointOptions options)
+        public override ValueTask<ParameterBindingResult> Factory(HttpContext httpContext, EndpointOptions options, IBindingErrorCollection bindingErrorCollection)
         {
-            return HttpContextJsonHelper.ReadJsonBody(httpContext, descriptor.ParameterType, options.JsonSerializerOptions);
+            return HttpContextJsonHelper.ReadJsonBody(httpContext, descriptor.ParameterType, options.JsonSerializerOptions, bindingErrorCollection);
         }
     }
 

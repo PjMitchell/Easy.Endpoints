@@ -18,10 +18,10 @@ namespace Easy.Endpoints
 
         public override IEnumerable<EndpointParameterDescriptor> GetParameterDescriptors() => Descriptors;
 
-        public override ValueTask<object?> Factory(HttpContext httpContext, EndpointOptions options) => ValueTask.FromResult(ParameterFactory(httpContext, options));
+        public override ValueTask<ParameterBindingResult> Factory(HttpContext httpContext, EndpointOptions options, IBindingErrorCollection bindingErrorCollection) => ValueTask.FromResult(ParameterFactory(httpContext, options, bindingErrorCollection));
 
     }
 
-    internal delegate object? SyncParameterFactory(HttpContext httpContext, EndpointOptions options);
+    internal delegate ParameterBindingResult SyncParameterFactory(HttpContext httpContext, EndpointOptions options, IBindingErrorCollection errorCollection);
 
 }

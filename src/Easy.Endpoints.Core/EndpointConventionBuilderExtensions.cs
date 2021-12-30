@@ -54,11 +54,22 @@ namespace Easy.Endpoints
                     var endpointHandler = endpointInfo.HandlerDeclaration.Factory(context);
                     await endpointHandler.HandleRequest().ConfigureAwait(false);
                 }
+                catch (EndpointNotFoundException)
+                {
+                    context.Response.StatusCode = 404;
+                    await context.Response.WriteAsync("Not found").ConfigureAwait(false);
+                }
+                catch (MalformedRequestException)
+                {
+                    context.Response.StatusCode = 400;
+                    await context.Response.WriteAsync("Bad Request").ConfigureAwait(false);
+                }
                 catch (EndpointStatusCodeResponseException e)
                 {
                     context.Response.StatusCode = e.StatusCode;
                     await context.Response.WriteAsync(e.Message).ConfigureAwait(false);
                 }
+                
             }
             return Request;
         }

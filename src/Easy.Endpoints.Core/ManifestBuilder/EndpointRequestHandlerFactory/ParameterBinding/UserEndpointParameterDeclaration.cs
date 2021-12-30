@@ -6,7 +6,7 @@ namespace Easy.Endpoints
     internal class UserEndpointParameterDeclaration : PredefinedEndpointParameterDeclaration
     {
         public static UserEndpointParameterDeclaration Instance => new ();
-        public override ValueTask<object?> Factory(HttpContext httpContext, EndpointOptions options) => ValueTask.FromResult<object?>(httpContext.User);
+        public override ValueTask<ParameterBindingResult> Factory(HttpContext httpContext, EndpointOptions options, IBindingErrorCollection bindingErrorCollection) => ValueTask.FromResult(new ParameterBindingResult(httpContext.User));
     }
 
 }
