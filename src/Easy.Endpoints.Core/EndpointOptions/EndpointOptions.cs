@@ -14,20 +14,17 @@ namespace Easy.Endpoints
         /// </summary>
         public EndpointOptions()
         {
-            JsonSerializerOptions = new JsonSerializerOptions {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                PropertyNameCaseInsensitive = true,
-            };
+            JsonSerializer = new DefaultJsonSerializer();      
         }
 
         /// <summary>
-        /// JSON Serializer Options for Endpoints
+        /// JSON Serializer for Endpoints
         /// </summary>
-        public JsonSerializerOptions JsonSerializerOptions { get; set; }
+        public IJsonSerializer JsonSerializer { get; set; }
 
         /// <summary>
         /// Format provider for parsing Query and Route Parameters, defaults to Invariant Culture
         /// </summary>
         public IFormatProvider FormatProvider { get; set; } = CultureInfo.InvariantCulture;
-    }
+    }    
 }
