@@ -16,7 +16,7 @@ namespace Easy.Endpoints.Tests
 
         protected ParameterBindingTests()
         {
-            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<NumberEndpoint>());
+            server = TestEndpointServerFactory.CreateEndpointServer(a => a.WithEndpoint<NumberEndpoint>().WithMalformedRequestHandler<ErrorHandler>());
         }
 
         [Fact]
@@ -63,16 +63,23 @@ namespace Easy.Endpoints.Tests
         public async Task MultipleValues_ForNullable_Returns400()
         {
             var result = await server.CreateRequest($"{expected3}/Test?nullable={expected2}&nullable={expected1}").GetAsync();
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var observed = await result.GetJsonBody<ErrorModel>();
+            var error = Assert.Single(observed.Errors);
+            Assert.Equal("nullable", error.Property);
+            Assert.Equal("Multiple Values when expecting single", error.Error);
+
         }
 
         [Fact]
         public async Task MultipleValues_ForSingle_Returns400()
         {
             var result = await server.CreateRequest($"{expected3}/Test?single={expected2}&single={expected1}").GetAsync();
-            Assert.False(result.IsSuccessStatusCode);
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
-
+            Assert.Equal(System.Net.HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var observed = await result.GetJsonBody<ErrorModel>();
+            var error = Assert.Single(observed.Errors);
+            Assert.Equal("single", error.Property);
+            Assert.Equal("Multiple Values when expecting single", error.Error);
         }
 
         [Fact]
@@ -80,21 +87,33 @@ namespace Easy.Endpoints.Tests
         {
             var result = await server.CreateRequest($"{expected3}/Test?nullable=one").GetAsync();
 
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var observed = await result.GetJsonBody<ErrorModel>();
+            var error = Assert.Single(observed.Errors);
+            Assert.Equal("nullable", error.Property);
+            Assert.Equal("Could not parse one", error.Error);
         }
 
         [Fact]
         public async Task FailedToParses_ForSingle_Returns400()
         {
             var result = await server.CreateRequest($"{expected3}/Test?single=one").GetAsync();
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var observed = await result.GetJsonBody<ErrorModel>();
+            var error = Assert.Single(observed.Errors);
+            Assert.Equal("single", error.Property);
+            Assert.Equal("Could not parse one", error.Error);
         }
 
         [Fact]
         public async Task FailedToParses_ForMultiple_Returns400()
         {
             var result = await server.CreateRequest($"{expected3}/Test?multiple=one&multiple={expected2}").GetAsync();
-            Assert.Equal(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.UnprocessableEntity, result.StatusCode);
+            var observed = await result.GetJsonBody<ErrorModel>();
+            var error = Assert.Single(observed.Errors);
+            Assert.Equal("multiple[0]", error.Property);
+            Assert.Equal("Could not parse one", error.Error);
         }
 
         [Fact]
@@ -126,6 +145,26 @@ namespace Easy.Endpoints.Tests
             public T? Nullable { get; set; }
             public T Route { get; set; }
 
+        }
+
+        public class ErrorModel
+        {
+            public BindingError[] Errors { get; set; } = Array.Empty<BindingError>();
+        }
+
+        public class ErrorHandler : IMalformedRequestExceptionHandler
+        {
+            private readonly EndpointOptions options;
+
+            public ErrorHandler(EndpointOptions options)
+            {
+                this.options = options;
+            }
+            public Task HandleMalformedRequest(MalformedRequestException ex, HttpContext httpContext)
+            {
+                httpContext.Response.StatusCode = 422;
+                return httpContext.Response.WriteAsJsonAsync(new ErrorModel { Errors = ex.BindingErrors }, options.JsonSerializerOptions);
+            }
         }
     }
 

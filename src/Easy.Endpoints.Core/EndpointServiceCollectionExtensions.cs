@@ -65,6 +65,8 @@ namespace Easy.Endpoints
             services.AddTransient<IApiDescriptionGroupCollectionProvider, EasyEndpointApiDescriptionGroupCollectionProvider>();
             var builderOptions = new EasyEndpointBuilderOptions();
             services.AddSingleton(builderOptions);
+
+            services.AddTransient<IMalformedRequestExceptionHandler, DefaultIMalformedRequestExceptionHandler>();
             var builder = new EasyEndpointBuilder(services, builderOptions, options);
             AddDefaultParsers(builder);
             return builder;
