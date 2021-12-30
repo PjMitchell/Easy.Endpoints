@@ -92,6 +92,20 @@ namespace Easy.Endpoints
         }
 
         /// <summary>
+        /// Defines Malformed Request handler, will default to a handler that returns a 400 Bad Request response
+        /// </summary>
+        /// <typeparam name="THandler">Type of parser to IMalformedRequestExceptionHandler</typeparam>
+        /// <returns>Updated instance of the option builder</returns>
+        public EasyEndpointBuilder WithMalformedRequestHandler<THandler>() where THandler : class, IMalformedRequestExceptionHandler
+        {
+            var toRemove = serviceCollection.Where(s => s.ServiceType == typeof(IMalformedRequestExceptionHandler)).ToArray();
+            foreach(var item in toRemove)
+                serviceCollection.Remove(item);
+            serviceCollection.AddTransient<IMalformedRequestExceptionHandler, THandler>();
+            return this;
+        }
+
+        /// <summary>
         /// Adds Json Serializer Options, if not defined default settings will be used
         /// </summary>
         /// <param name="jsonSerializerOptions">jsonSerializerOptions to be used by endpoint</param>

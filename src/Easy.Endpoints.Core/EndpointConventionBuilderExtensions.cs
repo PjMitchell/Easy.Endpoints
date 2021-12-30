@@ -59,10 +59,10 @@ namespace Easy.Endpoints
                     context.Response.StatusCode = 404;
                     await context.Response.WriteAsync("Not found").ConfigureAwait(false);
                 }
-                catch (MalformedRequestException)
+                catch (MalformedRequestException e)
                 {
-                    context.Response.StatusCode = 400;
-                    await context.Response.WriteAsync("Bad Request").ConfigureAwait(false);
+                    var handler = context.RequestServices.GetRequiredService<IMalformedRequestExceptionHandler>();
+                    await handler.HandleMalformedRequest(e, context).ConfigureAwait(false);
                 }
                 catch (EndpointStatusCodeResponseException e)
                 {
