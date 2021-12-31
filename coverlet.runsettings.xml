@@ -6,7 +6,9 @@
         <Configuration>
           <Format>opencover</Format>
           <IncludeDirectory>./src/</IncludeDirectory>
-        </Configuration>
+		  <IncludeDirectory>./analyzer/Easy.Endpoints.Analyzer</IncludeDirectory>
+		  <IncludeDirectory>./analyzer/Easy.Endpoints.Analyzer.CodeFixes</IncludeDirectory>
+		</Configuration>
       </DataCollector>
     </DataCollectors>
   </DataCollectionRunSettings>

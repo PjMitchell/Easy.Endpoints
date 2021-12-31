@@ -9,9 +9,6 @@ namespace Easy.Endpoints.Benchmark
             BenchmarkRunner.Run<BookHttpJsonGet>();
             BenchmarkRunner.Run<BookHttpJsonPost>();
             BenchmarkRunner.Run<PeopleQueryHttpJsonGet>();
-            BenchmarkRunner.Run<TestPayload>();
-
-            
         }
     }
 }

@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="Easy.Endpoints.Analyzer" Version="1.0.1"/>
-    <PackageReference Include="Easy.Endpoints.Core" Version="3.1.0" />
+    <PackageReference Include="Easy.Endpoints.Core" Version="4.0.0" />
   </ItemGroup>
 
 </Project>
