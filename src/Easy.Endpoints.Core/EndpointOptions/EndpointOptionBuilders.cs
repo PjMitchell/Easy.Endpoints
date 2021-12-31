@@ -26,7 +26,7 @@ namespace Easy.Endpoints
         /// <returns>Updated instance of the option builder</returns>
         public EndpointOptionBuilders WithJsonSerializer(JsonSerializerOptions jsonSerializerOptions)
         {
-            option.JsonSerializerOptions = jsonSerializerOptions;
+            option.JsonSerializer = new DefaultJsonSerializer(jsonSerializerOptions);
             return this;
         }
 
@@ -37,7 +37,9 @@ namespace Easy.Endpoints
         /// <returns>Updated instance of the option builder</returns>
         public EndpointOptionBuilders WithJsonSerializer(Action<JsonSerializerOptions> jsonSerializerOptionsModification)
         {
-            jsonSerializerOptionsModification(option.JsonSerializerOptions);
+            var jsonSerializerOptions = DefaultJsonSerializer.GetDefaultSettings();
+            jsonSerializerOptionsModification(jsonSerializerOptions);
+            option.JsonSerializer = new DefaultJsonSerializer(jsonSerializerOptions);
             return this;
         }
 

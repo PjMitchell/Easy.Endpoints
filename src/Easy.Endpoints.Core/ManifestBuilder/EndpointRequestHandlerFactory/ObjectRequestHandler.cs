@@ -24,7 +24,8 @@ namespace Easy.Endpoints
             var parameters = await parameterFactory(httpContext, options);
             var endpointHandler = httpContext.RequestServices.GetRequiredService(executor.EndpointType);
             var result = await executor.Execute(endpointHandler, parameters);
-            await HttpContextJsonHelper.WriteJsonResponse(httpContext,options.JsonSerializerOptions,result,executor.ObjectReturnType).ConfigureAwait(false);
+            httpContext.Response.StatusCode = 200;
+            await options.JsonSerializer.SerializeToResponse(httpContext.Response, result, executor.ObjectReturnType, httpContext.RequestAborted);
 
         }
     }

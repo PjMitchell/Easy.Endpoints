@@ -21,7 +21,7 @@ namespace Easy.Endpoints
 
         public override ValueTask<ParameterBindingResult> Factory(HttpContext httpContext, EndpointOptions options, IBindingErrorCollection bindingErrorCollection)
         {
-            return HttpContextJsonHelper.ReadJsonBody(httpContext, descriptor.ParameterType, options.JsonSerializerOptions, bindingErrorCollection);
+            return options.JsonSerializer.DeserializeFromRequest(httpContext.Request, descriptor.ParameterType, bindingErrorCollection, httpContext.RequestAborted);
         }
     }
 

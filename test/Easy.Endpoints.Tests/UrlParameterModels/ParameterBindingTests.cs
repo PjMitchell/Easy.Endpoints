@@ -163,7 +163,7 @@ namespace Easy.Endpoints.Tests
             public Task HandleMalformedRequest(MalformedRequestException ex, HttpContext httpContext)
             {
                 httpContext.Response.StatusCode = 422;
-                return httpContext.Response.WriteAsJsonAsync(new ErrorModel { Errors = ex.BindingErrors }, options.JsonSerializerOptions);
+                return options.JsonSerializer.SerializeToResponse(httpContext.Response, new ErrorModel { Errors = ex.BindingErrors }, httpContext.RequestAborted);
             }
         }
     }

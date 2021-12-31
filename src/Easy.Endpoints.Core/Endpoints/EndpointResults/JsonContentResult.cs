@@ -32,10 +32,12 @@ namespace Easy.Endpoints
         public int StatusCode { get; }
 
 
-        /// <inheritdoc cref="IEndpointResult.ExecuteResultAsync"/>
+        /// <inheritdoc />
         public async ValueTask ExecuteResultAsync(HttpContext context, EndpointOptions options)
         {
-            await HttpContextJsonHelper.WriteJsonResponse(context, options.JsonSerializerOptions, Result, StatusCode);
+            context.Response.StatusCode = StatusCode;
+            await options.JsonSerializer.SerializeToResponse(context.Response, Result, context.RequestAborted);
+
         }
     }
 }
